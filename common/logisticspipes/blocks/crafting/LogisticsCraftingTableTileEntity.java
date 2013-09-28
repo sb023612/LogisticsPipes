@@ -77,6 +77,7 @@ outer:
 			int j = toUse[i];
 			if(j != -1) crafter.setInventorySlotContents(i, inv.getStackInSlot(j));
 		}
+		if(!cache.matches(crafter, getWorldObj())) return null; //Fix MystCraft
 		ItemStack result = cache.getCraftingResult(crafter);
 		if(result == null) return null;
 		if(!ItemIdentifier.get(resultInv.getStackInSlot(0)).equalsWithoutNBT(ItemIdentifier.get(result))) return null;
