@@ -13,22 +13,22 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class RoutingUpdateSourcePipe extends ModernPacket {
-	
+
 	@Getter
 	@Setter
 	private ExitRoute exitRoute;
-	
+
 	public RoutingUpdateSourcePipe(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		ClientViewController.instance().handlePacket(this);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new RoutingUpdateSourcePipe(getId());
@@ -49,4 +49,3 @@ public class RoutingUpdateSourcePipe extends ModernPacket {
 		data.writeExitRoute(exitRoute);
 	}
 }
-

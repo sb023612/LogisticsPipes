@@ -37,11 +37,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 public class RequestMonitorPopup extends SubGuiScreen {
-	
+
 	private enum ZOOM_LEVEL {
-		NORMAL(1, 165, 224, 1, 0, 0, 0),
-		LEVEL_1(0.5F, 330, 465, 1, 50, -200, 100),
-		LEVEL_2(0.25F, 660, 950, 2, 100, -400, -100);
+		NORMAL(1, 165, 224, 1, 0, 0, 0), LEVEL_1(0.5F, 330, 465, 1, 50, -200, 100), LEVEL_2(0.25F, 660, 950, 2, 100, -400, -100);
+
 		private ZOOM_LEVEL(float zoom, int bottom, int right, int line, int moveY, int maxX, int maxY) {
 			this.zoom = zoom;
 			this.bottomRenderBorder = bottom;
@@ -51,53 +50,53 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			this.maxX = maxX;
 			this.maxY = maxY;
 		}
-		
-		final float	zoom;
-		final int	bottomRenderBorder;
-		final int	rightRenderBorder;
-		final int	line;
-		final int	moveY;
-		final int	maxX;
-		final int	maxY;
-		
+
+		final float zoom;
+		final int bottomRenderBorder;
+		final int rightRenderBorder;
+		final int line;
+		final int moveY;
+		final int maxX;
+		final int maxY;
+
 		ZOOM_LEVEL next() {
 			int id = this.ordinal();
-			if(id + 1 >= ZOOM_LEVEL.values().length) {
+			if (id + 1 >= ZOOM_LEVEL.values().length) {
 				return this;
 			} else {
 				return ZOOM_LEVEL.values()[id + 1];
 			}
 		}
-		
+
 		ZOOM_LEVEL prev() {
 			int id = this.ordinal();
-			if(id - 1 < 0) {
+			if (id - 1 < 0) {
 				return this;
 			} else {
 				return ZOOM_LEVEL.values()[id - 1];
 			}
 		}
 	}
-	
-	private static final ResourceLocation	achievementTextures	= new ResourceLocation("textures/gui/achievement/achievement_background.png");
-	
-	private final PipeBlockRequestTable		_table;
-	private final int						orderId;
-	private final RenderItem				renderitem			= new RenderItem();
-	
-	private int								isMouseButtonDown;
-	private int								mouseX;
-	private int								mouseY;
-	private double							guiMapX;
-	private double							guiMapY;
-	private int								minY				= -230;
-	private int								maxY				= 0;
-	private int								minX				= -800;
-	private int								maxX				= 800;
-	private ZOOM_LEVEL						zoom				= ZOOM_LEVEL.NORMAL;
-	
-	private Object[]						tooltip				= null;
-	
+
+	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
+
+	private final PipeBlockRequestTable _table;
+	private final int orderId;
+	private final RenderItem renderitem = new RenderItem();
+
+	private int isMouseButtonDown;
+	private int mouseX;
+	private int mouseY;
+	private double guiMapX;
+	private double guiMapY;
+	private int minY = -230;
+	private int maxY = 0;
+	private int minX = -800;
+	private int maxX = 800;
+	private ZOOM_LEVEL zoom = ZOOM_LEVEL.NORMAL;
+
+	private Object[] tooltip = null;
+
 	public RequestMonitorPopup(PipeBlockRequestTable table, int orderId) {
 		super(256, 202, 0, 0);
 		this._table = table;
@@ -105,7 +104,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		this.guiMapY = -200;
 		Mouse.getDWheel(); // Reset DWheel on GUI open
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void initGui() {
@@ -114,95 +113,95 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		this.buttonList.add(new GuiSmallButton(0, this.width / 2 - 90, this.height / 2 + 74, 80, 20, "Close"));
 		this.buttonList.add(new GuiSmallButton(1, this.width / 2 + 10, this.height / 2 + 74, 80, 20, "Save as Image"));
 	}
-	
+
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		if(button.id == 0) {
+		if (button.id == 0) {
 			this.exitGui();
-		} else if(button.id == 1) {
+		} else if (button.id == 1) {
 			saveTreeToImage();
 		}
 	}
-	
+
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
-		if(!_table.watchedRequests.containsKey(orderId)) {
+		if (!_table.watchedRequests.containsKey(orderId)) {
 			this.exitGui();
 			return;
 		}
-		if(Mouse.isButtonDown(0)) {
+		if (Mouse.isButtonDown(0)) {
 			int k = (this.width - this.xSize) / 2;
 			int l = (this.height - this.ySize) / 2;
 			int i1 = k + 8;
 			int j1 = l + 17;
-			
-			if((this.isMouseButtonDown == 0 || this.isMouseButtonDown == 1) && par1 >= i1 && par1 < i1 + 224 && par2 >= j1 && par2 < j1 + 155) {
-				if(this.isMouseButtonDown == 0) {
+
+			if ((this.isMouseButtonDown == 0 || this.isMouseButtonDown == 1) && par1 >= i1 && par1 < i1 + 224 && par2 >= j1 && par2 < j1 + 155) {
+				if (this.isMouseButtonDown == 0) {
 					this.isMouseButtonDown = 1;
 				} else {
-					this.guiMapX -= (double)(par1 - this.mouseX) * 1 / zoom.zoom;
-					this.guiMapY -= (double)(par2 - this.mouseY) * 1 / zoom.zoom;
+					this.guiMapX -= (double) (par1 - this.mouseX) * 1 / zoom.zoom;
+					this.guiMapY -= (double) (par2 - this.mouseY) * 1 / zoom.zoom;
 				}
-				
+
 				this.mouseX = par1;
 				this.mouseY = par2;
 			}
-			
+
 		} else {
 			this.isMouseButtonDown = 0;
 		}
-		
-		if(guiMapY < minY) {
+
+		if (guiMapY < minY) {
 			guiMapY = minY;
 		}
-		if(guiMapY > maxY) {
+		if (guiMapY > maxY) {
 			guiMapY = maxY;
 		}
-		if(guiMapX > maxX) {
+		if (guiMapX > maxX) {
 			guiMapX = maxX;
 		}
-		if(guiMapX < minX) {
+		if (guiMapX < minX) {
 			guiMapX = minX;
 		}
-		
+
 		int dWheel = Mouse.getDWheel();
-		if(dWheel < 0) {
+		if (dWheel < 0) {
 			zoom = zoom.next();
-		} else if(dWheel > 0) {
+		} else if (dWheel > 0) {
 			zoom = zoom.prev();
 		}
 		this.createBoundary();
 		this.drawTransparentBack();
 		this.drawMap(par1, par2);
 		super.drawScreen(par1, par2, par3);
-		if(tooltip != null) {
+		if (tooltip != null) {
 			BasicGuiHelper.displayItemToolTip(tooltip, this.zLevel, guiLeft, guiTop, false, true);
 		}
 	}
-	
+
 	private void createBoundary() {
 		int size = _table.watchedRequests.get(this.orderId).getValue2().getTreeRootSize();
-		minX = -size * (40 / 2) + (int)(75 * (zoom.zoom));
+		minX = -size * (40 / 2) + (int) (75 * (zoom.zoom));
 		maxX = -minX + zoom.maxX;
 		maxY = -100;
 		findLowest(_table.watchedRequests.get(this.orderId).getValue2(), -200);
 	}
-	
+
 	private void drawTransparentBack() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		this.drawGradientRect(0, 0, this.width, this.height, 0, 0);
 	}
-	
+
 	private void findLowest(LinkedLogisticsOrderList list, int lowerLimit) {
 		lowerLimit += 48;
-		for(LinkedLogisticsOrderList sub: list.getSubOrders()) {
+		for (LinkedLogisticsOrderList sub : list.getSubOrders()) {
 			findLowest(sub, lowerLimit);
 		}
-		if(maxY < (lowerLimit + 10) * zoom.zoom) {
-			maxY = (int)((lowerLimit + 10) * zoom.zoom) + zoom.maxY;
+		if (maxY < (lowerLimit + 10) * zoom.zoom) {
+			maxY = (int) ((lowerLimit + 10) * zoom.zoom) + zoom.maxY;
 		}
 	}
-	
+
 	private void saveTreeToImage() {
 		int useWidth = mc.displayWidth;
 		int useHeight = mc.displayHeight;
@@ -210,35 +209,35 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		int top = minY;
 		int right = maxX - (this.width / 2);
 		int bottom = maxY;
-		
+
 		int k = useWidth * useHeight;
 		IntBuffer pixels = BufferUtils.createIntBuffer(k);
 		int[] intArray = new int[k];
-		
+
 		int imgPosX = 0;
 		int imgPosY = 0;
-		for(int x = left; x < right + this.width; x += this.width) {
+		for (int x = left; x < right + this.width; x += this.width) {
 			imgPosY = 0;
-			for(int y = top; y < bottom + this.height; y += this.height) {
+			for (int y = top; y < bottom + this.height; y += this.height) {
 				imgPosY += useHeight;
 			}
 			imgPosX += useWidth;
 		}
 		BufferedImage bufferedimage = new BufferedImage(imgPosX, imgPosY, 1);
-		
+
 		imgPosX = 0;
 		imgPosY = 0;
-		
+
 		//Clear everything
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glLoadIdentity();
 		mc.entityRenderer.setupOverlayRendering();
 		drawForSreenShot(0, 0);
-		
+
 		//Start Creating the Image
-		for(int x = left; x < right + this.width; x += this.width) {
+		for (int x = left; x < right + this.width; x += this.width) {
 			imgPosY = 0;
-			for(int y = top; y < bottom + this.height; y += this.height) {
+			for (int y = top; y < bottom + this.height; y += this.height) {
 				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 				mc.entityRenderer.setupOverlayRendering();
 				drawForSreenShot(y, x);
@@ -259,13 +258,13 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 		String s = dateFormat.format(new Date()).toString();
 		int i = 1;
-		while(true) {
+		while (true) {
 			File canidate = new File(screenShotsFolder, s + (i == 1 ? "" : "_" + i) + ".png");
-			if(!canidate.exists()) {
+			if (!canidate.exists()) {
 				try {
 					ImageIO.write(bufferedimage, "png", canidate);
 					Minecraft.getMinecraft().thePlayer.addChatMessage("Saved tree view as " + canidate.getName());
-				} catch(IOException e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 				return;
@@ -273,18 +272,18 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			++i;
 		}
 	}
-	
+
 	private static void mirror(int[] par0ArrayOfInteger, int width, int height) {
 		int[] aint1 = new int[width];
 		int k = height / 2;
-		
-		for(int l = 0; l < k; ++l) {
+
+		for (int l = 0; l < k; ++l) {
 			System.arraycopy(par0ArrayOfInteger, l * width, aint1, 0, width);
 			System.arraycopy(par0ArrayOfInteger, (height - 1 - l) * width, par0ArrayOfInteger, l * width, width);
 			System.arraycopy(aint1, 0, par0ArrayOfInteger, (height - 1 - l) * width, width);
 		}
 	}
-	
+
 	private void drawForSreenShot(int top, int left) {
 		left *= -1;
 		top *= -1;
@@ -293,33 +292,33 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glTranslated(0, 0, 100);
 		drawRect(0, 0, 10000, 10000, 0xff000000);
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
-		for(int yVar = 0; yVar * 16 < this.height; yVar++) {
-			for(int xVar = 0; xVar * 16 < this.width; xVar++) {
+		for (int yVar = 0; yVar * 16 < this.height; yVar++) {
+			for (int xVar = 0; xVar * 16 < this.width; xVar++) {
 				Icon icon = Block.stone.getIcon(0, 0);
 				this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
 				this.drawTexturedModelRectFromIcon(xVar * 16, yVar * 16, icon, 16, 16);
 			}
 		}
 		GL11.glTranslated(0, 0, 600);
-		
+
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-		
+
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		LinkedLogisticsOrderList list = _table.watchedRequests.get(this.orderId).getValue2();
-		if(!list.isEmpty()) {
+		if (!list.isEmpty()) {
 			this.drawVerticalLine(left + 8, top + 0, top + 17, 0xff00ff00);
 		}
 		renderLinkedOrderListLines(list, left, top + 17);
-		for(Float progress: list.getProgresses()) {
-			int pos = (int)(29.0F * progress.floatValue());
+		for (Float progress : list.getProgresses()) {
+			int pos = (int) (29.0F * progress.floatValue());
 			this.drawProgressPoint(left + 8, top + pos, 0xff00ff00);
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
-		
+
 		RenderHelper.enableGUIStandardItemLighting();
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -327,7 +326,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		this.mc.getTextureManager().bindTexture(achievementTextures);
 		String s = Integer.toString(orderId);
-		if(!list.isEmpty()) {
+		if (!list.isEmpty()) {
 			this.drawTexturedModalRect(left - 5, top - 40 + 17, 0, 202, 26, 26);
 			fontRenderer.drawStringWithShadow(s, left + 9 - fontRenderer.getStringWidth(s) / 2, top - 30 + 17, 16777215);
 		} else {
@@ -337,7 +336,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		renderLinkedOrderListItems(list, left, top + 17, 0, 0);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
-		
+
 		GL11.glPopMatrix();
 		this.zLevel = 0.0F;
 		GL11.glDepthFunc(GL11.GL_LEQUAL);
@@ -347,14 +346,14 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glEnable(GL11.GL_LIGHTING);
 		RenderHelper.disableStandardItemLighting();
 	}
-	
+
 	private void drawMap(int par1, int par2) {
 		tooltip = null;
 		int mapX = MathHelper.floor_double(this.guiMapX);
 		int mapY = MathHelper.floor_double(this.guiMapY - zoom.moveY);
 		int leftSide = ((this.width - this.xSize) / 2);
 		int topSide = ((this.height - this.ySize) / 2);
-		
+
 		guiTop *= 1 / zoom.zoom;
 		guiLeft *= 1 / zoom.zoom;
 		xSize *= 1 / zoom.zoom;
@@ -363,11 +362,11 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		topSide *= 1 / zoom.zoom;
 		par1 *= 1 / zoom.zoom;
 		par2 *= 1 / zoom.zoom;
-		
+
 		int innerLeftSide = leftSide + 16;
 		int innerTopSide = topSide + 17;
 		this.zLevel = 0.0F;
-		
+
 		GL11.glDepthFunc(GL11.GL_GEQUAL);
 		GL11.glPushMatrix();
 		GL11.glScalef(zoom.zoom, zoom.zoom, 1);
@@ -376,33 +375,33 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-		
+
 		int moveBackgroundX = (mapX - minX) % 16;
 		int moveBackgroundY = (mapY - minY) % 16;
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
-		for(int yVar = 0; yVar * 16 - moveBackgroundY < zoom.bottomRenderBorder; yVar++) {
-			for(int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
+		for (int yVar = 0; yVar * 16 - moveBackgroundY < zoom.bottomRenderBorder; yVar++) {
+			for (int xVar = 0; xVar * 16 - moveBackgroundX < zoom.rightRenderBorder; xVar++) {
 				Icon icon = Block.stone.getIcon(0, 0);
 				this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
 				this.drawTexturedModelRectFromIcon(innerLeftSide + xVar * 16 - moveBackgroundX, innerTopSide + yVar * 16 - moveBackgroundY, icon, 16, 16);
 			}
 		}
-		
+
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthFunc(GL11.GL_LEQUAL);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		LinkedLogisticsOrderList list = _table.watchedRequests.get(this.orderId).getValue2();
-		if(!list.isEmpty()) {
+		if (!list.isEmpty()) {
 			this.drawVerticalLine(innerLeftSide - mapX + 110, innerTopSide - mapY - 197, innerTopSide - mapY - 180, 0xff00ff00);
 		}
 		renderLinkedOrderListLines(list, innerLeftSide - mapX + 102, innerTopSide - mapY - 180);
-		for(Float progress: list.getProgresses()) {
-			int pos = (int)(29.0F * progress.floatValue());
+		for (Float progress : list.getProgresses()) {
+			int pos = (int) (29.0F * progress.floatValue());
 			this.drawProgressPoint(innerLeftSide - mapX + 110, innerTopSide - mapY - 197 + pos, 0xff00ff00);
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_BLEND);
-		
+
 		RenderHelper.enableGUIStandardItemLighting();
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
@@ -410,7 +409,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 		this.mc.getTextureManager().bindTexture(achievementTextures);
 		String s = Integer.toString(orderId);
-		if(!list.isEmpty()) {
+		if (!list.isEmpty()) {
 			this.drawTexturedModalRect(innerLeftSide - mapX + 97, innerTopSide - mapY - 220, 0, 202, 26, 26);
 			fontRenderer.drawStringWithShadow(s, innerLeftSide - mapX + 111 - fontRenderer.getStringWidth(s) / 2, innerTopSide - mapY - 210, 16777215);
 		} else {
@@ -420,16 +419,16 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		renderLinkedOrderListItems(list, innerLeftSide - mapX + 102, innerTopSide - mapY - 180, par1, par2);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
-		
+
 		guiTop *= zoom.zoom;
 		guiLeft *= zoom.zoom;
 		xSize *= zoom.zoom;
 		ySize *= zoom.zoom;
 		leftSide *= zoom.zoom;
 		topSide *= zoom.zoom;
-		
+
 		GL11.glScalef(1 / zoom.zoom, 1 / zoom.zoom, 1);
-		
+
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.mc.getTextureManager().bindTexture(achievementTextures);
 		this.drawTexturedModalRect(leftSide, topSide, 0, 0, this.xSize, this.ySize);
@@ -442,13 +441,13 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glEnable(GL11.GL_LIGHTING);
 		RenderHelper.disableStandardItemLighting();
 	}
-	
+
 	private void renderLinkedOrderListItems(LinkedLogisticsOrderList list, int xPos, int yPos, int par1, int par2) {
 		int size = list.size();
 		int startLeft = -(size - 1) * (30 / 2) + xPos;
 		yPos += 13;
-		for(int i = 0; i < list.size(); i++) {
-			if(list.get(i).isInProgress()) {
+		for (int i = 0; i < list.size(); i++) {
+			if (list.get(i).isInProgress()) {
 				GL11.glColor4f(0.1F, 0.9F, 0.1F, 1.0F);
 			} else {
 				GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
@@ -458,111 +457,111 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			this.drawTexturedModalRect(startLeft - 5, yPos - 5, 0, 202, 26, 26);
 			GL11.glColor4f(0.7F, 0.7F, 0.7F, 1.0F);
 			renderItemAt(list.get(i).getItem(), startLeft, yPos);
-			if(list.get(i).isInProgress() && list.get(i).getMachineProgress() != 0) {
+			if (list.get(i).isInProgress() && list.get(i).getMachineProgress() != 0) {
 				drawRect(startLeft - 4, yPos + 20, startLeft + 20, yPos + 24, 0xff000000);
 				drawRect(startLeft - 3, yPos + 21, startLeft + 19, yPos + 23, 0xffffffff);
 				drawRect(startLeft - 3, yPos + 21, startLeft - 3 + (22 * list.get(i).getMachineProgress() / 100), yPos + 23, 0xffff0000);
 			}
-			if(startLeft - 10 < par1 && par1 < startLeft + 20 && yPos - 6 < par2 && par2 < yPos + 20) {
-				if(guiLeft < par1 && par1 < guiLeft + xSize - 16 && guiTop < par2 && par2 < guiTop + ySize - 16) {
+			if (startLeft - 10 < par1 && par1 < startLeft + 20 && yPos - 6 < par2 && par2 < yPos + 20) {
+				if (guiLeft < par1 && par1 < guiLeft + xSize - 16 && guiTop < par2 && par2 < guiTop + ySize - 16) {
 					IOrderInfoProvider order = list.get(i);
 					List<String> tooltipList = new ArrayList<String>();
 					tooltipList.add(ChatColor.BLUE + "Request Type: " + ChatColor.YELLOW + order.getType().name());
 					tooltipList.add(ChatColor.BLUE + "Send to Router ID: " + ChatColor.YELLOW + order.getRouterId());
-					tooltip = new Object[] { (int)(par1 * zoom.zoom - 10), (int)(par2 * zoom.zoom), order.getItem().makeNormalStack(), true, tooltipList };
+					tooltip = new Object[] { (int) (par1 * zoom.zoom - 10), (int) (par2 * zoom.zoom), order.getItem().makeNormalStack(), true, tooltipList };
 				}
 			}
 			startLeft += 30;
 		}
 		startLeft = xPos + 20 - list.getSubTreeRootSize() * (40 / 2);
-		if(!list.getSubOrders().isEmpty()) {
-			for(int i = 0; i < list.getSubOrders().size(); i++) {
+		if (!list.getSubOrders().isEmpty()) {
+			for (int i = 0; i < list.getSubOrders().size(); i++) {
 				startLeft += list.getSubOrders().get(i).getTreeRootSize() * (40 / 2);
 				renderLinkedOrderListItems(list.getSubOrders().get(i), startLeft - 20, yPos + 48, par1, par2);
 				startLeft += list.getSubOrders().get(i).getTreeRootSize() * (40 / 2);
 			}
 		}
 	}
-	
+
 	private void renderLinkedOrderListLines(LinkedLogisticsOrderList list, int xPos, int yPos) {
 		int size = list.size();
-		if(list.isEmpty()) {
+		if (list.isEmpty()) {
 			size = 1;
 		}
 		int startLeft = -(size - 1) * (30 / 2) + xPos;
 		yPos += 13;
 		int left = startLeft;
-		for(int i = 0; i < list.size(); i++) {
+		for (int i = 0; i < list.size(); i++) {
 			this.drawVerticalLine(startLeft + 8, yPos - 13, yPos - 3, 0xff00ff00);
-			if(!list.getSubOrders().isEmpty()) {
+			if (!list.getSubOrders().isEmpty()) {
 				this.drawVerticalLine(startLeft + 8, yPos + 18, yPos + 28, 0xff00ff00);
 			}
 			startLeft += 30;
 		}
-		if(!list.isEmpty()) {
+		if (!list.isEmpty()) {
 			this.drawHorizontalLine(left + 8, startLeft - 22, yPos - 13, 0xff00ff00);
 		}
-		if(!list.getSubOrders().isEmpty()) {
-			if(!list.isEmpty()) {
+		if (!list.getSubOrders().isEmpty()) {
+			if (!list.isEmpty()) {
 				this.drawHorizontalLine(left + 8, startLeft - 22, yPos + 28, 0xff00ff00);
 				startLeft -= 30;
 			}
 			this.drawVerticalLine(left + ((startLeft - left) / 2) + 8, yPos + 28, yPos + 38, 0xff00ff00);
 			startLeft = xPos + 20 - list.getSubTreeRootSize() * (40 / 2);
 			left = startLeft;
-			for(int i = 0; i < list.getSubOrders().size(); i++) {
+			for (int i = 0; i < list.getSubOrders().size(); i++) {
 				startLeft += list.getSubOrders().get(i).getTreeRootSize() * (40 / 2);
 				this.drawVerticalLine(startLeft - 12, yPos + 38, yPos + 48, 0xff00ff00);
 				drawPointFor(list, xPos, yPos, i, startLeft);
 				renderLinkedOrderListLines(list.getSubOrders().get(i), startLeft - 20, yPos + 48);
 				startLeft += list.getSubOrders().get(i).getTreeRootSize() * (40 / 2);
 			}
-			if(!list.getSubOrders().isEmpty()) {
+			if (!list.getSubOrders().isEmpty()) {
 				left += list.getSubOrders().get(0).getTreeRootSize() * (40 / 2);
 				startLeft -= list.getSubOrders().get(list.getSubOrders().size() - 1).getTreeRootSize() * (40 / 2);
 			}
 			this.drawHorizontalLine(left - 12, startLeft - 12, yPos + 38, 0xff00ff00);
 		}
 	}
-	
+
 	private void drawPointFor(LinkedLogisticsOrderList list, int xPos, int yPos, int i, int startLeft) {
 		float totalLine = 10 + 1 + 10 + 1 + Math.abs(startLeft - (xPos + 20)) + 10 + 1 + 10;
-		for(Float point: list.getSubOrders().get(i).getProgresses()) {
-			int pos = (int)(totalLine * (1.0F - point));
-			if(pos < 13) {
+		for (Float point : list.getSubOrders().get(i).getProgresses()) {
+			int pos = (int) (totalLine * (1.0F - point));
+			if (pos < 13) {
 				int newSize = list.getSubOrders().get(i).size();
 				int newStartLeft = -(newSize - 1) * (30 / 2) + startLeft - 20;
-				for(int j = 0; j < newSize; j++) {
+				for (int j = 0; j < newSize; j++) {
 					this.drawProgressPoint(newStartLeft + 8, yPos + 48 + 12 - pos, 0xff00ff00);
 					newStartLeft += 30;
 				}
-			} else if(pos < 10 + 1 + 10 + 1) {
+			} else if (pos < 10 + 1 + 10 + 1) {
 				pos -= 10;
 				this.drawProgressPoint(startLeft - 20 + 8, yPos + 38 + 12 - pos, 0xff00ff00);
-			} else if(pos < Math.abs(startLeft - (xPos + 20)) + 10 + 1 + 10 + 1) {
+			} else if (pos < Math.abs(startLeft - (xPos + 20)) + 10 + 1 + 10 + 1) {
 				pos -= 10 + 1 + 10 + 1;
-				if(startLeft < xPos + 20) {
+				if (startLeft < xPos + 20) {
 					pos *= -1;
 				}
 				this.drawProgressPoint(startLeft - 12 - pos, yPos + 38, 0xff00ff00);
-			} else if(pos < Math.abs(startLeft - (xPos + 20)) + 10 + 1 + 10 + 1 + 10 + 1) {
+			} else if (pos < Math.abs(startLeft - (xPos + 20)) + 10 + 1 + 10 + 1 + 10 + 1) {
 				pos -= 10 + 1 + 10 + 1 + Math.abs(startLeft - (xPos + 20)) + 10 + 1;
 				this.drawProgressPoint(xPos + 8, yPos + 27 - pos, 0xff00ff00);
-			} else if(pos < Math.abs(startLeft - (xPos + 20)) + 10 + 1 + 10 + 1 + 10 + 1 + 10 + 1) {
+			} else if (pos < Math.abs(startLeft - (xPos + 20)) + 10 + 1 + 10 + 1 + 10 + 1 + 10 + 1) {
 				pos -= 10 + 1 + 10 + 1 + Math.abs(startLeft - (xPos + 20)) + 10 + 1 + 10 + 1;
 				int newSize = list.size();
 				int newStartLeft = -(newSize - 1) * (30 / 2) + xPos;
-				for(int j = 0; j < newSize; j++) {
+				for (int j = 0; j < newSize; j++) {
 					this.drawProgressPoint(newStartLeft + 8, yPos + 16 - pos, 0xff00ff00);
 					newStartLeft += 30;
 				}
 			}
 		}
 	}
-	
+
 	private void renderItemAt(ItemIdentifierStack item, int x, int y) {
 		renderitem.renderItemAndEffectIntoGUI(this.mc.fontRenderer, this.mc.getTextureManager(), item.makeNormalStack(), x, y);
-		if(guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
+		if (guiLeft < x && x < guiLeft + xSize - 16 && guiTop < y && y < guiTop + ySize - 16) {
 			renderitem.renderItemOverlayIntoGUI(fontRenderer, this.mc.renderEngine, item.makeNormalStack(), x, y, "");
 			String s = StringUtil.getFormatedStackSize(item.getStackSize());
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -574,9 +573,9 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 	}
-	
+
 	protected void drawHorizontalLine(int par1, int par2, int par3, int par4) {
-		if(par2 < par1) {
+		if (par2 < par1) {
 			int i1 = par1;
 			par1 = par2;
 			par2 = i1;
@@ -584,9 +583,9 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		int line = zoom.line;
 		drawRect(par1, par3, par2 + 1, par3 + line, par4);
 	}
-	
+
 	protected void drawVerticalLine(int par1, int par2, int par3, int par4) {
-		if(par3 < par2) {
+		if (par3 < par2) {
 			int i1 = par2;
 			par2 = par3;
 			par3 = i1;
@@ -594,7 +593,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		int line = zoom.line;
 		drawRect(par1, par2 + 1, par1 + line, par3, par4);
 	}
-	
+
 	protected void drawProgressPoint(int x, int y, int color) {
 		int line = zoom.line + 1;
 		drawRect(x - line + 1, y - line + 1, x + line, y + line, color);

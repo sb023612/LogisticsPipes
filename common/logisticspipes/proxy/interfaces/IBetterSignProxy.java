@@ -1,9 +1,11 @@
 package logisticspipes.proxy.interfaces;
 
+import net.minecraft.client.model.ModelSign;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.model.ModelSign;
 
 public interface IBetterSignProxy {
-	public @SideOnly(Side.CLIENT) void hideSignSticks(ModelSign model);
+
+	@SideOnly(Side.CLIENT)
+	public void hideSignSticks(ModelSign model);
 }

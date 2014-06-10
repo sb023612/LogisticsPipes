@@ -20,18 +20,19 @@ import net.minecraft.entity.player.EntityPlayer;
 
 @Accessors(chain = true)
 public class DebugInfoUpdate extends ModernPacket {
+
 	@Getter
 	@Setter
 	private Integer[] path;
-	
+
 	@Getter
 	@Setter
 	private VarType information;
-	
+
 	public DebugInfoUpdate(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		int arraySize = data.readInt();
@@ -42,25 +43,25 @@ public class DebugInfoUpdate extends ModernPacket {
 		in = new ObjectInputStream(bis);
 		try {
 			information = (VarType) in.readObject();
-		} catch(ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			throw new UnsupportedOperationException(e);
 		}
 		int size = data.readInt();
 		path = new Integer[size];
-		for(int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			path[i] = data.readInt();
 		}
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		try {
 			DebugGuiTickHandler.instance().handleContentUpdatePacket(path, getInformation());
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -70,11 +71,11 @@ public class DebugInfoUpdate extends ModernPacket {
 		data.writeInt(bytes.length);
 		data.write(bytes);
 		data.writeInt(path.length);
-		for(int i = 0; i < path.length; i++) {
+		for (int i = 0; i < path.length; i++) {
 			data.writeInt(path[i]);
 		}
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new DebugInfoUpdate(getId());
@@ -85,4 +86,3 @@ public class DebugInfoUpdate extends ModernPacket {
 		return true;
 	}
 }
-

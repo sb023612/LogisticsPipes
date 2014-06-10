@@ -56,35 +56,35 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
-	
+
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
 	protected IRoutedPowerProvider _power;
-	
+
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(RequestType.PROVIDER);
-	
+
 	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
 
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
-	
+
 	protected final int ticksToAction = 6;
 	protected int currentTick = 0;
-	
+
 	protected boolean isExcludeFilter = false;
 	protected ExtractionMode _extractionMode = ExtractionMode.Normal;
-	
+
 	private int slot = 0;
 
 	private IWorldProvider _world;
 
-	private final Map<ItemIdentifier,Integer> displayMap = new HashMap<ItemIdentifier, Integer>();
+	private final Map<ItemIdentifier, Integer> displayMap = new HashMap<ItemIdentifier, Integer>();
 	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<ItemIdentifierStack>();
 	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<ItemIdentifierStack>();
-	
+
 	private IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	
+
 	public ModuleProvider() {}
 
 	@Override
@@ -100,14 +100,14 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
 		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
-		
+
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
-    	nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);
-    	nbttagcompound.setInteger("extractionMode", _extractionMode.ordinal());
+		nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);
+		nbttagcompound.setInteger("extractionMode", _extractionMode.ordinal());
 
 	}
 
@@ -115,15 +115,15 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	public int getGuiHandlerID() {
 		return GuiIDs.GUI_Module_Provider_ID;
 	}
-	
+
 	protected int neededEnergy() {
 		return 1;
 	}
-	
+
 	protected ItemSendMode itemSendMode() {
 		return ItemSendMode.Normal;
 	}
-	
+
 	protected int itemsToExtract() {
 		return 8;
 	}
@@ -153,11 +153,10 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		LogisticsOrder firstOrder = null;
 		LogisticsOrder order = null;
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
-			if(firstOrder == null)
-				firstOrder = order;
+			if (firstOrder == null) firstOrder = order;
 			order = _orderManager.peekAtTopRequest();
 			int sent = sendStack(order.getItem(), itemsleft, order.getDestination().getRouter().getSimpleID());
-			if(sent < 0) break;
+			if (sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), _world.getWorld(), 3);
 			stacksleft -= 1;
 			itemsleft -= sent;
@@ -171,14 +170,14 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 
 	@Override
 	public boolean filterAllowsItem(ItemIdentifier item) {
-		if(!hasFilter()) return true;
+		if (!hasFilter()) return true;
 		boolean isFiltered = itemIsFiltered(item);
 		return isExcludeFilter ^ isFiltered;
 	}
 
 	@Override
 	public void onBlockRemoval() {
-		while(_orderManager.hasOrders()) {
+		while (_orderManager.hasOrders()) {
 			_orderManager.sendFailed();
 		}
 	}
@@ -206,24 +205,24 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
-		IInventoryUtil inv =_invProvider.getPointedInventory(_extractionMode,true);
+		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode, true);
 		if (inv == null) return;
-		
+
 		Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 
 		//Skip already added items from this provider, skip filtered items, Reduce what has been reserved, add.
-outer:
+		outer:
 		for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
-			if(items.containsKey(currItem.getKey())) continue;
-			
-			if(!filterAllowsItem(currItem.getKey())) continue;
+			if (items.containsKey(currItem.getKey())) continue;
 
-			for(ILegacyActiveModule m:_previousLegacyModules) {
-				if(m.filterAllowsItem(currItem.getKey())) continue outer;
+			if (!filterAllowsItem(currItem.getKey())) continue;
+
+			for (ILegacyActiveModule m : _previousLegacyModules) {
+				if (m.filterAllowsItem(currItem.getKey())) continue outer;
 			}
-			
-			for(IFilter filter:filters) {
-				if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
+
+			for (IFilter filter : filters) {
+				if (filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
 			}
 
 			int remaining = currItem.getValue() - _orderManager.totalItemsCountInOrders(currItem.getKey());
@@ -233,17 +232,16 @@ outer:
 		}
 	}
 
-	
 	// returns -1 on perminatly failed, don't try another stack this tick
 	// returns 0 on "unable to do this delivery"
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination) {
 		ItemIdentifier item = stack.getItem();
-		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode,true);
+		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode, true);
 		if (inv == null) {
 			_orderManager.sendFailed();
 			return 0;
 		}
-		
+
 		int available = inv.itemCount(item);
 		if (available == 0) {
 			_orderManager.sendFailed();
@@ -252,27 +250,27 @@ outer:
 		int wanted = Math.min(available, stack.getStackSize());
 		wanted = Math.min(wanted, maxCount);
 		wanted = Math.min(wanted, item.getMaxStackSize());
-		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
-		if(dRtr == null) {
+		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination, false);
+		if (dRtr == null) {
 			_orderManager.sendFailed();
 			return 0;
 		}
 		SinkReply reply = LogisticsManager.canSink(dRtr, null, true, stack.getItem(), null, true, false);
 		boolean defersend = false;
-		if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
-			if(reply.maxNumberOfItems < wanted) {
+		if (reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
+			if (reply.maxNumberOfItems < wanted) {
 				wanted = reply.maxNumberOfItems;
-				if(wanted <= 0) {
+				if (wanted <= 0) {
 					_orderManager.deferSend();
 					return 0;
 				}
 				defersend = true;
 			}
 		}
-		if(!_power.canUseEnergy(wanted * neededEnergy())) return -1;
+		if (!_power.canUseEnergy(wanted * neededEnergy())) return -1;
 
 		ItemStack removed = inv.getMultipleItems(item, wanted);
-		if(removed == null || removed.stackSize == 0) {
+		if (removed == null || removed.stackSize == 0) {
 			_orderManager.sendFailed();
 			return 0;
 		}
@@ -283,27 +281,27 @@ outer:
 		_orderManager.sendSuccessfull(sent, defersend, sendedItem);
 		return sent;
 	}
-	
+
 	private int getTotalItemCount(ItemIdentifier item) {
-		
-		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode,true);
+
+		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode, true);
 		if (inv == null) return 0;
-		
-		if(!filterAllowsItem(item)) return 0;
-		
+
+		if (!filterAllowsItem(item)) return 0;
+
 		return inv.itemCount(item);
 	}
-	
+
 	private boolean hasFilter() {
 		return !_filterInventory.isEmpty();
 	}
-	
-	private boolean itemIsFiltered(ItemIdentifier item){
+
+	private boolean itemIsFiltered(ItemIdentifier item) {
 		return _filterInventory.containsItem(item);
 	}
-	
+
 	/*** GUI STUFF ***/
-	
+
 	public IInventory getFilterInventory() {
 		return _filterInventory;
 	}
@@ -316,7 +314,7 @@ outer:
 		this.isExcludeFilter = isExcludeFilter;
 	}
 
-	public ExtractionMode getExtractionMode(){
+	public ExtractionMode getExtractionMode() {
 		return _extractionMode;
 	}
 
@@ -339,53 +337,45 @@ outer:
 		return list;
 	}
 
-
-	@Override 
+	@Override
 	public void registerSlot(int slot) {
 		this.slot = slot;
 	}
-	
-	@Override 
+
+	@Override
 	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
+		if (slot >= 0) return this._invProvider.getX();
+		else return 0;
 	}
 
-	
+	@Override
+	public final int getY() {
+		if (slot >= 0) return this._invProvider.getY();
+		else return -1;
+	}
+
+	@Override
+	public final int getZ() {
+		if (slot >= 0) return this._invProvider.getZ();
+		else return -1 - slot;
+	}
+
 	private void checkUpdate(EntityPlayer player) {
-		if(localModeWatchers.size() == 0 && player == null)
-			return;
+		if (localModeWatchers.size() == 0 && player == null) return;
 		displayList.clear();
 		displayMap.clear();
 		getAllItems(displayMap, new ArrayList<IFilter>(0));
 		displayList.ensureCapacity(displayMap.size());
-		for(Entry<ItemIdentifier, Integer> item :displayMap.entrySet()) {
+		for (Entry<ItemIdentifier, Integer> item : displayMap.entrySet()) {
 			displayList.add(new ItemIdentifierStack(item.getKey(), item.getValue()));
 		}
-		if(!oldList.equals(displayList)) {
+		if (!oldList.equals(displayList)) {
 			oldList.clear();
 			oldList.ensureCapacity(displayList.size());
 			oldList.addAll(displayList);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setCompressable(true), localModeWatchers);
-		} else if(player != null) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setCompressable(true), (Player)player);
+		} else if (player != null) {
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setCompressable(true), (Player) player);
 		}
 	}
 
@@ -429,12 +419,12 @@ outer:
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
 		//when filter is empty or in exclude mode, this is interested in attached inventory already
-		if(this.isExcludeFilter || _filterInventory.isEmpty()) {
+		if (this.isExcludeFilter || _filterInventory.isEmpty()) {
 			return null;
 		}
 		// when items included this is only interested in items in the filter
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+		List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(mapIC.size());
 		li.addAll(mapIC.keySet());
 		return li;
 	}

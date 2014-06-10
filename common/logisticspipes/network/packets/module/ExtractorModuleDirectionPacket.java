@@ -28,10 +28,10 @@ public class ExtractorModuleDirectionPacket extends IntegerCoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		final int value = ((getInteger() % 10) + 10) % 10;
 		final int slot = getInteger() / 10;
-		if(slot < 0) {
-			if(player.openContainer instanceof DummyModuleContainer) {
+		if (slot < 0) {
+			if (player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-				if(dummy.getModule() instanceof ISneakyDirectionReceiver) {
+				if (dummy.getModule() instanceof ISneakyDirectionReceiver) {
 					final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) dummy.getModule();
 					module.setSneakyDirection(ForgeDirection.getOrientation(value));
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
@@ -40,25 +40,25 @@ public class ExtractorModuleDirectionPacket extends IntegerCoordinatesPacket {
 			return;
 		}
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if( !(pipe.pipe instanceof CoreRoutedPipe)) {
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 			return;
 		}
 		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
-		if(piperouted.getLogisticsModule() == null) {
+		if (piperouted.getLogisticsModule() == null) {
 			return;
 		}
-		if(slot <= 0) {
-			if(piperouted.getLogisticsModule() instanceof ISneakyDirectionReceiver) {
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ISneakyDirectionReceiver) {
 				final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) piperouted.getLogisticsModule();
 				module.setSneakyDirection(ForgeDirection.getOrientation(value));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				return;
 			}
 		} else {
-			if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ISneakyDirectionReceiver) {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ISneakyDirectionReceiver) {
 				final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.setSneakyDirection(ForgeDirection.getOrientation(value));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot - 1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
@@ -67,4 +67,3 @@ public class ExtractorModuleDirectionPacket extends IntegerCoordinatesPacket {
 		}
 	}
 }
-

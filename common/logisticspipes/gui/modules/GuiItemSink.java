@@ -25,62 +25,64 @@ public class GuiItemSink extends ModuleBaseGui {
 
 	private final ModuleItemSink _itemSink;
 	private final int slot;
-	
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
-       //Default item toggle:
-       buttonList.clear();
-       buttonList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20, new GuiStringHandlerButton.StringHandler(){
-		@Override
-		public String getContent() {
-			return _itemSink.isDefaultRoute() ? "Yes" : "No";
-		}}));
+		//Default item toggle:
+		buttonList.clear();
+		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20, new GuiStringHandlerButton.StringHandler() {
+
+			@Override
+			public String getContent() {
+				return _itemSink.isDefaultRoute() ? "Yes" : "No";
+			}
+		}));
 	}
-	
+
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		switch(guibutton.id)
-		{
+		switch (guibutton.id) {
 			case 0:
 				_itemSink.setDefaultRoute(!_itemSink.isDefaultRoute());
 				//((GuiButton)buttonList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
-				if(slot >= 0) {
+				if (slot >= 0) {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setInteger((_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 				} else {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setInteger((_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).setPosX(0).setPosY(-1).setPosZ(0));
 				}
 				break;
 		}
-		
+
 	}
-	
+
 	public GuiItemSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleItemSink itemSink, int slot) {
-		super(null,pipe);
+		super(null, pipe);
 		_itemSink = itemSink;
 		this.slot = slot;
 		DummyContainer dummy = new DummyContainer(playerInventory, _itemSink.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots
-	    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-	    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-	    }
-	    
-	    this.inventorySlots = dummy;
+		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+		}
+
+		this.inventorySlots = dummy;
 		xSize = 175;
 		ySize = 142;
 	}
-	
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		fontRenderer.drawString(_itemSink.getFilterInventory().getInvName(), 8, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 		fontRenderer.drawString("Default route:", 65, 45, 0x404040);
 	}
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

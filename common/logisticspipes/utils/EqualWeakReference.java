@@ -10,9 +10,9 @@ public class EqualWeakReference<T> extends WeakReference<T> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof EqualWeakReference) {
-			Object o = ((EqualWeakReference<?>)obj).get();
-			if(o == null) {
+		if (obj instanceof EqualWeakReference) {
+			Object o = ((EqualWeakReference<?>) obj).get();
+			if (o == null) {
 				return this.get() == null;
 			} else {
 				return o.equals(this.get());

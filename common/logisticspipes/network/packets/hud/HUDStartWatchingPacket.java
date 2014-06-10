@@ -20,13 +20,12 @@ public class HUDStartWatchingPacket extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof IWatchingHandler) {
+		if (pipe.pipe instanceof IWatchingHandler) {
 			IWatchingHandler handler = (IWatchingHandler) pipe.pipe;
 			handler.playerStartWatching(player, getInteger());
 		}
 	}
 }
-

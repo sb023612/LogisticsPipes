@@ -7,22 +7,22 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatMessageComponent;
 
 public class DumpCommand implements ICommandHandler {
-	
+
 	@Override
 	public String[] getNames() {
-		return new String[]{"dump"};
+		return new String[] { "dump" };
 	}
-	
+
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
 		return LogisticsPipesCommand.isOP(sender);
 	}
-	
+
 	@Override
 	public String[] getDescription() {
-		return new String[]{"Dumps the current Tread states", "into the server log"};
+		return new String[] { "Dumps the current Tread states", "into the server log" };
 	}
-	
+
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		Watchdog.dump(false, false, true);

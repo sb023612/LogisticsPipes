@@ -14,11 +14,11 @@ public class GuiExtentionController {
 	@Setter
 	private int maxBottom;
 	private GuiExtention currentlyExtended = null;
-	
+
 	public void render(int xPos, int yPos) {
 		yPos += 4;
-		if(currentlyExtended == null) {
-			for(GuiExtention extention:extentions) {
+		if (currentlyExtended == null) {
+			for (GuiExtention extention : extentions) {
 				extention.setExtending(false);
 				int left = xPos - extention.getCurrentWidth();
 				int bottom = yPos + extention.getCurrentHeight();
@@ -28,15 +28,15 @@ public class GuiExtentionController {
 				yPos = bottom;
 			}
 		} else {
-			if(currentlyExtended.isExtending()) {
+			if (currentlyExtended.isExtending()) {
 				int left = xPos - currentlyExtended.getCurrentWidth();
 				int bottom = currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight();
 				currentlyExtended.update(left, yPos);
 				BasicGuiHelper.drawGuiBackGround(Minecraft.getMinecraft(), left, currentlyExtended.getCurrentYPos(), xPos + 15, bottom, 0, true, true, true, true, false);
 				currentlyExtended.renderForground(left, currentlyExtended.getCurrentYPos());
 			} else {
-				for(GuiExtention extention:extentions) {
-					if(extention == currentlyExtended) break;
+				for (GuiExtention extention : extentions) {
+					if (extention == currentlyExtended) break;
 					extention.setExtending(false);
 					int bottom = yPos + extention.getCurrentHeight();
 					yPos = bottom;
@@ -46,18 +46,18 @@ public class GuiExtentionController {
 				currentlyExtended.update(left, yPos);
 				BasicGuiHelper.drawGuiBackGround(Minecraft.getMinecraft(), left, currentlyExtended.getCurrentYPos(), xPos + 15, bottom, 0, true, true, true, true, false);
 				currentlyExtended.renderForground(left, currentlyExtended.getCurrentYPos());
-				if(currentlyExtended.isFullyRetracted()) {
+				if (currentlyExtended.isFullyRetracted()) {
 					currentlyExtended = null;
 				}
 			}
 		}
-		if(currentlyExtended != null && extentionsToRemove.contains(currentlyExtended)) {
+		if (currentlyExtended != null && extentionsToRemove.contains(currentlyExtended)) {
 			currentlyExtended = null;
 		}
 		extentions.removeAll(extentionsToRemove);
 		extentionsToRemove.clear();
 	}
-	
+
 	public void addExtention(GuiExtention extention) {
 		extentions.add(extention);
 	}
@@ -67,15 +67,15 @@ public class GuiExtentionController {
 	}
 
 	public void mouseClicked(int x, int y, int k) {
-		if(currentlyExtended == null) {
-			for(GuiExtention extention:extentions) {
-				if(x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
+		if (currentlyExtended == null) {
+			for (GuiExtention extention : extentions) {
+				if (x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
 					currentlyExtended = extention;
 					currentlyExtended.setExtending(true);
 				}
 			}
 		} else {
-			if(x > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() && y > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
+			if (x > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() && y > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
 				currentlyExtended.setExtending(false);
 			}
 		}
@@ -84,15 +84,15 @@ public class GuiExtentionController {
 	public void mouseOver(int i, int j) {
 		int x = i;
 		int y = j;
-		if(currentlyExtended == null) {
-			for(GuiExtention extention:extentions) {
-				if(x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
+		if (currentlyExtended == null) {
+			for (GuiExtention extention : extentions) {
+				if (x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
 					extention.handleMouseOverAt(x, y);
 					return;
 				}
 			}
 		} else {
-			if(x > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() && y > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
+			if (x > currentlyExtended.getCurrentXPos() && x < currentlyExtended.getCurrentXPos() + currentlyExtended.getCurrentWidth() && y > currentlyExtended.getCurrentYPos() && y < currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight()) {
 				currentlyExtended.handleMouseOverAt(x, y);
 				return;
 			}

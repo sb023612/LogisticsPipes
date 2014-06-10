@@ -20,7 +20,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleApiaristTerminus extends LogisticsModule {
 
 	private IRoutedPowerProvider _power;
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
 
@@ -32,24 +32,24 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 		_power = powerProvider;
 	}
 
+	@Override
+	public void registerSlot(int slot) {}
 
-	@Override 
-	public void registerSlot(int slot) {
-	}
-	
-	@Override 
+	@Override
 	public final int getX() {
 		return this._power.getX();
 	}
-	@Override 
+
+	@Override
 	public final int getY() {
 		return this._power.getY();
 	}
-	
-	@Override 
+
+	@Override
 	public final int getZ() {
 		return this._power.getZ();
-	}	
+	}
+
 	private boolean replyCheck(ItemStack item) {
 		if (SimpleServiceLocator.forestryProxy.isDrone(item)) {
 			return true;
@@ -58,9 +58,10 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 5, 0);
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		boolean decision = replyCheck(item.makeNormalStack(1));
 		if (decision) {
 			if (_power.canUseEnergy(5)) {
@@ -77,6 +78,7 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 
 	@Override
 	public void tick() {}
+
 	@Override
 	public boolean hasGenericInterests() {
 		return true;
@@ -88,7 +90,7 @@ public class ModuleApiaristTerminus extends LogisticsModule {
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 	}
 

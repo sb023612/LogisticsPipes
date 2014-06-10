@@ -9,14 +9,15 @@ import cpw.mods.ironchest.TileEntityIronChest;
 import cpw.mods.ironchest.client.GUIChest;
 
 public class IronChestProxy implements IIronChestProxy {
+
 	@Override
 	public boolean isIronChest(TileEntity tile) {
 		return tile instanceof TileEntityIronChest;
 	}
 
 	@Override
-	public @SideOnly(Side.CLIENT)
-	boolean isChestGui(GuiScreen gui) {
+	@SideOnly(Side.CLIENT)
+	public boolean isChestGui(GuiScreen gui) {
 		return gui instanceof GUIChest;
 	}
 }

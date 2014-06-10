@@ -19,17 +19,17 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class MissingItems extends ModernPacket {
 
 	@Getter
 	@Setter
 	private Collection<ItemIdentifierStack> items = new ArrayList<ItemIdentifierStack>();
-	
+
 	@Setter
 	@Getter
 	private boolean flag;
-	
+
 	public MissingItems(int id) {
 		super(id);
 	}
@@ -43,23 +43,24 @@ public class MissingItems extends ModernPacket {
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
 		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
+			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiOrderer) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
-			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen, player);
-		} else if(isFlag()) {
-			for(ItemIdentifierStack item:items){
+			((GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
+		} else if (isFlag()) {
+			for (ItemIdentifierStack item : items) {
 				player.addChatMessage(ChatColor.RED + "Missing: " + item.getFriendlyName());
 			}
 		} else {
-			for(ItemIdentifierStack item:items) {
+			for (ItemIdentifierStack item : items) {
 				player.addChatMessage(ChatColor.GREEN + "Requested: " + item.getFriendlyName());
 			}
 			player.addChatMessage(ChatColor.GREEN + "Request successful!");
 		}
 	}
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
-		for(ItemIdentifierStack item:items) {
+		for (ItemIdentifierStack item : items) {
 			data.write(1);
 			data.writeItemIdentifierStack(item);
 		}
@@ -69,10 +70,9 @@ public class MissingItems extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
-		while(data.read() != 0) {
+		while (data.read() != 0) {
 			items.add(data.readItemIdentifierStack());
 		}
 		setFlag(data.readBoolean());
 	}
 }
-

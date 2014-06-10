@@ -22,8 +22,7 @@ public class LPItemList implements Iterable<LPTravelingItem> {
 	}
 
 	private boolean add(LPTravelingItem item) {
-		if (items.containsValue(item))
-			return false;
+		if (items.containsValue(item)) return false;
 		item.setContainer(pipe.container);
 		items.put(item.getId(), item);
 		return true;
@@ -116,7 +115,7 @@ public class LPItemList implements Iterable<LPTravelingItem> {
 	public boolean isEmpty() {
 		return items.isEmpty();
 	}
-	
+
 	public boolean hasContent() {
 		return !items.isEmpty() || !toAdd.isEmpty();
 	}

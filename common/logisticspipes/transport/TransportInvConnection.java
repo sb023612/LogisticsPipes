@@ -7,18 +7,18 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 
 public class TransportInvConnection extends PipeTransportLogistics {
-	
+
 	public TransportInvConnection() {}
 
 	@Override
 	protected boolean isItemExitable(ItemIdentifierStack stack) {
 		return true;
 	}
-	
+
 	@Override
 	protected void insertedItemStack(ItemIdentifierStack item, ItemRoutingInformation info, TileEntity tile) {
-		if(tile instanceof IInventory) {
-			((PipeItemsInvSysConnector)this.container.pipe).handleItemEnterInv(item, info, tile);
+		if (tile instanceof IInventory) {
+			((PipeItemsInvSysConnector) this.container.pipe).handleItemEnterInv(item, info, tile);
 		}
 	}
 }

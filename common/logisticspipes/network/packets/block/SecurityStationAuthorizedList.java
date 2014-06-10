@@ -6,7 +6,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SecurityStationAuthorizedList extends StringListPacket {
 
 	public SecurityStationAuthorizedList(int id) {
@@ -28,4 +28,3 @@ public class SecurityStationAuthorizedList extends StringListPacket {
 		return true;
 	}
 }
-

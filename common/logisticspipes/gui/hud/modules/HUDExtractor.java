@@ -10,9 +10,9 @@ import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class HUDExtractor implements IHUDModuleRenderer {
-	
+
 	private final ModuleExtractor module;
-	
+
 	public HUDExtractor(ModuleExtractor moduleExtractor) {
 		this.module = moduleExtractor;
 	}
@@ -22,9 +22,9 @@ public class HUDExtractor implements IHUDModuleRenderer {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 
 		ForgeDirection d = module.getSneakyDirection();
-		mc.fontRenderer.drawString("Extract" , -22, -22, 0);
-		mc.fontRenderer.drawString("from:" , -22, -9, 0);
-		mc.fontRenderer.drawString(((d == ForgeDirection.UNKNOWN) ? "DEFAULT" : d.name()) , -22, 18, 0);
+		mc.fontRenderer.drawString("Extract", -22, -22, 0);
+		mc.fontRenderer.drawString("from:", -22, -9, 0);
+		mc.fontRenderer.drawString(((d == ForgeDirection.UNKNOWN) ? "DEFAULT" : d.name()), -22, 18, 0);
 	}
 
 	@Override

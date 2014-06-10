@@ -7,18 +7,18 @@ import logisticspipes.interfaces.routing.ISpecialPipedConnection;
 import logisticspipes.routing.pathfinder.IPipeInformationProvider;
 
 public class SpecialPipeConnection {
-	
+
 	private List<ISpecialPipedConnection> handler = new ArrayList<ISpecialPipedConnection>();
-	
+
 	public void registerHandler(ISpecialPipedConnection connectionHandler) {
-		if(connectionHandler.init()) {
+		if (connectionHandler.init()) {
 			handler.add(connectionHandler);
 		}
 	}
-	
+
 	public List<IPipeInformationProvider> getConnectedPipes(IPipeInformationProvider startPipe) {
-		for(ISpecialPipedConnection connectionHandler:handler) {
-			if(connectionHandler.isType(startPipe)) {
+		for (ISpecialPipedConnection connectionHandler : handler) {
+			if (connectionHandler.isType(startPipe)) {
 				return connectionHandler.getConnections(startPipe);
 			}
 		}

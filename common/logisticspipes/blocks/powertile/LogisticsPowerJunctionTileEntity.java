@@ -42,46 +42,44 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
-@ModDependentInterface(modId={"IC2", "ComputerCraft@1.6", "CoFHCore"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler"})
+@ModDependentInterface(modId = { "IC2", "ComputerCraft@1.6", "CoFHCore" }, interfacePath = { "ic2.api.energy.tile.IEnergySink", "dan200.computercraft.api.peripheral.IPeripheral", "cofh.api.energy.IEnergyHandler" })
 public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGuiTileEntity, IPowerReceptor, ILogisticsPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral, IEnergyHandler {
 
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
-	
+
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
-	
+
 	public final int BuildCraftMultiplier = 5;
 	public final int IC2Multiplier = 2;
 	public final float RFMultiplier = 0.5F;
 	public final int MAX_STORAGE = 2000000;
-	
+
 	private PowerHandler powerFramework;
-	
-	
+
 	private int internalStorage = 0;
-  	private int lastUpdateStorage = 0;
-  	private double internalBuffer = 0;
-	
-  	private boolean addedToEnergyNet = false;
-	
+	private int lastUpdateStorage = 0;
+	private double internalBuffer = 0;
+
+	private boolean addedToEnergyNet = false;
+
 	private boolean init = false;
 	private PlayerCollectionList guiListener = new PlayerCollectionList();
 	private PlayerCollectionList watcherList = new PlayerCollectionList();
 	private IHeadUpDisplayRenderer HUD;
-	
+
 	public LogisticsPowerJunctionTileEntity() {
 		powerFramework = new PowerHandler(this, Type.STORAGE);
 		powerFramework.configure(1, 250, 1000, 750); // never triggers doWork, as this is just an energy store, and tick does the actual work.
 		HUD = new HUDPowerLevel(this);
 	}
+
 	@Override
 	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
-		if(providersToIgnore!=null && providersToIgnore.contains(this))
-			return false;
-		if(canUseEnergy(amount,null)) {
+		if (providersToIgnore != null && providersToIgnore.contains(this)) return false;
+		if (canUseEnergy(amount, null)) {
 			internalStorage -= (int) ((amount * Configs.POWER_USAGE_MULTIPLIER) + 0.5D);
-			if(internalStorage<MAX_STORAGE/2)
-				needMorePowerTriggerCheck=true;
+			if (internalStorage < MAX_STORAGE / 2) needMorePowerTriggerCheck = true;
 			return true;
 		}
 		return false;
@@ -89,49 +87,47 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 
 	@Override
 	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
-		if(providersToIgnore!=null && providersToIgnore.contains(this))
-			return false;
+		if (providersToIgnore != null && providersToIgnore.contains(this)) return false;
 		return internalStorage >= (int) ((amount * Configs.POWER_USAGE_MULTIPLIER) + 0.5D);
-	}	
+	}
+
 	@Override
 	public boolean useEnergy(int amount) {
-		return useEnergy(amount,null);
+		return useEnergy(amount, null);
 	}
-	
+
 	public int freeSpace() {
 		return MAX_STORAGE - internalStorage;
 	}
-	
+
 	public void updateClients() {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), guiListener);
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), watcherList);
 		lastUpdateStorage = internalStorage;
 	}
-	
+
 	@Override
 	public boolean canUseEnergy(int amount) {
-		return canUseEnergy(amount,null);
+		return canUseEnergy(amount, null);
 	}
-	
+
 	public void addEnergy(float amount) {
-		if(MainProxy.isClient(getWorld())) return;
+		if (MainProxy.isClient(getWorld())) return;
 		internalStorage += amount;
-		if(internalStorage > MAX_STORAGE) {
+		if (internalStorage > MAX_STORAGE) {
 			internalStorage = MAX_STORAGE;
 		}
-		if(internalStorage == MAX_STORAGE)
-			needMorePowerTriggerCheck=false;
+		if (internalStorage == MAX_STORAGE) needMorePowerTriggerCheck = false;
 	}
-	
+
 	private void addStoredMJ() {
 		float space = freeSpace() / BuildCraftMultiplier;
-		float minrequest = 1.01f / BuildCraftMultiplier;	//we round down, so always ask for a bit over 1LP-equivalent
-		if(space < minrequest)
-			space = minrequest;
-		int availablelp = (int)(powerFramework.useEnergy(minrequest, space, false) * BuildCraftMultiplier);
-		if(availablelp > 0) {
-			float totake = (float)availablelp / BuildCraftMultiplier;
-			if(powerFramework.useEnergy(totake, totake, true) == totake) {
+		float minrequest = 1.01f / BuildCraftMultiplier; //we round down, so always ask for a bit over 1LP-equivalent
+		if (space < minrequest) space = minrequest;
+		int availablelp = (int) (powerFramework.useEnergy(minrequest, space, false) * BuildCraftMultiplier);
+		if (availablelp > 0) {
+			float totake = (float) availablelp / BuildCraftMultiplier;
+			if (powerFramework.useEnergy(totake, totake, true) == totake) {
 				addEnergy(availablelp);
 			}
 		}
@@ -142,7 +138,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 		super.readFromNBT(par1nbtTagCompound);
 		powerFramework.readFromNBT(par1nbtTagCompound);
 		internalStorage = par1nbtTagCompound.getInteger("powerLevel");
-		if(par1nbtTagCompound.hasKey("needMorePowerTriggerCheck")) {
+		if (par1nbtTagCompound.hasKey("needMorePowerTriggerCheck")) {
 			needMorePowerTriggerCheck = par1nbtTagCompound.getBoolean("needMorePowerTriggerCheck");
 		}
 	}
@@ -158,19 +154,19 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		if(MainProxy.isServer(getWorld())) {
-			if(freeSpace() > 0 && powerFramework.getEnergyStored() > 0) {
+		if (MainProxy.isServer(getWorld())) {
+			if (freeSpace() > 0 && powerFramework.getEnergyStored() > 0) {
 				addStoredMJ();
 			}
-			if(internalStorage != lastUpdateStorage) {
+			if (internalStorage != lastUpdateStorage) {
 				updateClients();
 			}
 		}
-		if(!init) {
-			if(MainProxy.isClient(getWorld())) {
+		if (!init) {
+			if (MainProxy.isClient(getWorld())) {
 				LogisticsHUDRenderer.instance().add(this);
 			}
-			if(!addedToEnergyNet) {
+			if (!addedToEnergyNet) {
 				SimpleServiceLocator.IC2Proxy.registerToEneryNet(this);
 				addedToEnergyNet = true;
 			}
@@ -181,10 +177,10 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
-		if(addedToEnergyNet) {
+		if (addedToEnergyNet) {
 			SimpleServiceLocator.IC2Proxy.unregisterToEneryNet(this);
 			addedToEnergyNet = false;
 		}
@@ -193,10 +189,10 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	@Override
 	public void validate() {
 		super.validate();
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			init = false;
 		}
-		if(!addedToEnergyNet) {
+		if (!addedToEnergyNet) {
 			init = false;
 		}
 	}
@@ -204,10 +200,10 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
-		if(addedToEnergyNet) {
+		if (addedToEnergyNet) {
 			SimpleServiceLocator.IC2Proxy.unregisterToEneryNet(this);
 			addedToEnergyNet = false;
 		}
@@ -252,14 +248,14 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	}
 
 	public void handlePowerPacket(int integer) {
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			internalStorage = integer;
 		}
 	}
 
 	@Override
 	public IHeadUpDisplayRenderer getRenderer() {
-		return HUD ;
+		return HUD;
 	}
 
 	@Override
@@ -307,7 +303,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	public boolean isHUDExistent() {
 		return getWorld().getBlockTileEntity(xCoord, yCoord, zCoord) == this;
 	}
-	
+
 	@Override
 	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
 		super.func_85027_a(par1CrashReportCategory);
@@ -315,30 +311,30 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	}
 
 	@Override
-	@ModDependentMethod(modId="IC2")
+	@ModDependentMethod(modId = "IC2")
 	public boolean acceptsEnergyFrom(TileEntity tile, ForgeDirection dir) {
 		return true;
 	}
 
 	private void transferFromIC2Buffer() {
-		if(freeSpace() > 0 && internalBuffer >= 1) {
-			int addAmount = Math.min((int)Math.floor(internalBuffer), freeSpace());
+		if (freeSpace() > 0 && internalBuffer >= 1) {
+			int addAmount = Math.min((int) Math.floor(internalBuffer), freeSpace());
 			addEnergy(addAmount);
 			internalBuffer -= addAmount;
 		}
 	}
 
 	@Override
-	@ModDependentMethod(modId="IC2")
+	@ModDependentMethod(modId = "IC2")
 	public double demandedEnergyUnits() {
-		if(!addedToEnergyNet) return 0;
+		if (!addedToEnergyNet) return 0;
 		transferFromIC2Buffer();
 		//round up so we demand enough to completely fill visible storage
 		return (freeSpace() + IC2Multiplier - 1) / IC2Multiplier;
 	}
 
 	@Override
-	@ModDependentMethod(modId="IC2")
+	@ModDependentMethod(modId = "IC2")
 	public double injectEnergyUnits(ForgeDirection directionFrom, double amount) {
 		internalBuffer += amount * IC2Multiplier;
 		transferFromIC2Buffer();
@@ -346,43 +342,43 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	}
 
 	@Override
-	@ModDependentMethod(modId="IC2")
+	@ModDependentMethod(modId = "IC2")
 	public int getMaxSafeInput() {
 		return Integer.MAX_VALUE;
 	}
-	
+
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId = "ComputerCraft@1.6")
 	public String getType() {
 		return "LogisticsPowerJunction";
 	}
-	
+
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId = "ComputerCraft@1.6")
 	public String[] getMethodNames() {
-		return new String[]{"getPowerLevel"};
+		return new String[] { "getPowerLevel" };
 	}
-	
+
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId = "ComputerCraft@1.6")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws Exception {
-		return new Object[]{this.getPowerLevel()};
+		return new Object[] { this.getPowerLevel() };
 	}
-	
+
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId = "ComputerCraft@1.6")
 	public boolean equals(IPeripheral other) {
 		return this.equals((Object) other);
 	}
-	
+
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId = "ComputerCraft@1.6")
 	public void attach(IComputerAccess computer) {}
-	
+
 	@Override
-	@ModDependentMethod(modId="ComputerCraft@1.6")
+	@ModDependentMethod(modId = "ComputerCraft@1.6")
 	public void detach(IComputerAccess computer) {}
-	
+
 	@Override
 	public PowerReceiver getPowerReceiver(ForgeDirection side) {
 		return powerFramework.getPowerReceiver();
@@ -394,16 +390,15 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	}
 
 	@Override
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId = "CoFHCore")
 	public int receiveEnergy(ForgeDirection from, int maxReceive, boolean simulate) {
 		float space = freeSpace() / RFMultiplier;
-		float minrequest = 1.01f / RFMultiplier;	//we round down, so always ask for a bit over 1LP-equivalent
-		if(space < minrequest)
-			space = minrequest;
+		float minrequest = 1.01f / RFMultiplier; //we round down, so always ask for a bit over 1LP-equivalent
+		if (space < minrequest) space = minrequest;
 		int availablelp = (int) (Math.min(maxReceive, space) * RFMultiplier);
-		if(availablelp > 0) {
+		if (availablelp > 0) {
 			int totake = (int) (availablelp / RFMultiplier);
-			if(!simulate) {
+			if (!simulate) {
 				addEnergy(availablelp);
 			}
 			return totake;
@@ -412,29 +407,29 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IGui
 	}
 
 	@Override
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId = "CoFHCore")
 	public int extractEnergy(ForgeDirection from, int maxExtract, boolean simulate) {
 		return 0;
 	}
 
 	@Override
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId = "CoFHCore")
 	public boolean canInterface(ForgeDirection from) {
 		return true;
 	}
 
 	@Override
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId = "CoFHCore")
 	public int getEnergyStored(ForgeDirection from) {
 		return 0;
 	}
 
 	@Override
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId = "CoFHCore")
 	public int getMaxEnergyStored(ForgeDirection from) {
-		return (int)(MAX_STORAGE * RFMultiplier);
+		return (int) (MAX_STORAGE * RFMultiplier);
 	}
-	
+
 	@Override
 	public CoordinatesGuiProvider getGuiProvider() {
 		return NewGuiHandler.getGui(PowerJunctionGui.class);

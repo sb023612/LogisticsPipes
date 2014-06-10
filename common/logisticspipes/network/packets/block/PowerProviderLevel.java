@@ -19,9 +19,8 @@ public class PowerProviderLevel extends FloatCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsPowerProviderTileEntity tile = this.getTile(player.worldObj, LogisticsPowerProviderTileEntity.class);
-		if(tile != null) {
+		if (tile != null) {
 			tile.handlePowerPacket(getFloat());
 		}
 	}
 }
-

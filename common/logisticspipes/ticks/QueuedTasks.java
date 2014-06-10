@@ -12,33 +12,34 @@ import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 
 public class QueuedTasks implements ITickHandler {
-	
+
 	@SuppressWarnings("rawtypes")
 	private static LinkedList<Callable> queue = new LinkedList<Callable>();
-	
+
 	// called on server shutdown only.
 	public static void clearAllTasks() {
 		queue.clear();
 	}
+
 	@SuppressWarnings("rawtypes")
 	public static void queueTask(Callable task) {
 		synchronized (queue) {
 			queue.add(task);
 		}
 	}
-	
+
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
 
-	@SuppressWarnings({"rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		Callable call = null;
-		while(!queue.isEmpty()) {
+		while (!queue.isEmpty()) {
 			synchronized (queue) {
 				call = queue.removeFirst();
 			}
-			if(call != null) {
+			if (call != null) {
 				try {
 					call.call();
 				} catch (Exception e) {
@@ -47,12 +48,12 @@ public class QueuedTasks implements ITickHandler {
 			}
 		}
 		MainProxy.proxy.tick();
-		synchronized(LPTravelingItem.forceKeep) {
+		synchronized (LPTravelingItem.forceKeep) {
 			Iterator<Pair<Integer, Object>> iter = LPTravelingItem.forceKeep.iterator();
-			while(iter.hasNext()) {
+			while (iter.hasNext()) {
 				Pair<Integer, Object> pair = iter.next();
 				pair.setValue1(pair.getValue1() - 1);
-				if(pair.getValue1() < 0) {
+				if (pair.getValue1() < 0) {
 					iter.remove();
 				}
 			}

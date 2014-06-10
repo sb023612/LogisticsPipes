@@ -12,11 +12,12 @@ import org.lwjgl.opengl.GL11;
 import buildcraft.BuildCraftTransport;
 
 public class LogisticsPipeBlockRenderer implements IItemRenderer {
+
 	private void renderBlockItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
 		Tessellator tessellator = Tessellator.instance;
 
 		Block block = Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID];
-		
+
 		block.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 		block.setBlockBoundsForItemRender();
 		render.setRenderBoundsFromBlock(block);
@@ -55,16 +56,16 @@ public class LogisticsPipeBlockRenderer implements IItemRenderer {
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
 		switch (type) {
-		case ENTITY:
-			return true;
-		case EQUIPPED:
-			return true;
-		case EQUIPPED_FIRST_PERSON:
-			return true;
-		case INVENTORY:
-			return true;
-		default:
-			return false;
+			case ENTITY:
+				return true;
+			case EQUIPPED:
+				return true;
+			case EQUIPPED_FIRST_PERSON:
+				return true;
+			case INVENTORY:
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -76,19 +77,19 @@ public class LogisticsPipeBlockRenderer implements IItemRenderer {
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 		switch (type) {
-		case ENTITY:
-			renderBlockItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
-			break;
-		case EQUIPPED:
-			renderBlockItem((RenderBlocks) data[0], item, -0.4f, 0.50f, 0.35f);
-			break;
-		case EQUIPPED_FIRST_PERSON:
-			renderBlockItem((RenderBlocks) data[0], item, -0.4f, 0.50f, 0.35f);
-			break;
-		case INVENTORY:
-			renderBlockItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
-			break;
-		default:
+			case ENTITY:
+				renderBlockItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
+				break;
+			case EQUIPPED:
+				renderBlockItem((RenderBlocks) data[0], item, -0.4f, 0.50f, 0.35f);
+				break;
+			case EQUIPPED_FIRST_PERSON:
+				renderBlockItem((RenderBlocks) data[0], item, -0.4f, 0.50f, 0.35f);
+				break;
+			case INVENTORY:
+				renderBlockItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
+				break;
+			default:
 		}
 	}
 }

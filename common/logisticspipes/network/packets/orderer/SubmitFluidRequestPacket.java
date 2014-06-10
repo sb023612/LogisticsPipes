@@ -35,4 +35,3 @@ public class SubmitFluidRequestPacket extends RequestPacket {
 		RequestHandler.requestFluid(player, getStack(), (CoreRoutedPipe) pipe.pipe, (IRequestFluid) pipe.pipe);
 	}
 }
-

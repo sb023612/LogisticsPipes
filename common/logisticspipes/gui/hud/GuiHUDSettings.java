@@ -19,7 +19,7 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 
 	private int slot;
 	private EntityPlayer player;
-	
+
 	public GuiHUDSettings(EntityPlayer player, int slot) {
 		super(180, 160, 0, 0);
 		this.slot = slot;
@@ -29,15 +29,15 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 		dummy.addRestrictedArmorForPlayerInventory(10, 65);
 		this.inventorySlots = dummy;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
-		if(player.inventory.getStackInSlot(slot) != null) {
+		if (player.inventory.getStackInSlot(slot) != null) {
 			IHUDConfig config;
-			if(SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
-				if(SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3))) {
+			if (SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
+				if (SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3))) {
 					config = SimpleServiceLocator.mpsProxy.getConfigFor(player.inventory.armorItemInSlot(3));
 				} else {
 					config = new HUDConfig(player.inventory.armorItemInSlot(3));
@@ -45,17 +45,17 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 			} else {
 				config = new HUDConfig(player.inventory.getStackInSlot(slot));
 			}
-			this.buttonList.add(new GuiCheckBox(0, guiLeft + 30, guiTop +  10, 12, 12, config.isHUDChassie()));
-			this.buttonList.add(new GuiCheckBox(1, guiLeft + 30, guiTop +  30, 12, 12, config.isHUDCrafting()));
-			this.buttonList.add(new GuiCheckBox(2, guiLeft + 30, guiTop +  50, 12, 12, config.isHUDInvSysCon()));
-			this.buttonList.add(new GuiCheckBox(3, guiLeft + 30, guiTop +  70, 12, 12, config.isHUDPowerLevel()));
-			this.buttonList.add(new GuiCheckBox(4, guiLeft + 30, guiTop +  90, 12, 12, config.isHUDProvider()));
+			this.buttonList.add(new GuiCheckBox(0, guiLeft + 30, guiTop + 10, 12, 12, config.isHUDChassie()));
+			this.buttonList.add(new GuiCheckBox(1, guiLeft + 30, guiTop + 30, 12, 12, config.isHUDCrafting()));
+			this.buttonList.add(new GuiCheckBox(2, guiLeft + 30, guiTop + 50, 12, 12, config.isHUDInvSysCon()));
+			this.buttonList.add(new GuiCheckBox(3, guiLeft + 30, guiTop + 70, 12, 12, config.isHUDPowerLevel()));
+			this.buttonList.add(new GuiCheckBox(4, guiLeft + 30, guiTop + 90, 12, 12, config.isHUDProvider()));
 			this.buttonList.add(new GuiCheckBox(5, guiLeft + 30, guiTop + 110, 12, 12, config.isHUDSatellite()));
 		} else {
 			this.closeGui();
 		}
 	}
-	
+
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_HUD_Settings;
@@ -63,20 +63,20 @@ public class GuiHUDSettings extends LogisticsBaseGuiScreen {
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		if(this.buttonList.get(button.id) instanceof GuiCheckBox) {
-			((GuiCheckBox)this.buttonList.get(button.id)).change();
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDSettingsPacket.class).setButtonId(button.id).setState(((GuiCheckBox)this.buttonList.get(button.id)).getState()).setSlot(slot));
+		if (this.buttonList.get(button.id) instanceof GuiCheckBox) {
+			((GuiCheckBox) this.buttonList.get(button.id)).change();
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDSettingsPacket.class).setButtonId(button.id).setState(((GuiCheckBox) this.buttonList.get(button.id)).getState()).setSlot(slot));
 		}
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		if(SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
-			if(player.inventory.armorItemInSlot(3) == null || (!SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3)) && player.inventory.armorItemInSlot(3).itemID != LogisticsPipes.LogisticsHUDArmor.itemID)) {
+		if (SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
+			if (player.inventory.armorItemInSlot(3) == null || (!SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3)) && player.inventory.armorItemInSlot(3).itemID != LogisticsPipes.LogisticsHUDArmor.itemID)) {
 				this.mc.thePlayer.closeScreen();
 			}
 		} else {
-			if(player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).itemID != LogisticsPipes.LogisticsHUDArmor.itemID) {
+			if (player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).itemID != LogisticsPipes.LogisticsHUDArmor.itemID) {
 				this.mc.thePlayer.closeScreen();
 			}
 		}

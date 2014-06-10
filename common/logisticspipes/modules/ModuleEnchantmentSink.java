@@ -16,10 +16,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleEnchantmentSink extends LogisticsModule {
-	
+
 	private IRoutedPowerProvider _power;
 	private int slot = 0;
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
 
@@ -27,9 +27,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider,
-			ISendRoutedItem itemSender, IWorldProvider world,
-			IRoutedPowerProvider powerProvider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_power = powerProvider;
 	}
 
@@ -40,28 +38,21 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 
 	@Override
 	public int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
+		if (slot >= 0) return this._power.getX();
+		else return 0;
 	}
 
 	@Override
 	public int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else 
-			return 0;
+		if (slot >= 0) return this._power.getY();
+		else return 0;
 	}
 
 	@Override
 	public int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else 
-			return 0;
+		if (slot >= 0) return this._power.getZ();
+		else return 0;
 	}
-
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.EnchantmentItemSink, 0, true, false, 1, 0);
 
@@ -69,16 +60,15 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		// check to see if a better route is already found
 		// Note: Higher MKs are higher priority  
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+
 		//check to see if item is enchanted
-		if (item.makeNormalStack(1).isItemEnchanted())
-		{
+		if (item.makeNormalStack(1).isItemEnchanted()) {
 			return _sinkReply;
 		}
 		return null;
 	}
-	
+
 	@Override
 	public LogisticsModule getSubModule(int slot) {
 		return null;
@@ -125,6 +115,7 @@ public class ModuleEnchantmentSink extends LogisticsModule {
 	public Icon getIconTexture(IconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleEnchantmentSink");
 	}
+
 	@Override
 	public boolean hasEffect() {
 		return true;

@@ -37,82 +37,82 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 	public List<String> interfacesToClearA = new ArrayList<String>();
 	public List<String> interfacesToClearB = new ArrayList<String>();
-	private LaunchClassLoader cl = (LaunchClassLoader)LogisticsClassTransformer.class.getClassLoader();
+	private LaunchClassLoader cl = (LaunchClassLoader) LogisticsClassTransformer.class.getClassLoader();
 	private Field negativeResourceCache;
 	private Field invalidClasses;
-	
+
 	public Map<String, byte[]> cachedClasses = new HashMap<String, byte[]>();
 	public static LogisticsClassTransformer instance;
-	
+
 	public LogisticsClassTransformer() {
 		instance = this;
 		try {
 			negativeResourceCache = LaunchClassLoader.class.getDeclaredField("negativeResourceCache");
 			negativeResourceCache.setAccessible(true);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			//e.printStackTrace();
 		}
 		try {
 			invalidClasses = LaunchClassLoader.class.getDeclaredField("invalidClasses");
 			invalidClasses.setAccessible(true);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
 		try {
-			if(cachedClasses.containsKey(name)) {
+			if (cachedClasses.containsKey(name)) {
 				interfacesToClearA.add(name);
 			}
 			Thread thread = Thread.currentThread();
-			if(thread.getName().equals("Minecraft main thread") || thread.getName().equals("main") || thread.getName().equals("Server thread")) { //Only clear when called from the main thread to avoid ConcurrentModificationException on start
+			if (thread.getName().equals("Minecraft main thread") || thread.getName().equals("main") || thread.getName().equals("Server thread")) { //Only clear when called from the main thread to avoid ConcurrentModificationException on start
 				clearNegativeInterfaceCache();
 			}
-			if(cachedClasses.containsKey(name)) {
+			if (cachedClasses.containsKey(name)) {
 				return cachedClasses.get(name);
 			}
-			if(bytes == null) return null;
-			if(name.equals("buildcraft.transport.PipeTransportItems")) {
+			if (bytes == null) return null;
+			if (name.equals("buildcraft.transport.PipeTransportItems")) {
 				return ClassPipeTransportItemsHandler.handlePipeTransportItems(bytes);
 			}
-			if(name.equals("buildcraft.transport.Pipe")) {
+			if (name.equals("buildcraft.transport.Pipe")) {
 				return handleBCPipeClass(bytes);
 			}
-			if(name.equals("thermalexpansion.part.conduit.ConduitBase")) {
+			if (name.equals("thermalexpansion.part.conduit.ConduitBase")) {
 				Configs.load();
-				if(Configs.TE_PIPE_SUPPORT) {
+				if (Configs.TE_PIPE_SUPPORT) {
 					return handleTEConduitBase(bytes);
 				}
 			}
-			if(name.equals("thermalexpansion.part.conduit.item.ConduitItem")) {
+			if (name.equals("thermalexpansion.part.conduit.item.ConduitItem")) {
 				Configs.load();
-				if(Configs.TE_PIPE_SUPPORT) {
+				if (Configs.TE_PIPE_SUPPORT) {
 					return handleTEConduitItem(bytes);
 				}
 			}
-			if(name.equals("thermalexpansion.part.conduit.item.ItemRoute")) {
+			if (name.equals("thermalexpansion.part.conduit.item.ItemRoute")) {
 				Configs.load();
-				if(Configs.TE_PIPE_SUPPORT) {
+				if (Configs.TE_PIPE_SUPPORT) {
 					return handleTEItemRoute(bytes);
 				}
 			}
-			if(name.equals("thermalexpansion.part.conduit.item.TravelingItem")) {
+			if (name.equals("thermalexpansion.part.conduit.item.TravelingItem")) {
 				Configs.load();
-				if(Configs.TE_PIPE_SUPPORT) {
+				if (Configs.TE_PIPE_SUPPORT) {
 					return handleTETravelingItem(bytes);
 				}
 			}
-			if(name.equals("net.minecraft.crash.CrashReport")) {
+			if (name.equals("net.minecraft.crash.CrashReport")) {
 				return handleCrashReportClass(bytes);
 			}
-			if(!name.startsWith("logisticspipes.")) {
+			if (!name.startsWith("logisticspipes.")) {
 				return bytes;
 			}
 			return handleLPTransformation(bytes);
-		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) { //For better Debugging
+		} catch (Exception e) {
+			if (LogisticsPipes.DEBUG) { //For better Debugging
 				e.printStackTrace();
 				return bytes;
 			}
@@ -123,13 +123,13 @@ public class LogisticsClassTransformer implements IClassTransformer {
 	public void clearNegativeInterfaceCache() {
 		//Remove previously not found Classes to Fix ClassNotFound Exceptions for Interfaces.
 		//TODO remove in future version when everybody starts using a ClassTransformer system for Interfaces.
-		if(negativeResourceCache != null) {
-			if(!interfacesToClearA.isEmpty()) {
+		if (negativeResourceCache != null) {
+			if (!interfacesToClearA.isEmpty()) {
 				handleField(negativeResourceCache, interfacesToClearA);
 			}
 		}
-		if(invalidClasses != null) {
-			if(!interfacesToClearB.isEmpty()) {
+		if (invalidClasses != null) {
+			if (!interfacesToClearB.isEmpty()) {
 				handleField(invalidClasses, interfacesToClearB);
 			}
 		}
@@ -140,15 +140,15 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		try {
 			Set<String> set = (Set<String>) field.get(cl);
 			Iterator<String> it = toClear.iterator();
-			while(it.hasNext()) {
+			while (it.hasNext()) {
 				String content = it.next();
-				if(set.contains(content)) {
+				if (set.contains(content)) {
 					set.remove(content);
 					it.remove();
 				}
 			}
-		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) { //For better Debugging
+		} catch (Exception e) {
+			if (LogisticsPipes.DEBUG) { //For better Debugging
 				e.printStackTrace();
 			}
 		}
@@ -160,21 +160,21 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);
 		boolean changed = false;
-		if(node.visibleAnnotations != null) {
-			for(AnnotationNode a:node.visibleAnnotations) {
-				if(a.desc.equals("Llogisticspipes/asm/ModDependentInterface;")) {
-					if(a.values.size() == 4 && a.values.get(0).equals("modId") && a.values.get(2).equals("interfacePath")) {
+		if (node.visibleAnnotations != null) {
+			for (AnnotationNode a : node.visibleAnnotations) {
+				if (a.desc.equals("Llogisticspipes/asm/ModDependentInterface;")) {
+					if (a.values.size() == 4 && a.values.get(0).equals("modId") && a.values.get(2).equals("interfacePath")) {
 						List<String> modId = (List<String>) a.values.get(1);
 						List<String> interfacePath = (List<String>) a.values.get(3);
-						if(modId.size() != interfacePath.size()) {
+						if (modId.size() != interfacePath.size()) {
 							throw new RuntimeException("The Arrays have to be of the same size.");
 						}
-						for(int i=0;i<modId.size();i++) {
-							if(!ModStatusHelper.isModLoaded(modId.get(i))) {
+						for (int i = 0; i < modId.size(); i++) {
+							if (!ModStatusHelper.isModLoaded(modId.get(i))) {
 								interfacesToClearA.add(interfacePath.get(i));
 								interfacesToClearB.add(interfacePath.get(i));
-								for(String inter:node.interfaces) {
-									if(inter.replace("/", ".").equals(interfacePath.get(i))) {
+								for (String inter : node.interfaces) {
+									if (inter.replace("/", ".").equals(interfacePath.get(i))) {
 										node.interfaces.remove(inter);
 										changed = true;
 										break;
@@ -189,21 +189,21 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 		}
 		List<MethodNode> methodsToRemove = new ArrayList<MethodNode>();
-		for(MethodNode m:node.methods) {
-			if(m.visibleAnnotations != null) {
-				for(AnnotationNode a:m.visibleAnnotations) {
-					if(a.desc.equals("Llogisticspipes/asm/ModDependentMethod;")) {
-						if(a.values.size() == 2 && a.values.get(0).equals("modId")) {
+		for (MethodNode m : node.methods) {
+			if (m.visibleAnnotations != null) {
+				for (AnnotationNode a : m.visibleAnnotations) {
+					if (a.desc.equals("Llogisticspipes/asm/ModDependentMethod;")) {
+						if (a.values.size() == 2 && a.values.get(0).equals("modId")) {
 							String modId = a.values.get(1).toString();
-							if(!ModStatusHelper.isModLoaded(modId)) {
+							if (!ModStatusHelper.isModLoaded(modId)) {
 								methodsToRemove.add(m);
 								break;
 							}
 						} else {
 							throw new UnsupportedOperationException("Can't parse the annotation correctly");
 						}
-					} else if(a.desc.equals("Llogisticspipes/asm/ClientSideOnlyMethodContent;")) {
-						if(FMLCommonHandler.instance().getSide().equals(Side.SERVER)) {
+					} else if (a.desc.equals("Llogisticspipes/asm/ClientSideOnlyMethodContent;")) {
+						if (FMLCommonHandler.instance().getSide().equals(Side.SERVER)) {
 							m.instructions.clear();
 							m.localVariables.clear();
 							m.tryCatchBlocks.clear();
@@ -223,15 +223,15 @@ public class LogisticsClassTransformer implements IClassTransformer {
 							changed = true;
 							break;
 						}
-					} else if(a.desc.equals("Llogisticspipes/asm/ModDependentMethodName;")) {
-						if(a.values.size() == 6 && a.values.get(0).equals("modId") && a.values.get(2).equals("newName") && a.values.get(4).equals("version")) {
+					} else if (a.desc.equals("Llogisticspipes/asm/ModDependentMethodName;")) {
+						if (a.values.size() == 6 && a.values.get(0).equals("modId") && a.values.get(2).equals("newName") && a.values.get(4).equals("version")) {
 							String modId = a.values.get(1).toString();
 							final String newName = a.values.get(3).toString();
 							final String version = a.values.get(5).toString();
 							boolean loaded = ModStatusHelper.isModLoaded(modId);
-							if(loaded && !version.equals("")) {
+							if (loaded && !version.equals("")) {
 								ModContainer mod = Loader.instance().getIndexedModList().get(modId);
-								if(mod != null) {
+								if (mod != null) {
 									VersionRange range = VersionParser.parseRange(version);
 									ArtifactVersion artifactVersion = new DefaultArtifactVersion("Version", mod.getVersion());
 									loaded = range.containsVersion(artifactVersion);
@@ -239,13 +239,14 @@ public class LogisticsClassTransformer implements IClassTransformer {
 									loaded = false;
 								}
 							}
-							if(loaded) {
+							if (loaded) {
 								final String oldName = m.name;
 								m.name = newName;
 								MethodNode newM = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 									@Override
 									public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-										if(name.equals(oldName) && owner.equals(node.superName)) {
+										if (name.equals(oldName) && owner.equals(node.superName)) {
 											super.visitMethodInsn(opcode, owner, newName, desc);
 										} else {
 											super.visitMethodInsn(opcode, owner, name, desc);
@@ -264,17 +265,17 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				}
 			}
 		}
-		for(MethodNode m:methodsToRemove) {
+		for (MethodNode m : methodsToRemove) {
 			node.methods.remove(m);
 		}
 		List<FieldNode> fieldsToRemove = new ArrayList<FieldNode>();
-		for(FieldNode f:node.fields) {
-			if(f.visibleAnnotations != null) {
-				for(AnnotationNode a:f.visibleAnnotations) {
-					if(a.desc.equals("Llogisticspipes/asm/ModDependentField;")) {
-						if(a.values.size() == 2 && a.values.get(0).equals("modId")) {
+		for (FieldNode f : node.fields) {
+			if (f.visibleAnnotations != null) {
+				for (AnnotationNode a : f.visibleAnnotations) {
+					if (a.desc.equals("Llogisticspipes/asm/ModDependentField;")) {
+						if (a.values.size() == 2 && a.values.get(0).equals("modId")) {
 							String modId = a.values.get(1).toString();
-							if(!ModStatusHelper.isModLoaded(modId)) {
+							if (!ModStatusHelper.isModLoaded(modId)) {
 								fieldsToRemove.add(f);
 								break;
 							}
@@ -285,32 +286,35 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				}
 			}
 		}
-		for(FieldNode f:fieldsToRemove) {
+		for (FieldNode f : fieldsToRemove) {
 			node.fields.remove(f);
 		}
-		if(!changed && methodsToRemove.isEmpty() && fieldsToRemove.isEmpty()) {
+		if (!changed && methodsToRemove.isEmpty() && fieldsToRemove.isEmpty()) {
 			return bytes;
 		}
 		ClassWriter writer = new ClassWriter(0);
 		node.accept(writer);
 		return writer.toByteArray();
 	}
-	
-	private enum STATE {SEARCHING, INSERTING, DONE};
+
+	private enum STATE {
+		SEARCHING, INSERTING, DONE
+	};
 
 	private byte[] handleTEConduitBase(byte[] bytes) {
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
-		for(MethodNode m:node.methods) {
-			if(m.name.equals("onNeighborChanged")) {
+		for (MethodNode m : node.methods) {
+			if (m.name.equals("onNeighborChanged")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					private STATE state = STATE.SEARCHING;
-					
+
 					@Override
 					public void visitJumpInsn(int opcode, Label label) {
 						super.visitJumpInsn(opcode, label);
-						if(state == STATE.INSERTING) {
+						if (state == STATE.INSERTING) {
 							Label l0 = new Label();
 							super.visitLabel(l0);
 							super.visitVarInsn(Opcodes.ALOAD, 0);
@@ -323,7 +327,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 					@Override
 					public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-						if(state == STATE.SEARCHING && "passOcclusionTest".equals(name)) {
+						if (state == STATE.SEARCHING && "passOcclusionTest".equals(name)) {
 							state = STATE.INSERTING;
 						}
 						super.visitMethodInsn(opcode, owner, name, desc);
@@ -332,14 +336,15 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if(m.name.equals("onNeighborTileChanged")) {
+			if (m.name.equals("onNeighborTileChanged")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					private STATE state = STATE.SEARCHING;
-					
+
 					@Override
 					public void visitJumpInsn(int opcode, Label label) {
 						super.visitJumpInsn(opcode, label);
-						if(state == STATE.INSERTING) {
+						if (state == STATE.INSERTING) {
 							Label l0 = new Label();
 							super.visitLabel(l0);
 							super.visitVarInsn(Opcodes.ALOAD, 0);
@@ -352,7 +357,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 					@Override
 					public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-						if(state == STATE.SEARCHING && "passOcclusionTest".equals(name)) {
+						if (state == STATE.SEARCHING && "passOcclusionTest".equals(name)) {
 							state = STATE.INSERTING;
 						}
 						super.visitMethodInsn(opcode, owner, name, desc);
@@ -361,14 +366,15 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if(m.name.equals("onAdded")) {
+			if (m.name.equals("onAdded")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					private STATE state = STATE.SEARCHING;
-					
+
 					@Override
 					public void visitJumpInsn(int opcode, Label label) {
 						super.visitJumpInsn(opcode, label);
-						if(state == STATE.INSERTING) {
+						if (state == STATE.INSERTING) {
 							Label l0 = new Label();
 							super.visitLabel(l0);
 							super.visitVarInsn(Opcodes.ALOAD, 0);
@@ -381,7 +387,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 					@Override
 					public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-						if(state == STATE.SEARCHING && "passOcclusionTest".equals(name)) {
+						if (state == STATE.SEARCHING && "passOcclusionTest".equals(name)) {
 							state = STATE.INSERTING;
 						}
 						super.visitMethodInsn(opcode, owner, name, desc);
@@ -390,18 +396,19 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if(m.name.equals("onPartChanged")) {
+			if (m.name.equals("onPartChanged")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					@Override
 					public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-						if("isConduit".equals(name)) {
+						if ("isConduit".equals(name)) {
 							super.visitVarInsn(Opcodes.ILOAD, 7);
 							super.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "handleOnPartChanged", "(Lthermalexpansion/part/conduit/ConduitBase;Lnet/minecraft/tileentity/TileEntity;I)V");
 							Label l0 = new Label();
 							super.visitLabel(l0);
 							super.visitVarInsn(Opcodes.ALOAD, 0);
 							super.visitVarInsn(Opcodes.ALOAD, 2);
-							
+
 						}
 						super.visitMethodInsn(opcode, owner, name, desc);
 					}
@@ -409,14 +416,15 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if(m.name.equals("getConduit") && m.desc.equals("(I)Lthermalexpansion/part/conduit/ConduitBase;")) {
+			if (m.name.equals("getConduit") && m.desc.equals("(I)Lthermalexpansion/part/conduit/ConduitBase;")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					private STATE state = STATE.SEARCHING;
-					
+
 					@Override
 					public void visitMethodInsn(int opcode, String owner, String name, String desc) {
 						super.visitMethodInsn(opcode, owner, name, desc);
-						if(state == STATE.SEARCHING && name.equals("getAdjacentTileEntity")) {
+						if (state == STATE.SEARCHING && name.equals("getAdjacentTileEntity")) {
 							state = STATE.INSERTING;
 						}
 					}
@@ -424,7 +432,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 					@Override
 					public void visitVarInsn(int opcode, int var) {
 						super.visitVarInsn(opcode, var);
-						if(state == STATE.INSERTING) {
+						if (state == STATE.INSERTING) {
 							Label l0 = new Label();
 							super.visitLabel(l0);
 							super.visitVarInsn(Opcodes.ALOAD, 0);
@@ -438,8 +446,9 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if(m.name.equals("onRemoved")) {
+			if (m.name.equals("onRemoved")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					@Override
 					public void visitCode() {
 						super.visitCode();
@@ -462,13 +471,14 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
-		for(MethodNode m:node.methods) {
-			if(m.name.equals("getConnectionType")) {
+		for (MethodNode m : node.methods) {
+			if (m.name.equals("getConnectionType")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					private Label l1 = new Label();
 					private Label l2 = new Label();
 					private boolean varAdded = false;
-					
+
 					@Override
 					public void visitCode() {
 						super.visitCode();
@@ -491,7 +501,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 					@Override
 					public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
 						super.visitLocalVariable(name, desc, signature, start, end, index);
-						if(!varAdded) {
+						if (!varAdded) {
 							varAdded = true;
 							super.visitLocalVariable("i_LP_TEMPVAR", "I", null, l1, l2, 2);
 						}
@@ -510,7 +520,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
-		for(FieldNode f:node.fields) {
+		for (FieldNode f : node.fields) {
 			f.access = Opcodes.ACC_PUBLIC;
 		}
 		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -523,17 +533,17 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
 		boolean add = true;
-		for(FieldNode f:node.fields) {
-			if(f.name.equals("routedLPInfo")) {
+		for (FieldNode f : node.fields) {
+			if (f.name.equals("routedLPInfo")) {
 				add = false;
 				break;
 			}
 		}
-		if(add) {
+		if (add) {
 			node.fields.add(new FieldNode(Opcodes.ACC_PUBLIC, "routedLPInfo", "Llogisticspipes/routing/ItemRoutingInformation;", null, null));
 		}
-		for(MethodNode m:node.methods) {
-			if(m.name.equals("toNBT") && m.desc.equals("(Lnet/minecraft/nbt/NBTTagCompound;)V")) {
+		for (MethodNode m : node.methods) {
+			if (m.name.equals("toNBT") && m.desc.equals("(Lnet/minecraft/nbt/NBTTagCompound;)V")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 
 					@Override
@@ -545,18 +555,19 @@ public class LogisticsClassTransformer implements IClassTransformer {
 						this.visitVarInsn(Opcodes.ALOAD, 1);
 						this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/proxy/te/ASMHookClass", "handleTETravelingItemSave", "(Lthermalexpansion/part/conduit/item/TravelingItem;Lnet/minecraft/nbt/NBTTagCompound;)V");
 					}
-					
+
 				};
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if(m.name.equals("<init>") && m.desc.equals("(Lnet/minecraft/nbt/NBTTagCompound;)V")) {
+			if (m.name.equals("<init>") && m.desc.equals("(Lnet/minecraft/nbt/NBTTagCompound;)V")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					private STATE state = STATE.SEARCHING;
 
 					@Override
 					public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-						if(state == STATE.SEARCHING && "thermalexpansion/part/conduit/item/TravelingItem".equals(owner) && "startZ".equals(name) && "I".equals(desc)) {
+						if (state == STATE.SEARCHING && "thermalexpansion/part/conduit/item/TravelingItem".equals(owner) && "startZ".equals(name) && "I".equals(desc)) {
 							state = STATE.INSERTING;
 						}
 						super.visitFieldInsn(opcode, owner, name, desc);
@@ -564,7 +575,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 					@Override
 					public void visitLabel(Label label) {
-						if(state == STATE.INSERTING) {
+						if (state == STATE.INSERTING) {
 							Label l23 = new Label();
 							super.visitLabel(l23);
 							super.visitVarInsn(Opcodes.ALOAD, 0);
@@ -588,22 +599,23 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
-		for(MethodNode m:node.methods) {
-			if(m.name.equals("getCompleteReport") || m.name.equals("func_71502_e")) { //TODO SRG NAME
+		for (MethodNode m : node.methods) {
+			if (m.name.equals("getCompleteReport") || m.name.equals("func_71502_e")) { //TODO SRG NAME
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					private STATE state = STATE.SEARCHING;
-					
+
 					@Override
 					public void visitLdcInsn(Object cst) {
 						super.visitLdcInsn(cst);
-						if("\n\n".equals(cst) && state == STATE.SEARCHING) {
+						if ("\n\n".equals(cst) && state == STATE.SEARCHING) {
 							state = STATE.INSERTING;
 						}
 					}
-					
+
 					@Override
 					public void visitLabel(Label label) {
-						if(state == STATE.INSERTING) {
+						if (state == STATE.INSERTING) {
 							Label l0 = new Label();
 							super.visitLabel(l0);
 							super.visitVarInsn(Opcodes.ALOAD, 1);
@@ -628,9 +640,10 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
-		for(MethodNode m:node.methods) {
-			if(m.name.equals("handlePipeEvent")) {
+		for (MethodNode m : node.methods) {
+			if (m.name.equals("handlePipeEvent")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					@Override
 					public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
 						super.visitTryCatchBlock(start, end, handler, type);

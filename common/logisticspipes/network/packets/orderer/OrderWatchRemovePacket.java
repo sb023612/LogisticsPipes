@@ -7,7 +7,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class OrderWatchRemovePacket extends IntegerCoordinatesPacket {
-	
+
 	public OrderWatchRemovePacket(int id) {
 		super(id);
 	}
@@ -15,11 +15,11 @@ public class OrderWatchRemovePacket extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
-		if(tile != null && tile.pipe instanceof IRequestWatcher) {
-			((IRequestWatcher)tile.pipe).handleClientSideRemove(getInteger());
+		if (tile != null && tile.pipe instanceof IRequestWatcher) {
+			((IRequestWatcher) tile.pipe).handleClientSideRemove(getInteger());
 		}
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new OrderWatchRemovePacket(getId());

@@ -8,14 +8,12 @@
 
 package logisticspipes.logisticspipes;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ItemRoutingInformation;
 import logisticspipes.routing.order.IDistanceTracker;
-import logisticspipes.transport.LPTravelingItem;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
@@ -25,43 +23,52 @@ import net.minecraftforge.common.ForgeDirection;
  *
  */
 public interface IRoutedItem {
-	
+
 	public enum TransportMode {
-		Unknown,
-		Default,
-		Passive,
-		Active
+		Unknown, Default, Passive, Active
 	}
-	
+
 	public int getDestination();
+
 	public UUID getDestinationUUID();
+
 	public void setDestination(int destination);
+
 	public void clearDestination();
-	
+
 	public void setTransportMode(TransportMode transportMode);
+
 	public TransportMode getTransportMode();
-	
+
 	public void setDoNotBuffer(boolean doNotBuffer);
+
 	public boolean getDoNotBuffer();
 
 	public int getBufferCounter();
+
 	public void setBufferCounter(int counter);
-	
+
 	public void setArrived(boolean flag);
+
 	public boolean getArrived();
-	
+
 	public void addToJamList(IRouter router);
+
 	public List<Integer> getJamList();
-	
+
 	public void checkIDFromUUID();
+
 	ItemIdentifierStack getItemIdentifierStack();
 
 	public void readFromNBT(NBTTagCompound data);
+
 	public void writeToNBT(NBTTagCompound tagentityitem);
 
 	public void setDistanceTracker(IDistanceTracker tracker);
+
 	public IDistanceTracker getDistanceTracker();
-	
+
 	public ItemRoutingInformation getInfo();
+
 	void split(int itemsToTake, ForgeDirection orientation);
 }

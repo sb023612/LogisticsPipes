@@ -5,7 +5,6 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-
 public class ModuleAdvancedExtractorMK2 extends ModuleAdvancedExtractor {
 
 	public ModuleAdvancedExtractorMK2() {

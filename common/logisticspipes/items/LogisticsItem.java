@@ -26,21 +26,21 @@ public class LogisticsItem extends Item {
 	public LogisticsItem(int i) {
 		super(i);
 	}
-	
-	public LogisticsItem(int i,Icon icon) {
+
+	public LogisticsItem(int i, Icon icon) {
 		super(i);
 		this.itemIcon = icon;
 	}
 
 	@Override
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IconRegister par1IconRegister) {
-		this.itemIcon = par1IconRegister.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.",""));
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IconRegister par1IconRegister) {
+		this.itemIcon = par1IconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.", ""));
 	}
 
 	@Override
 	public CreativeTabs[] getCreativeTabs() {
-        return new CreativeTabs[]{ LogisticsPipes.LPCreativeTab };
+		return new CreativeTabs[] { LogisticsPipes.LPCreativeTab };
 	}
 
 	@Override
@@ -48,11 +48,11 @@ public class LogisticsItem extends Item {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
 		super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
-		if(addShiftInfo()) {
+		if (addShiftInfo()) {
 			StringUtil.addShiftAddition(par1ItemStack, par3List);
 		}
 	}
-	
+
 	public boolean addShiftInfo() {
 		return true;
 	}

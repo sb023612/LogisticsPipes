@@ -7,15 +7,13 @@ import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.transport.LPTravelingItem;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TravelingItem;
 
 public class TesseractConnection implements ISpecialTileConnection {
-	
+
 	@Override
 	public boolean init() {
 		return SimpleServiceLocator.thermalExpansionProxy.isTE();
@@ -33,8 +31,8 @@ public class TesseractConnection implements ISpecialTileConnection {
 			Position p = new Position(tile.xCoord, tile.yCoord, tile.zCoord, direction);
 			p.moveForwards(1);
 			TileEntity canidate = tile.getWorldObj().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
-			if(canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(tile, canidate, direction)) {
-				if(onlyOnePipe) {
+			if (canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(tile, canidate, direction)) {
+				if (onlyOnePipe) {
 					onlyOnePipe = false;
 					break;
 				} else {
@@ -42,19 +40,19 @@ public class TesseractConnection implements ISpecialTileConnection {
 				}
 			}
 		}
-		if(!onlyOnePipe) {
+		if (!onlyOnePipe) {
 			return new ArrayList<TileEntity>(0);
 		}
 		List<? extends TileEntity> connections = SimpleServiceLocator.thermalExpansionProxy.getConnectedTesseracts(tile);
 		List<TileEntity> list = new ArrayList<TileEntity>();
-		for(TileEntity connected:connections) {
+		for (TileEntity connected : connections) {
 			TileGenericPipe pipe = null;
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 				Position p = new Position(connected.xCoord, connected.yCoord, connected.zCoord, direction);
 				p.moveForwards(1);
 				TileEntity canidate = connected.getWorldObj().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
-				if(canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(connected, canidate, direction)) {
-					if(pipe != null) {
+				if (canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(connected, canidate, direction)) {
+					if (pipe != null) {
 						pipe = null;
 						break;
 					} else {
@@ -62,11 +60,11 @@ public class TesseractConnection implements ISpecialTileConnection {
 					}
 				}
 			}
-			if(pipe != null && pipe.pipe instanceof CoreRoutedPipe) {
+			if (pipe != null && pipe.pipe instanceof CoreRoutedPipe) {
 				list.add(pipe);
 			}
 		}
-		if(list.size() == 1) {
+		if (list.size() == 1) {
 			return list;
 		} else {
 			return new ArrayList<TileEntity>(0);
@@ -81,10 +79,10 @@ public class TesseractConnection implements ISpecialTileConnection {
 	@Override
 	public void transmit(TileEntity tile, IRoutedItem data) {
 		List<TileEntity> list = getConnections(tile);
-		if(list.size() < 1) return;
+		if (list.size() < 1) return;
 		TileEntity pipe = list.get(0);
-		if(pipe instanceof TileGenericPipe) {
-			((CoreRoutedPipe)((TileGenericPipe)pipe).pipe).queueUnroutedItemInformation(data.getItemIdentifierStack().clone(), data.getInfo());
+		if (pipe instanceof TileGenericPipe) {
+			((CoreRoutedPipe) ((TileGenericPipe) pipe).pipe).queueUnroutedItemInformation(data.getItemIdentifierStack().clone(), data.getInfo());
 		} else {
 			new RuntimeException("Only LP pipes can be next to Teseracts to queue item informaiton").printStackTrace();
 		}

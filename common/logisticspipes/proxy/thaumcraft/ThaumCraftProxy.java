@@ -26,12 +26,12 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ThaumCraftProxy implements IThaumCraftProxy {
-	
-	public ThaumCraftProxy() throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+
+	public ThaumCraftProxy() throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
 		Class<?> tcConfig = Class.forName("thaumcraft.common.config.ConfigItems");
-		itemShard = (Item)tcConfig.getField("itemShard").get((Object)null);
+		itemShard = (Item) tcConfig.getField("itemShard").get((Object) null);
 	}
-	
+
 	/**
 	 * Shard meta:
 	 * 0 = air
@@ -42,8 +42,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * 5 = dull
 	 */
 	private Item itemShard;
-	
-	
+
 	/**
 	 * Renders the aspect icons for a given stack downwards starting at x, y.
 	 * @param x The x coord of the screen.
@@ -62,7 +61,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 			for (Aspect tag : tags.getAspectsSortedAmount()) {
 				if (tag == null) continue;
 				int yPos = y + index * 18;
-	            renderAspectAt(tag, x, yPos, gui, tags.getAmount(tag));
+				renderAspectAt(tag, x, yPos, gui, tags.getAmount(tag));
 				index++;
 			}
 		}
@@ -80,7 +79,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 		ot = ThaumcraftApiHelper.getBonusObjectTags(stack, ot);
 		return ot;
 	}
-	
+
 	/**
 	 * Used to render a icon of an aspect at a give x and y on top of a given GuiScreen.
 	 * @param etag The EnumTag (aspect) to render
@@ -89,7 +88,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param gui The gui to render on.
 	 */
 	private void renderAspectAt(Aspect tag, int x, int y, GuiScreen gui, int amount) {
-		if(!(tag instanceof Aspect)) return;
+		if (!(tag instanceof Aspect)) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		UtilsFX.bindTexture("textures/aspects/_back.png");
 		GL11.glPushMatrix();
@@ -100,7 +99,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 		UtilsFX.drawTexturedQuadFull(0, 0, gui.zLevel);
 		GL11.glDisable(3042);
 		GL11.glPopMatrix();
-		if(Thaumcraft.proxy.playerKnowledge.hasDiscoveredAspect(mc.thePlayer.username, tag)) {
+		if (Thaumcraft.proxy.playerKnowledge.hasDiscoveredAspect(mc.thePlayer.username, tag)) {
 			UtilsFX.drawTag(x, y, tag, amount, 0, gui.zLevel);
 		} else {
 			UtilsFX.bindTexture("textures/aspects/_unknown.png");
@@ -113,7 +112,6 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 			GL11.glPopMatrix();
 		}
 	}
-
 
 	/**
 	 * Used to render a rectangle of different aspects. Algorithm does top row 
@@ -137,7 +135,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 			for (int j = 0; j < legnth; j++) {
 				renderAspectAt(Aspect.getAspect(etagIDs.get(currentListIndex)), xshift, yshift, gui, 0);
 				currentListIndex += 1;
-				if(currentListIndex == etagIDs.size()) return;
+				if (currentListIndex == etagIDs.size()) return;
 				xshift += 18;
 			}
 			xshift = x;
@@ -167,23 +165,14 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 
 	@Override
 	public void addCraftingRecipes() {
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK), new Object[] { 
-			"wGe", 
-			"rBr", 
-			"fra", 
-			Character.valueOf('w'), new ItemStack(itemShard, 1, 2), 
-			Character.valueOf('e'), new ItemStack(itemShard, 1, 3), 
-			Character.valueOf('f'), new ItemStack(itemShard, 1, 1), 
-			Character.valueOf('a'), new ItemStack(itemShard, 1, 0), 
-			
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
+
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK),
+				new Object[] { "wGe", "rBr", "fra", Character.valueOf('w'), new ItemStack(itemShard, 1, 2), Character.valueOf('e'), new ItemStack(itemShard, 1, 3), Character.valueOf('f'), new ItemStack(itemShard, 1, 1), Character.valueOf('a'), new ItemStack(itemShard, 1, 0),
+
+				Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
+
 	}
-	
+
 	@Override
 	public boolean isScannedObject(ItemStack stack, String playerName) {
 		String h = ScanManager.generateItemHash(stack.itemID, stack.getItemDamage());

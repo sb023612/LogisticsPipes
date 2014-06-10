@@ -36,7 +36,7 @@ public class TeleportPipes implements ISpecialPipedConnection {
 				PipeItemTeleport = (Class<? extends Pipe>) Class.forName("buildcraft.additionalpipes.pipes.PipeItemsTeleport");
 				Class<?> tpmanager = Class.forName("buildcraft.additionalpipes.pipes.TeleportManager");
 				teleportManager = tpmanager.getField("instance").get(null);
-				teleportPipeMethod = tpmanager.getMethod("getConnectedPipes",Class.forName("buildcraft.additionalpipes.pipes.PipeTeleport"),boolean.class);
+				teleportPipeMethod = tpmanager.getMethod("getConnectedPipes", Class.forName("buildcraft.additionalpipes.pipes.PipeTeleport"), boolean.class);
 				LogisticsPipes.log.fine("Additional pipes detected, adding compatibility");
 				return true;
 			} catch (Exception e2) {
@@ -46,11 +46,10 @@ public class TeleportPipes implements ISpecialPipedConnection {
 		}
 	}
 
-
 	@Override
 	public boolean isType(IPipeInformationProvider tile) {
-		if(tile.getTile() instanceof TileGenericPipe && ((TileGenericPipe)tile.getTile()).pipe != null) {
-			if(PipeItemTeleport.isAssignableFrom(((TileGenericPipe)tile.getTile()).pipe.getClass())) return true;
+		if (tile.getTile() instanceof TileGenericPipe && ((TileGenericPipe) tile.getTile()).pipe != null) {
+			if (PipeItemTeleport.isAssignableFrom(((TileGenericPipe) tile.getTile()).pipe.getClass())) return true;
 		}
 		return false;
 	}
@@ -62,14 +61,14 @@ public class TeleportPipes implements ISpecialPipedConnection {
 		}
 		return (LinkedList<? extends Pipe>) teleportPipeMethod.invoke(pipe, false);
 	}
-	
+
 	@Override
 	public List<IPipeInformationProvider> getConnections(IPipeInformationProvider tile) {
 		List<IPipeInformationProvider> list = new ArrayList<IPipeInformationProvider>();
-		if(tile.getTile() instanceof TileGenericPipe && ((TileGenericPipe)tile.getTile()).pipe != null) {
+		if (tile.getTile() instanceof TileGenericPipe && ((TileGenericPipe) tile.getTile()).pipe != null) {
 			try {
-				LinkedList<? extends Pipe> pipes = getConnectedTeleportPipes(((TileGenericPipe)tile.getTile()).pipe);
-				for(Pipe pipe : pipes) {
+				LinkedList<? extends Pipe> pipes = getConnectedTeleportPipes(((TileGenericPipe) tile.getTile()).pipe);
+				for (Pipe pipe : pipes) {
 					list.add(SimpleServiceLocator.pipeInformaitonManager.getInformationProviderFor(pipe.container));
 				}
 			} catch (Exception e) {

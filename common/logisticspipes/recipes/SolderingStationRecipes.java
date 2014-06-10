@@ -13,21 +13,28 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.BuildCraftSilicon;
 
-public class SolderingStationRecipes {
-	
+public final class SolderingStationRecipes {
+
+	private SolderingStationRecipes() {}
+
 	public static class SolderingStationRecipe {
+
 		public final ItemStack[] source;
 		public final ItemStack result;
 		public final ICraftingResultHandler handler;
+
 		public SolderingStationRecipe(ItemStack[] stacks, ItemStack result, ICraftingResultHandler handler) {
 			this.source = stacks;
 			this.result = result;
 			this.handler = handler;
 		}
 	}
-	
+
 	private static final ArrayList<SolderingStationRecipe> recipes = new ArrayList<SolderingStationRecipe>();
-	
+
+	//@formatter:off
+	//CHECKSTYLE:OFF
+
 	public static void loadRecipe() {
 		recipes.add(new SolderingStationRecipe(new ItemStack[] {
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,1),

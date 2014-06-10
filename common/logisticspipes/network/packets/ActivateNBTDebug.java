@@ -24,11 +24,11 @@ public class ActivateNBTDebug extends ModernPacket {
 		try {
 			Class.forName("codechicken.nei.forge.GuiContainerManager");
 			Configs.TOOLTIP_INFO = true;
-			LoadingHelper.LoadNeiNBTDebugHelper();
-		} catch(ClassNotFoundException e) {
+			LoadingHelper.loadNeiNBTDebugHelper();
+		} catch (ClassNotFoundException e) {
 
-		} catch(Exception e1) {
-			if(LogisticsPipes.DEBUG) {
+		} catch (Exception e1) {
+			if (LogisticsPipes.DEBUG) {
 				e1.printStackTrace();
 			}
 		}

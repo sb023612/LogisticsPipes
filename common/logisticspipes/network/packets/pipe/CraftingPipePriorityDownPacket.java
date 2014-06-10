@@ -29,4 +29,3 @@ public class CraftingPipePriorityDownPacket extends CoordinatesPacket {
 		((PipeItemsCraftingLogistics) pipe.pipe).priorityDown(player);
 	}
 }
-

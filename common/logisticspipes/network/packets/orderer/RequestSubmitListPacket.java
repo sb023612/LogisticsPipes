@@ -22,7 +22,7 @@ public class RequestSubmitListPacket extends InventoryCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
 		if (!(pipe.pipe instanceof PipeBlockRequestTable)) {
@@ -31,4 +31,3 @@ public class RequestSubmitListPacket extends InventoryCoordinatesPacket {
 		RequestHandler.requestList(player, getIdentList(), (CoreRoutedPipe) pipe.pipe);
 	}
 }
-

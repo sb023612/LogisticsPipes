@@ -24,51 +24,50 @@ public class DiskMacroRequestPacket extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
-			if(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk() == null) {
+		if (pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
+			if (((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk() == null) {
 				return;
 			}
-			if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
+			if (!((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().hasTagCompound()) {
 				return;
 			}
-			NBTTagCompound nbt = ((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().getTagCompound();
-			if(!nbt.hasKey("macroList")) {
+			NBTTagCompound nbt = ((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().getTagCompound();
+			if (!nbt.hasKey("macroList")) {
 				NBTTagList list = new NBTTagList();
 				nbt.setTag("macroList", list);
 			}
 			NBTTagList list = nbt.getTagList("macroList");
-			for(int i = 0;i < list.tagCount();i++) {
-				if(i == getInteger()) {
+			for (int i = 0; i < list.tagCount(); i++) {
+				if (i == getInteger()) {
 					NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
-					RequestHandler.requestMacrolist(itemlist, (PipeItemsRequestLogisticsMk2)pipe.pipe, player);
+					RequestHandler.requestMacrolist(itemlist, (PipeItemsRequestLogisticsMk2) pipe.pipe, player);
 					break;
 				}
 			}
 		}
-		if(pipe.pipe instanceof PipeBlockRequestTable) {
-			if(((PipeBlockRequestTable)pipe.pipe).getDisk() == null) {
+		if (pipe.pipe instanceof PipeBlockRequestTable) {
+			if (((PipeBlockRequestTable) pipe.pipe).getDisk() == null) {
 				return;
 			}
-			if(!((PipeBlockRequestTable)pipe.pipe).getDisk().hasTagCompound()) {
+			if (!((PipeBlockRequestTable) pipe.pipe).getDisk().hasTagCompound()) {
 				return;
 			}
-			NBTTagCompound nbt = ((PipeBlockRequestTable)pipe.pipe).getDisk().getTagCompound();
-			if(!nbt.hasKey("macroList")) {
+			NBTTagCompound nbt = ((PipeBlockRequestTable) pipe.pipe).getDisk().getTagCompound();
+			if (!nbt.hasKey("macroList")) {
 				NBTTagList list = new NBTTagList();
 				nbt.setTag("macroList", list);
 			}
 			NBTTagList list = nbt.getTagList("macroList");
-			for(int i = 0;i < list.tagCount();i++) {
-				if(i == getInteger()) {
+			for (int i = 0; i < list.tagCount(); i++) {
+				if (i == getInteger()) {
 					NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
-					RequestHandler.requestMacrolist(itemlist, (PipeBlockRequestTable)pipe.pipe, player);
+					RequestHandler.requestMacrolist(itemlist, (PipeBlockRequestTable) pipe.pipe, player);
 					break;
 				}
 			}
 		}
 	}
 }
-

@@ -50,7 +50,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
-	
+
 	public PipeFluidSatellite(int itemID) {
 		super(itemID);
 		throttleTime = 40;
@@ -84,7 +84,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(getWorld().getTotalWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
+		if (getWorld().getTotalWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
 			updateInv(false);
 		}
 	}
@@ -93,10 +93,10 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public void sendFailed(FluidIdentifier liquid, Integer amount) {
 		liquidLost(liquid, amount);
 	}
-	
+
 	private void addToList(ItemIdentifierStack stack) {
-		for(ItemIdentifierStack ident:itemList) {
-			if(ident.getItem().equals(stack.getItem())) {
+		for (ItemIdentifierStack ident : itemList) {
+			if (ident.getItem().equals(stack.getItem())) {
 				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
 				return;
 			}
@@ -106,24 +106,24 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			if(!(pair.getValue1() instanceof IFluidHandler)) continue;
+		for (Pair<TileEntity, ForgeDirection> pair : getAdjacentTanks(false)) {
+			if (!(pair.getValue1() instanceof IFluidHandler)) continue;
 			IFluidHandler tankContainer = (IFluidHandler) pair.getValue1();
 			FluidTankInfo[] tanks = tankContainer.getTankInfo(pair.getValue2().getOpposite());
-			for(FluidTankInfo tank: tanks) {
+			for (FluidTankInfo tank : tanks) {
 				FluidStack liquid = tank.fluid;
-				if(liquid != null) {
+				if (liquid != null) {
 					addToList(FluidIdentifier.get(liquid).getItemIdentifier().makeStack(liquid.amount));
 				}
 			}
 		}
-		if(!itemList.equals(oldList) || force) {
+		if (!itemList.equals(oldList) || force) {
 			oldList.clear();
 			oldList.addAll(itemList);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(itemList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 		}
 	}
-	
+
 	@Override
 	public void setReceivedChestContent(Collection<ItemIdentifierStack> list) {
 		itemList.clear();
@@ -144,13 +144,13 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public void stopWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
-	
+
 	@Override
 	public void playerStartWatching(EntityPlayer player, int mode) {
-		if(mode == 1) {
+		if (mode == 1) {
 			localModeWatchers.add(player);
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID((this).satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, (Player) player);
 			updateInv(true);
 		} else {
 			super.playerStartWatching(player, mode);
@@ -163,14 +163,14 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		localModeWatchers.remove(player);
 	}
 
-// from baseLogicLiquidSatellite
+	// from baseLogicLiquidSatellite
 	public static HashSet<PipeFluidSatellite> AllSatellites = new HashSet<PipeFluidSatellite>();
 
 	// called only on server shutdown
 	public static void cleanup() {
 		AllSatellites.clear();
 	}
-	
+
 	protected final Map<FluidIdentifier, Integer> _lostItems = new HashMap<FluidIdentifier, Integer>();
 
 	public int satelliteId;
@@ -189,7 +189,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	}
 
 	protected int findId(int increment) {
-		if(MainProxy.isClient(this.getWorld())) return satelliteId;
+		if (MainProxy.isClient(this.getWorld())) return satelliteId;
 		int potentialId = satelliteId;
 		boolean conflict = true;
 		while (conflict) {
@@ -209,7 +209,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	}
 
 	protected void ensureAllSatelliteStatus() {
-		if(MainProxy.isClient()) return;
+		if (MainProxy.isClient()) return;
 		if (satelliteId == 0 && AllSatellites.contains(this)) {
 			AllSatellites.remove(this);
 		}
@@ -226,7 +226,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToPlayer(packet, (Player) player);
 		}
 		updateWatchers();
 	}
@@ -239,20 +239,18 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet,(Player) player);
+			MainProxy.sendPacketToPlayer(packet, (Player) player);
 		}
 		updateWatchers();
 	}
 
-	
 	private void updateWatchers() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), ((PipeFluidSatellite)this.container.pipe).localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), ((PipeFluidSatellite) this.container.pipe).localModeWatchers);
 	}
-	
 
 	@Override
 	public void onAllowedRemoval() {
-		if(MainProxy.isClient(this.getWorld())) return;
+		if (MainProxy.isClient(this.getWorld())) return;
 		if (AllSatellites.contains(this)) {
 			AllSatellites.remove(this);
 		}
@@ -262,7 +260,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		// Send the satellite id when opening gui
 		final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-		MainProxy.sendPacketToPlayer(packet, (Player)entityplayer);
+		MainProxy.sendPacketToPlayer(packet, (Player) entityplayer);
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), getX(), getY(), getZ());
 	}
 
@@ -276,9 +274,9 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		while (iterator.hasNext()) {
 			Entry<FluidIdentifier, Integer> stack = iterator.next();
 			int received = RequestTree.requestFluidPartial(stack.getKey(), stack.getValue(), this, null);
-			
-			if(received > 0) {
-				if(received == stack.getValue()) {
+
+			if (received > 0) {
+				if (received == stack.getValue()) {
 					iterator.remove();
 				} else {
 					stack.setValue(stack.getValue() - received);
@@ -293,7 +291,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 
 	@Override
 	public void liquidLost(FluidIdentifier item, int amount) {
-		if(_lostItems.containsKey(item)) {
+		if (_lostItems.containsKey(item)) {
 			_lostItems.put(item, _lostItems.get(item) + amount);
 		} else {
 			_lostItems.put(item, amount);

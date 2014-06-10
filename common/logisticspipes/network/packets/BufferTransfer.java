@@ -13,13 +13,13 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.common.network.Player;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class BufferTransfer extends ModernPacket {
-	
+
 	@Getter
 	@Setter
 	private byte[] content;
-	
+
 	public BufferTransfer(int id) {
 		super(id);
 	}
@@ -31,10 +31,10 @@ public class BufferTransfer extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.worldObj)) {
 			SimpleServiceLocator.clientBufferHandler.handlePacket(content);
 		} else {
-			SimpleServiceLocator.serverBufferHandler.handlePacket(content, (Player)player);
+			SimpleServiceLocator.serverBufferHandler.handlePacket(content, (Player) player);
 		}
 	}
 
@@ -50,5 +50,3 @@ public class BufferTransfer extends ModernPacket {
 		data.write(content);
 	}
 }
-
-

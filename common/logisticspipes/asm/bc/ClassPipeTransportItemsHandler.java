@@ -11,8 +11,10 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
-public class ClassPipeTransportItemsHandler {
-	
+public final class ClassPipeTransportItemsHandler {
+
+	private ClassPipeTransportItemsHandler() {}
+
 	private static void insertNewInjectItemMethod(ClassNode node) {
 		MethodVisitor mv = node.visitMethod(Opcodes.ACC_PUBLIC, "injectItem", "(Lbuildcraft/transport/TravelingItem;Lnet/minecraftforge/common/ForgeDirection;)V", null, null);
 		mv.visitCode();
@@ -35,32 +37,32 @@ public class ClassPipeTransportItemsHandler {
 		mv.visitMaxs(3, 3);
 		mv.visitEnd();
 	}
-	
+
 	public static byte[] handlePipeTransportItems(byte[] bytes) {
 		final ClassNode node = new ClassNode();
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);
 		Iterator<MethodNode> iter = node.methods.iterator();
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			MethodNode m = iter.next();
-			if(m.name.equals("readFromNBT")) {
+			if (m.name.equals("readFromNBT")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
 
 					// logisticspipes.asm.LogisticsASMHookClass.clearInvalidFluidContainers(items);
 					@Override
 					public void visitInsn(int opcode) {
-						if(opcode == Opcodes.RETURN) {
-							AbstractInsnNode instruction_1 = null;
-							AbstractInsnNode instruction_2 = null;
-							instructions.remove(instruction_2 = instructions.getLast());
-							instructions.remove(instruction_1 = instructions.getLast());
+						if (opcode == Opcodes.RETURN) {
+							AbstractInsnNode instruction_2 = instructions.getLast();
+							instructions.remove(instruction_2);
+							AbstractInsnNode instruction_1 = instructions.getLast();
+							instructions.remove(instruction_1);
 							Label l = new Label();
 							this.visitLabel(l);
 							this.visitVarInsn(Opcodes.ALOAD, 0);
 							this.visitFieldInsn(Opcodes.GETFIELD, "buildcraft/transport/PipeTransportItems", "items", "Lbuildcraft/transport/TravelerSet;");
 							this.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "clearInvalidFluidContainers", "(Lbuildcraft/transport/TravelerSet;)V");
 							instructions.add(instruction_1);
-							instructions.add(instruction_2);							
+							instructions.add(instruction_2);
 						}
 						super.visitInsn(opcode);
 					}
@@ -68,11 +70,12 @@ public class ClassPipeTransportItemsHandler {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if(m.name.equals("injectItem")) {
+			if (m.name.equals("injectItem")) {
 				iter.remove();
 			}
-			if(m.name.equals("canPipeConnect")) {
+			if (m.name.equals("canPipeConnect")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					@Override
 					public void visitCode() {
 						super.visitCode();
@@ -92,8 +95,9 @@ public class ClassPipeTransportItemsHandler {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if(m.name.equals("passToNextPipe")) {
+			if (m.name.equals("passToNextPipe")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					@Override
 					public void visitCode() {
 						super.visitCode();
@@ -121,8 +125,9 @@ public class ClassPipeTransportItemsHandler {
 				m.accept(mv);
 				node.methods.set(node.methods.indexOf(m), mv);
 			}
-			if(m.name.equals("canReceivePipeObjects")) {
+			if (m.name.equals("canReceivePipeObjects")) {
 				MethodNode mv = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+
 					@Override
 					public void visitCode() {
 						super.visitCode();

@@ -15,9 +15,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class PowerPacketLaser extends ModernPacket {
-	
+
 	public PowerPacketLaser(int id) {
 		super(id);
 	}
@@ -25,7 +25,7 @@ public class PowerPacketLaser extends ModernPacket {
 	@Getter
 	@Setter
 	private LPPosition pos;
-	
+
 	@Getter
 	@Setter
 	private ForgeDirection dir;
@@ -45,7 +45,7 @@ public class PowerPacketLaser extends ModernPacket {
 	@Getter
 	@Setter
 	private float length;
-	
+
 	@Getter
 	@Setter
 	private boolean remove = false;
@@ -60,19 +60,19 @@ public class PowerPacketLaser extends ModernPacket {
 		renderBall = data.readBoolean();
 		remove = data.readBoolean();
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		TileEntity tile = pos.getTileEntity(MainProxy.getClientMainWorld());
-		if(tile instanceof LogisticsTileGenericPipe) {
-			if(remove) {
-				((LogisticsTileGenericPipe)tile).removeLaser(dir, getColor(), isRenderBall());
+		if (tile instanceof LogisticsTileGenericPipe) {
+			if (remove) {
+				((LogisticsTileGenericPipe) tile).removeLaser(dir, getColor(), isRenderBall());
 			} else {
-				((LogisticsTileGenericPipe)tile).addLaser(dir, getLength(), getColor(), isReverse(), isRenderBall());
+				((LogisticsTileGenericPipe) tile).addLaser(dir, getLength(), getColor(), isReverse(), isRenderBall());
 			}
 		}
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeFloat(length);
@@ -83,10 +83,10 @@ public class PowerPacketLaser extends ModernPacket {
 		data.writeBoolean(renderBall);
 		data.writeBoolean(remove);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new PowerPacketLaser(getId());
 	}
-	
+
 }

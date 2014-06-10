@@ -23,4 +23,3 @@ public class ParticleFX extends Integer2CoordinatesPacket {
 		MainProxy.spawnParticle(particle, getPosX(), getPosY(), getPosZ(), amount);
 	}
 }
-

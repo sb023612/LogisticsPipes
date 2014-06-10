@@ -32,14 +32,11 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 
 	private int slot = 0;
 
-
-
-	
 	private IRoutedPowerProvider _power;
 	private IWorldProvider _world;
-	
+
 	public final List<String> aspectList = new LinkedList<String>();
-	
+
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	@Override
@@ -48,41 +45,35 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 		_world = world;
 	}
 
-
-	@Override 
+	@Override
 	public void registerSlot(int slot) {
 		this.slot = slot;
 	}
-	
-	@Override 
+
+	@Override
 	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-slot;
+		if (slot >= 0) return this._power.getX();
+		else return 0;
 	}
 
-	
+	@Override
+	public final int getY() {
+		if (slot >= 0) return this._power.getY();
+		else return -1;
+	}
+
+	@Override
+	public final int getZ() {
+		if (slot >= 0) return this._power.getZ();
+		else return -1 - slot;
+	}
+
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, -2, true, false, 5, 0);
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if(isOfInterest(item)) return _sinkReply;
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		if (isOfInterest(item)) return _sinkReply;
 		return null;
 	}
 
@@ -129,7 +120,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 		localModeWatchers.add(player);
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
 	}
 
 	@Override
@@ -138,7 +129,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	}
 
 	public void aspectListChanged() {
-		if(MainProxy.isServer(_world.getWorld())) {
+		if (MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
@@ -185,6 +176,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 		readFromNBT(nbt);
 		aspectListChanged();
 	}
+
 	@Override
 	public boolean hasGenericInterests() {
 		return true;
@@ -196,7 +188,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 	}
 

@@ -39,6 +39,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+
 	public final List<String> oreList = new LinkedList<String>();
 	//map of ItemID:<set of damagevalues>, empty set if wildcard damage
 	private Map<Integer, Set<Integer>> oreItemIdMap;
@@ -58,7 +59,6 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 		_world = world;
 	}
 
-
 	@Override
 	public void registerSlot(int slot) {
 		this.slot = slot;
@@ -66,41 +66,33 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 
 	@Override
 	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else
-			return 0;
+		if (slot >= 0) return this._power.getX();
+		else return 0;
 	}
 
 	@Override
 	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else
-			return -1;
+		if (slot >= 0) return this._power.getY();
+		else return -1;
 	}
 
 	@Override
 	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else
-			return -1-slot;
+		if (slot >= 0) return this._power.getZ();
+		else return -1 - slot;
 	}
 
-
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.OreDictItemSink, 0, true, false, 5, 0);
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if(oreItemIdMap == null) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		if (oreItemIdMap == null) {
 			buildOreItemIdMap();
 		}
 		Set<Integer> damageSet = oreItemIdMap.get(item.itemID);
-		if(damageSet == null)
-			return null;
-		if(damageSet.isEmpty() || damageSet.contains(item.itemDamage))
-			return _sinkReply;
+		if (damageSet == null) return null;
+		if (damageSet.isEmpty() || damageSet.contains(item.itemDamage)) return _sinkReply;
 		return null;
 	}
 
@@ -110,32 +102,32 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	}
 
 	public List<ItemIdentifierStack> getHudItemList() {
-		if(oreItemIdMap == null) {
+		if (oreItemIdMap == null) {
 			buildOreItemIdMap();
 		}
 		return oreHudList;
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	private void buildOreItemIdMap() {
 		oreItemIdMap = new TreeMap<Integer, Set<Integer>>();
 		oreHudList = new ArrayList<ItemIdentifierStack>(oreList.size());
-		for(String orename : oreList) {
-			if(orename == null || orename.equals(""))
-				continue;
+		for (String orename : oreList) {
+			if (orename == null || orename.equals("")) continue;
 			List<ItemStack> items = OreDictionary.getOres(orename);
 			ItemStack stackForHud = null;
-			for(ItemStack stack:items) {
-				if(stack != null) {
-					if(stackForHud == null)
-						stackForHud = stack;
-					if(stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
+			for (ItemStack stack : items) {
+				if (stack != null) {
+					if (stackForHud == null) stackForHud = stack;
+					if (stack.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
 						oreItemIdMap.put(stack.itemID, new TreeSet<Integer>());
 					} else {
 						Set<Integer> damageSet = oreItemIdMap.get(stack.itemID);
-						if(damageSet == null) {
+						if (damageSet == null) {
 							damageSet = new TreeSet<Integer>();
 							damageSet.add(stack.getItemDamage());
 							oreItemIdMap.put(stack.itemID, damageSet);
@@ -145,10 +137,9 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 					}
 				}
 			}
-			if(stackForHud != null) {
+			if (stackForHud != null) {
 				ItemStack t = stackForHud.copy();
-				if(t.getItemDamage() == OreDictionary.WILDCARD_VALUE)
-					t.setItemDamage(0);
+				if (t.getItemDamage() == OreDictionary.WILDCARD_VALUE) t.setItemDamage(0);
 				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(t), 1));
 			} else {
 				oreHudList.add(new ItemIdentifierStack(ItemIdentifier.get(Block.fire.blockID, 0, null), 1));
@@ -160,7 +151,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		oreList.clear();
 		int limit = nbttagcompound.getInteger("listSize");
-		for(int i = 0; i < limit; i++) {
+		for (int i = 0; i < limit; i++) {
 			oreList.add(nbttagcompound.getString("Ore" + i));
 		}
 		oreItemIdMap = null;
@@ -169,7 +160,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		nbttagcompound.setInteger("listSize", oreList.size());
-		for(int i = 0; i < oreList.size(); i++) {
+		for (int i = 0; i < oreList.size(); i++) {
 			nbttagcompound.setString("Ore" + i, oreList.get(i));
 		}
 	}
@@ -200,7 +191,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 		localModeWatchers.add(player);
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
 	}
 
 	@Override
@@ -208,8 +199,8 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 		localModeWatchers.remove(player);
 	}
 
-	public void OreListChanged() {
-		if(MainProxy.isServer(_world.getWorld())) {
+	public void oreListChanged() {
+		if (MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
@@ -224,6 +215,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	public IHUDModuleRenderer getRenderer() {
 		return HUD;
 	}
+
 	@Override
 	public boolean hasGenericInterests() {
 		return true;

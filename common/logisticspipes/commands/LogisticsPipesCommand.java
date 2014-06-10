@@ -17,11 +17,11 @@ import cpw.mods.fml.common.FMLCommonHandler;
 public class LogisticsPipesCommand extends CommandBase {
 
 	private final ICommandHandler mainCommand;
-	
+
 	public LogisticsPipesCommand() {
 		mainCommand = new MainCommandHandler();
 	}
-	
+
 	@Override
 	public String getCommandName() {
 		return "logisticspipes";
@@ -39,7 +39,7 @@ public class LogisticsPipesCommand extends CommandBase {
 
 	@Override
 	public List<String> getCommandAliases() {
-		return Arrays.asList(new String[]{"lp", "logipipes"});
+		return Arrays.asList(new String[] { "lp", "logipipes" });
 	}
 
 	@Override
@@ -49,18 +49,19 @@ public class LogisticsPipesCommand extends CommandBase {
 		}
 		try {
 			mainCommand.executeCommand(sender, arguments);
-		} catch(LPCommandException e) {
-			if(e instanceof PermissionDeniedException) {
+		} catch (LPCommandException e) {
+			if (e instanceof PermissionDeniedException) {
 				throw new CommandException("You are not allowed to execute that command now.");
-			} else if(e instanceof CommandNotFoundException) {
+			} else if (e instanceof CommandNotFoundException) {
 				throw new CommandException("The command was not found");
 			} else {
 				throw new WrongUsageException(this.getCommandUsage(sender));
 			}
 		}
 	}
-	
+
 	public static boolean isOP(ICommandSender sender) {
-		return MinecraftServer.getServerConfigurationManager(FMLCommonHandler.instance().getMinecraftServerInstance()).getOps().contains(sender.getCommandSenderName().toLowerCase()) || (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !FMLCommonHandler.instance().getMinecraftServerInstance().isServerInOnlineMode());
+		return MinecraftServer.getServerConfigurationManager(FMLCommonHandler.instance().getMinecraftServerInstance()).getOps().contains(sender.getCommandSenderName().toLowerCase())
+				|| (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && !FMLCommonHandler.instance().getMinecraftServerInstance().isServerInOnlineMode());
 	}
 }

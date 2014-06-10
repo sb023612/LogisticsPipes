@@ -8,9 +8,13 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.utils.FluidIdentifier;
 
 public interface IFluidProvider {
+
 	public Map<FluidIdentifier, Integer> getAvailableFluids();
+
 	public void canProvide(FluidRequestTreeNode request, int donePrommises);
+
 	public void fullFill(FluidLogisticsPromise promise, IRequestFluid destination);
+
 	public IRouter getRouter();
-	
+
 }

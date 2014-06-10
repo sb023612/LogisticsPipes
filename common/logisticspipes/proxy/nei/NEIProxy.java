@@ -15,11 +15,13 @@ import codechicken.core.gui.GuiDraw;
 import codechicken.nei.api.ItemInfo;
 
 public class NEIProxy implements INEIProxy {
+
 	@Override
 	public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {
 		List<ItemStack> items = ItemInfo.getIdentifierItems(world, player, objectMouseOver);
-		if(items.isEmpty()) return new ArrayList<String>(0);
+		if (items.isEmpty()) return new ArrayList<String>(0);
 		Collections.sort(items, new Comparator<ItemStack>() {
+
 			@Override
 			public int compare(ItemStack stack0, ItemStack stack1) {
 				return stack1.getItemDamage() - stack0.getItemDamage();
@@ -32,7 +34,7 @@ public class NEIProxy implements INEIProxy {
 	public int getWidthForList(List<String> textData, FontRenderer fontRenderer) {
 		int w = 0;
 		for (String s : textData) {
-			w = Math.max(w, GuiDraw.getStringWidthNoColours(fontRenderer, s)+22);
+			w = Math.max(w, GuiDraw.getStringWidthNoColours(fontRenderer, s) + 22);
 		}
 		return w;
 	}
@@ -40,8 +42,9 @@ public class NEIProxy implements INEIProxy {
 	@Override
 	public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {
 		List<ItemStack> items = ItemInfo.getIdentifierItems(world, player, objectMouseOver);
-		if(items.isEmpty()) return null;
+		if (items.isEmpty()) return null;
 		Collections.sort(items, new Comparator<ItemStack>() {
+
 			@Override
 			public int compare(ItemStack stack0, ItemStack stack1) {
 				return stack1.getItemDamage() - stack0.getItemDamage();

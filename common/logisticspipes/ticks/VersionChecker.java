@@ -25,45 +25,45 @@ public class VersionChecker extends Thread {
 		this.setDaemon(true);
 		this.start();
 	}
-	
+
 	@Override
 	@SuppressWarnings({ "resource", "rawtypes", "unchecked" })
 	public void run() {
 		try {
-			if(LogisticsPipes.VERSION.equals("%"+"VERSION%:%DEBUG"+"%")) return;
-			if(LogisticsPipes.VERSION.contains("-")) return;
+			if (LogisticsPipes.VERSION.equals("%" + "VERSION%:%DEBUG" + "%")) return;
+			if (LogisticsPipes.VERSION.contains("-")) return;
 			URL url = new URL("http://rs485.thezorro266.com/version/check.php?VERSION=" + LogisticsPipes.VERSION);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			InputStream inputStream = (InputStream) conn.getContent();
 			Scanner s = new Scanner(inputStream).useDelimiter("\\A");
 			String string = s.next();
 			s.close();
-			if(!Configs.CHECK_FOR_UPDATES) return;
+			if (!Configs.CHECK_FOR_UPDATES) return;
 			Gson gson = new Gson();
 			StringMap part = gson.fromJson(string, StringMap.class);
 			Boolean hasNew = (Boolean) part.get("new");
-			if(hasNew) {
+			if (hasNew) {
 				VersionChecker.hasNewVersion = true;
 				VersionChecker.newVersion = Integer.toString(Double.valueOf(part.get("build").toString()).intValue());
-				LogisticsPipes.log.warning("New LogisticsPipes" + (LogisticsPipes.DEV_BUILD?"-Dev":"") + " version found: #" + Double.valueOf(part.get("build").toString()).intValue());
+				LogisticsPipes.log.warning("New LogisticsPipes" + (LogisticsPipes.DEV_BUILD ? "-Dev" : "") + " version found: #" + Double.valueOf(part.get("build").toString()).intValue());
 				StringMap changeLog = (StringMap) part.get("changelog");
 				List<String> changeLogList = new ArrayList<String>();
-				if(changeLog != null) {
-					for(Object oVersion:changeLog.keySet()) {
+				if (changeLog != null) {
+					for (Object oVersion : changeLog.keySet()) {
 						String build = oVersion.toString();
 						changeLogList.add(new StringBuilder(build).append(": ").toString());
 						List<String> sub = (List<String>) changeLog.get(build);
-						for(String msg:sub) {
-							if(msg.length() > 60) {
+						for (String msg : sub) {
+							if (msg.length() > 60) {
 								boolean first = true;
-								while(!msg.isEmpty()) {
+								while (!msg.isEmpty()) {
 									int splitAt = msg.substring(0, Math.min(first ? 60 : 55, msg.length())).lastIndexOf(' ');
-									if(msg.length() < 60) {
+									if (msg.length() < 60) {
 										splitAt = msg.length();
 									}
-									if(splitAt <= 0) {
+									if (splitAt <= 0) {
 										splitAt = Math.min(first ? 60 : 55, msg.length());
-									} else if(msg.length() > 60 && splitAt < 40) {
+									} else if (msg.length() > 60 && splitAt < 40) {
 										splitAt = Math.min(first ? 60 : 55, msg.length());
 									}
 									changeLogList.add((first ? "" : "    ") + msg.substring(0, splitAt));
@@ -78,12 +78,12 @@ public class VersionChecker extends Thread {
 				}
 				VersionChecker.changeLog = changeLogList;
 			}
-		} catch(MalformedURLException e) {
-			if (Configs.CHECK_FOR_UPDATES){
+		} catch (MalformedURLException e) {
+			if (Configs.CHECK_FOR_UPDATES) {
 				e.printStackTrace();
 			}
-		} catch(IOException e) {
-			if (Configs.CHECK_FOR_UPDATES){
+		} catch (IOException e) {
+			if (Configs.CHECK_FOR_UPDATES) {
 				e.printStackTrace();
 			}
 		}

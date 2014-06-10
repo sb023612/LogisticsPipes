@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CCInfos {
+
 	public boolean isCCType = false;
 	public String type = "";
 	public HashMap<Integer, String> commandMap = new HashMap<Integer, String>();

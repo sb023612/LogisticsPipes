@@ -8,7 +8,7 @@ import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.tileentity.TileEntity;
 
 public class PipeItemsApiaristSink extends CoreRoutedPipe {
-	
+
 	private ModuleApiaristSink sinkModule;
 
 	public PipeItemsApiaristSink(int itemID) {

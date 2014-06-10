@@ -11,7 +11,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 public class LPShapelessOreRecipe extends ShapelessOreRecipe {
 
 	private final CraftingDependency dependent;
-	
+
 	public LPShapelessOreRecipe(ItemStack result, CraftingDependency dependent, Object[] recipe) {
 		super(result, recipe);
 		this.dependent = dependent;
@@ -20,10 +20,10 @@ public class LPShapelessOreRecipe extends ShapelessOreRecipe {
 
 	@Override
 	public ItemStack getCraftingResult(InventoryCrafting inv) {
-		if(Configs.ENABLE_RESEARCH_SYSTEM) {
+		if (Configs.ENABLE_RESEARCH_SYSTEM) {
 			String name = SimpleServiceLocator.craftingPermissionManager.getPlayerName(inv);
-			if(name == null || name.equals("")) return null;
-			if(!SimpleServiceLocator.craftingPermissionManager.isAllowedFor(dependent, name)) {
+			if (name == null || name.equals("")) return null;
+			if (!SimpleServiceLocator.craftingPermissionManager.isAllowedFor(dependent, name)) {
 				return null;
 			}
 		}
@@ -32,10 +32,10 @@ public class LPShapelessOreRecipe extends ShapelessOreRecipe {
 
 	@Override
 	public boolean matches(InventoryCrafting inv, World world) {
-		if(Configs.ENABLE_RESEARCH_SYSTEM) {
+		if (Configs.ENABLE_RESEARCH_SYSTEM) {
 			String name = SimpleServiceLocator.craftingPermissionManager.getPlayerName(inv);
-			if(name == null || name.equals("")) return false;
-			if(!SimpleServiceLocator.craftingPermissionManager.isAllowedFor(dependent, name)) {
+			if (name == null || name.equals("")) return false;
+			if (!SimpleServiceLocator.craftingPermissionManager.isAllowedFor(dependent, name)) {
 				return false;
 			}
 		}
@@ -44,8 +44,8 @@ public class LPShapelessOreRecipe extends ShapelessOreRecipe {
 
 	@Override
 	public ItemStack getRecipeOutput() {
-		if(MainProxy.isClient() && Configs.ENABLE_RESEARCH_SYSTEM) {
-			if(!SimpleServiceLocator.craftingPermissionManager.clientSidePermission.contains(dependent)) {
+		if (MainProxy.isClient() && Configs.ENABLE_RESEARCH_SYSTEM) {
+			if (!SimpleServiceLocator.craftingPermissionManager.clientSidePermission.contains(dependent)) {
 				return null;
 			}
 		}

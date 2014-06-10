@@ -55,9 +55,6 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 
 	private int slot = 0;
 
-
-
-
 	private IHUDModuleRenderer HUD = new HUDExtractor(this);
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
@@ -74,11 +71,11 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 		_world = world;
 	}
 
-	protected int ticksToAction(){
+	protected int ticksToAction() {
 		return 100;
 	}
 
-	protected int itemsToExtract(){
+	protected int itemsToExtract() {
 		return 1;
 	}
 
@@ -91,12 +88,12 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 	}
 
 	@Override
-	public ForgeDirection getSneakyDirection(){
+	public ForgeDirection getSneakyDirection() {
 		return _sneakyDirection;
 	}
 
 	@Override
-	public void setSneakyDirection(ForgeDirection sneakyDirection){
+	public void setSneakyDirection(ForgeDirection sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot).setInteger(_sneakyDirection.ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}
@@ -117,29 +114,31 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		if(nbttagcompound.hasKey("sneakydirection")) {
+		if (nbttagcompound.hasKey("sneakydirection")) {
 			_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
-		} else if(nbttagcompound.hasKey("sneakyorientation")) {
+		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
-			switch(t) {
-			default:
-			case 0:
-				_sneakyDirection = ForgeDirection.UNKNOWN;
-				break;
-			case 1:
-				_sneakyDirection = ForgeDirection.UP;
-				break;
-			case 2:
-				_sneakyDirection = ForgeDirection.SOUTH;
-				break;
-			case 3:
-				_sneakyDirection = ForgeDirection.DOWN;
-				break;
+			switch (t) {
+				default:
+				case 0:
+					_sneakyDirection = ForgeDirection.UNKNOWN;
+					break;
+				case 1:
+					_sneakyDirection = ForgeDirection.UP;
+					break;
+				case 2:
+					_sneakyDirection = ForgeDirection.SOUTH;
+					break;
+				case 3:
+					_sneakyDirection = ForgeDirection.DOWN;
+					break;
 			}
 		}
 	}
@@ -158,32 +157,31 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 		IInventory realInventory = _invProvider.getRealInventory();
 		if (realInventory == null) return;
 		ForgeDirection extractOrientation = _sneakyDirection;
-		if(extractOrientation == ForgeDirection.UNKNOWN) {
+		if (extractOrientation == ForgeDirection.UNKNOWN) {
 			extractOrientation = _invProvider.inventoryOrientation().getOpposite();
 		}
 
-		IInventoryUtil targetUtil = _invProvider.getSneakyInventory(extractOrientation,true);
-		
-		if (realInventory instanceof ISpecialInventory && !targetUtil.isSpecialInventory()){
+		IInventoryUtil targetUtil = _invProvider.getSneakyInventory(extractOrientation, true);
+
+		if (realInventory instanceof ISpecialInventory && !targetUtil.isSpecialInventory()) {
 			ItemStack[] stack = ((ISpecialInventory) realInventory).extractItem(false, extractOrientation, 1);
 			if (stack == null || stack.length < 1 || stack[0] == null || stack[0].stackSize == 0) return;
 			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
 			if (reply == null) return;
 			ItemStack[] stacks = ((ISpecialInventory) realInventory).extractItem(true, extractOrientation, 1);
 			if (stacks == null || stacks.length < 1 || stacks[0] == null || stacks[0].stackSize == 0) {
-				LogisticsPipes.log.info("extractor extractItem(true) got nothing from " + ((Object)realInventory).toString());
+				LogisticsPipes.log.info("extractor extractItem(true) got nothing from " + ((Object) realInventory).toString());
 				return;
 			}
-			if(!ItemStack.areItemStacksEqual(stack[0], stacks[0])) {
-				LogisticsPipes.log.info("extractor extract got a unexpected item from " + ((Object)realInventory).toString());
+			if (!ItemStack.areItemStacksEqual(stack[0], stacks[0])) {
+				LogisticsPipes.log.info("extractor extract got a unexpected item from " + ((Object) realInventory).toString());
 			}
 			_itemSender.sendStack(stacks[0], reply, itemSendMode());
 			return;
 		}
 
-		
-		for (int i = 0; i < targetUtil.getSizeInventory(); i++){
-			
+		for (int i = 0; i < targetUtil.getSizeInventory(); i++) {
+
 			ItemStack slot = targetUtil.getStackInSlot(i);
 			if (slot == null) continue;
 			ItemIdentifier slotitem = ItemIdentifier.get(slot);
@@ -192,28 +190,28 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 			if (reply == null) continue;
 
 			int itemsleft = itemsToExtract();
-			while(reply != null) {
+			while (reply != null) {
 				int count = Math.min(itemsleft, slot.stackSize);
 				count = Math.min(count, slotitem.getMaxStackSize());
-				if(reply.getValue2().maxNumberOfItems > 0) {
+				if (reply.getValue2().maxNumberOfItems > 0) {
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
 
-				while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
+				while (!_power.useEnergy(neededEnergy() * count) && count > 0) {
 					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
 					count--;
 				}
 
-				if(count <= 0) {
+				if (count <= 0) {
 					break;
 				}
 
 				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
-				if(stackToSend == null || stackToSend.stackSize == 0) break;
+				if (stackToSend == null || stackToSend.stackSize == 0) break;
 				count = stackToSend.stackSize;
 				_itemSender.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
-				if(itemsleft <= 0) break;
+				if (itemsleft <= 0) break;
 				slot = targetUtil.getStackInSlot(i);
 				if (slot == null) break;
 				jamList.add(reply.getValue1());
@@ -230,35 +228,28 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 		return list;
 	}
 
-
-	@Override 
+	@Override
 	public void registerSlot(int slot) {
 		this.slot = slot;
 	}
-	
-	@Override 
+
+	@Override
 	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
+		if (slot >= 0) return this._invProvider.getX();
+		else return 0;
 	}
 
+	@Override
+	public final int getY() {
+		if (slot >= 0) return this._invProvider.getY();
+		else return -1;
+	}
+
+	@Override
+	public final int getZ() {
+		if (slot >= 0) return this._invProvider.getZ();
+		else return -1 - slot;
+	}
 
 	@Override
 	public void startWatching() {
@@ -297,7 +288,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 	}
 

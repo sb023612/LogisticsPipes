@@ -8,22 +8,22 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class PowerProviderGui extends CoordinatesGuiProvider {
-	
+
 	public PowerProviderGui(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsPowerProviderTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsPowerProviderTileEntity.class);
-		if(tile == null) return null;
+		if (tile == null) return null;
 		return new GuiPowerProvider(player, tile);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		LogisticsPowerProviderTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsPowerProviderTileEntity.class);
-		if(tile == null) return null;
+		if (tile == null) return null;
 		DummyContainer dummy = new DummyContainer(player, null, tile);
 		dummy.addNormalSlotsForPlayerInventory(8, 80);
 		return dummy;

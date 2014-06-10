@@ -6,22 +6,22 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatMessageComponent;
 
 public class RoutingThreadCommand implements ICommandHandler {
-	
+
 	@Override
 	public String[] getNames() {
-		return new String[]{"routingthread", "rt"};
+		return new String[] { "routingthread", "rt" };
 	}
-	
+
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
 		return true;
 	}
-	
+
 	@Override
 	public String[] getDescription() {
-		return new String[]{"Display Routing thread status information"};
+		return new String[] { "Display Routing thread status information" };
 	}
-	
+
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		sender.sendChatToPlayer(ChatMessageComponent.createFromText("RoutingTableUpdateThread: Queued: " + RoutingTableUpdateThread.size()));

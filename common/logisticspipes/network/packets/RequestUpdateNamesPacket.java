@@ -31,13 +31,13 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 	public void processPacket(EntityPlayer player) {
 		Item[] itemList = Item.itemsList;
 		List<ItemIdentifier> identList = new LinkedList<ItemIdentifier>();
-		for(Item item:itemList) {
-			if(item != null) {
-				for(CreativeTabs tab:item.getCreativeTabs()) {
+		for (Item item : itemList) {
+			if (item != null) {
+				for (CreativeTabs tab : item.getCreativeTabs()) {
 					List<ItemStack> list = new ArrayList<ItemStack>();
 					item.getSubItems(item.itemID, tab, list);
-					if(list.size() > 0) {
-						for(ItemStack stack:list) {
+					if (list.size() > 0) {
+						for (ItemStack stack : list) {
 							identList.add(ItemIdentifier.get(stack));
 						}
 					} else {
@@ -47,7 +47,7 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 			}
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(true);
-		for(ItemIdentifier item:identList) {
+		for (ItemIdentifier item : identList) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(UpdateName.class).setIdent(item).setName(item.getFriendlyName()));
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(false);

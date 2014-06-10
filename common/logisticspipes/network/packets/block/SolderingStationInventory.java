@@ -20,13 +20,12 @@ public class SolderingStationInventory extends InventoryCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsSolderingTileEntity tile = this.getTile(player.worldObj, LogisticsSolderingTileEntity.class);
-		if(tile != null) {
-			for(int i = 0; i < tile.getSizeInventory(); i++) {
-				if(i >= getStackList().size()) break;
+		if (tile != null) {
+			for (int i = 0; i < tile.getSizeInventory(); i++) {
+				if (i >= getStackList().size()) break;
 				ItemStack stack = getStackList().get(i);
 				tile.setInventorySlotContents(i, stack);
 			}
 		}
 	}
 }
-

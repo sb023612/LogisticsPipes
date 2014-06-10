@@ -22,10 +22,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public class ClientRouter implements IRouter {
+
 	private final int _xCoord;
 	private final int _yCoord;
 	private final int _zCoord;
-	
+
 	public ClientRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord) {
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
@@ -33,8 +34,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public void destroy() {
-	}
+	public void destroy() {}
 
 	@Override
 	public int getSimpleID() {
@@ -43,12 +43,12 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public void update(boolean doFullRefresh, CoreRoutedPipe pipe) {
-		
+
 	}
 
 	@Override
 	public boolean isRoutedExit(ForgeDirection connection) {
-		if(LogisticsPipes.DEBUG) {
+		if (LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return false;
@@ -56,7 +56,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public boolean hasRoute(int id, boolean flag, ItemIdentifier item) {
-		if(LogisticsPipes.DEBUG) {
+		if (LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return false;
@@ -64,7 +64,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public ExitRoute getExitFor(int id, boolean flag, ItemIdentifier item) {
-		if(LogisticsPipes.DEBUG) {
+		if (LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return null;
@@ -72,7 +72,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public ArrayList<List<ExitRoute>> getRouteTable() {
-		if(LogisticsPipes.DEBUG) {
+		if (LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return new ArrayList<List<ExitRoute>>();
@@ -80,7 +80,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public List<ExitRoute> getIRoutersByCost() {
-		if(LogisticsPipes.DEBUG) {
+		if (LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
 		return new LinkedList<ExitRoute>();
@@ -89,19 +89,19 @@ public class ClientRouter implements IRouter {
 	@Override
 	public CoreRoutedPipe getPipe() {
 		World worldObj = MainProxy.proxy.getWorld();
-		if(worldObj == null) {
+		if (worldObj == null) {
 			return null;
 		}
 		TileEntity tile = worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
-		
+
 		if (!(tile instanceof LogisticsTileGenericPipe)) return null;
 		LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) tile;
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) return null;
 		return (CoreRoutedPipe) pipe.pipe;
 	}
-	
+
 	@Override
-	public CoreRoutedPipe getCachedPipe(){
+	public CoreRoutedPipe getCachedPipe() {
 		return getPipe();
 	}
 
@@ -111,10 +111,10 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
-		return  _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
+	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord) {
+		return _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
 	}
-	
+
 	@Override
 	public LPPosition getLPPosition() {
 		return new LPPosition(_xCoord, _yCoord, _zCoord);
@@ -122,7 +122,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public UUID getId() {
-		return  UUID.randomUUID();
+		return UUID.randomUUID();
 	}
 
 	@Override
@@ -144,12 +144,12 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public void act(BitSet hasBeenProcessed, IRAction actor) {
-		
+
 	}
 
 	@Override
 	public void flagForRoutingUpdate() {
-		
+
 	}
 
 	@Override
@@ -164,7 +164,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public void updateInterests() {
-		
+
 	}
 
 	@Override
@@ -174,17 +174,16 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public void clearInterests() {
-		
+
 	}
 
 	@Override
 	public boolean isValidCache() {
 		return true;
 	}
-	
+
 	@Override
-	public void forceLsaUpdate() {
-	}
+	public void forceLsaUpdate() {}
 
 	@Override
 	public boolean isSubPoweredExit(ForgeDirection connection) {

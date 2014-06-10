@@ -20,12 +20,11 @@ public class OrdererManagerContent extends InventoryCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
-		if(tile == null) {
+		if (tile == null) {
 			return;
 		}
-		if(tile.pipe instanceof IOrderManagerContentReceiver) {
-			((IOrderManagerContentReceiver)tile.pipe).setOrderManagerContent(getIdentList());
+		if (tile.pipe instanceof IOrderManagerContentReceiver) {
+			((IOrderManagerContentReceiver) tile.pipe).setOrderManagerContent(getIdentList());
 		}
 	}
 }
-

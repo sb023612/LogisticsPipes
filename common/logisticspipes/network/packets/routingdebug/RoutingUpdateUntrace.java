@@ -6,7 +6,7 @@ import logisticspipes.routing.debug.DebugController;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class RoutingUpdateUntrace extends IntegerPacket {
-	
+
 	public RoutingUpdateUntrace(int id) {
 		super(id);
 	}
@@ -15,7 +15,7 @@ public class RoutingUpdateUntrace extends IntegerPacket {
 	public void processPacket(EntityPlayer player) {
 		DebugController.instance(player).untrace(getInteger());
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new RoutingUpdateUntrace(getId());

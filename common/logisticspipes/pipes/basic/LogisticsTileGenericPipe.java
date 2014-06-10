@@ -31,34 +31,34 @@ import buildcraft.transport.TravelingItem;
 import cofh.api.transport.IItemConduit;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-@ModDependentInterface(modId={"CoFHCore"}, interfacePath={"cofh.api.transport.IItemConduit"})
+@ModDependentInterface(modId = { "CoFHCore" }, interfacePath = { "cofh.api.transport.IItemConduit" })
 public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeInformationProvider, IItemConduit {
-	
+
 	public Object OPENPERIPHERAL_IGNORE; //Tell OpenPeripheral to ignore this class
-	
-	public boolean turtleConnect[] = new boolean[7];
-	
+
+	public boolean[] turtleConnect = new boolean[7];
+
 	private LogisticsTileRenderController renderController;
 
-	@ModDependentField(modId="ComputerCraft@1.6")
+	@ModDependentField(modId = "ComputerCraft@1.6")
 	public HashMap<IComputerAccess, ForgeDirection> connections;
 
-	@ModDependentField(modId="ComputerCraft@1.6")
+	@ModDependentField(modId = "ComputerCraft@1.6")
 	public IComputerAccess currentPC;
 
-	@ModDependentField(modId="ThermalExpansion")
+	@ModDependentField(modId = "ThermalExpansion")
 	public LPConduitItem[] localConduit;
-	
+
 	private boolean sendInitPacket = true;
-	
+
 	public LogisticsTileGenericPipe() {
-		if(SimpleServiceLocator.ccProxy.isCC()) {
+		if (SimpleServiceLocator.ccProxy.isCC()) {
 			connections = new HashMap<IComputerAccess, ForgeDirection>();
 		}
 	}
-	
+
 	public CoreRoutedPipe getCPipe() {
-		if(pipe instanceof CoreRoutedPipe) {
+		if (pipe instanceof CoreRoutedPipe) {
 			return (CoreRoutedPipe) pipe;
 		}
 		return null;
@@ -66,7 +66,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@Override
 	public void invalidate() {
-		if(!getCPipe().blockRemove()) {
+		if (!getCPipe().blockRemove()) {
 			this.tileEntityInvalid = true;
 			super.invalidate();
 			SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitRemove(this);
@@ -81,7 +81,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@Override
 	public void updateEntity() {
-		if(sendInitPacket) {
+		if (sendInitPacket) {
 			sendInitPacket = false;
 			getRenderController().sendInit();
 		}
@@ -100,24 +100,24 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
 		try {
 			super.func_85027_a(par1CrashReportCategory);
-		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) {
+		} catch (Exception e) {
+			if (LogisticsPipes.DEBUG) {
 				e.printStackTrace();
 			}
 		}
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
-		if(this.pipe != null) {
+		if (this.pipe != null) {
 			par1CrashReportCategory.addCrashSection("Pipe", this.pipe.getClass().getCanonicalName());
-			if(this.pipe.transport != null) {
+			if (this.pipe.transport != null) {
 				par1CrashReportCategory.addCrashSection("Transport", this.pipe.transport.getClass().getCanonicalName());
 			} else {
 				par1CrashReportCategory.addCrashSection("Transport", "null");
 			}
 
-			if(this.pipe instanceof CoreRoutedPipe) {
+			if (this.pipe instanceof CoreRoutedPipe) {
 				try {
-					((CoreRoutedPipe)this.pipe).addCrashReport(par1CrashReportCategory);
-				} catch(Exception e) {
+					((CoreRoutedPipe) this.pipe).addCrashReport(par1CrashReportCategory);
+				} catch (Exception e) {
 					par1CrashReportCategory.addCrashSectionThrowable("Internal LogisticsPipes Error", e);
 				}
 			}
@@ -127,16 +127,16 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	@Override
 	public void scheduleNeighborChange() {
 		super.scheduleNeighborChange();
-		boolean connected[] = new boolean[6];
+		boolean[] connected = new boolean[6];
 		WorldUtil world = new WorldUtil(this.getWorld(), this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(false);
-		for(AdjacentTile aTile: adjacent) {
-			if(SimpleServiceLocator.ccProxy.isTurtle(aTile.tile)) {
+		for (AdjacentTile aTile : adjacent) {
+			if (SimpleServiceLocator.ccProxy.isTurtle(aTile.tile)) {
 				connected[aTile.orientation.ordinal()] = true;
 			}
 		}
-		for(int i=0; i<6;i++) {
-			if(!connected[i]) {
+		for (int i = 0; i < 6; i++) {
+			if (!connected[i]) {
 				turtleConnect[i] = false;
 			}
 		}
@@ -146,7 +146,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
-		for(int i=0;i<turtleConnect.length;i++) {
+		for (int i = 0; i < turtleConnect.length; i++) {
 			nbttagcompound.setBoolean("turtleConnect_" + i, turtleConnect[i]);
 		}
 	}
@@ -154,17 +154,17 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
-		for(int i=0;i<turtleConnect.length;i++) {
+		for (int i = 0; i < turtleConnect.length; i++) {
 			turtleConnect[i] = nbttagcompound.getBoolean("turtleConnect_" + i);
 		}
 	}
-	
+
 	@Override
 	public boolean canPipeConnect(TileEntity with, ForgeDirection dir) {
-		if(SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
+		if (SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
 		return super.canPipeConnect(with, dir);
 	}
-	
+
 	public void queueEvent(String event, Object[] arguments) {
 		SimpleServiceLocator.ccProxy.queueEvent(event, arguments, this);
 	}
@@ -172,7 +172,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	public void handleMesssage(int computerId, Object message, int sourceId) {
 		SimpleServiceLocator.ccProxy.handleMesssage(computerId, message, this, sourceId);
 	}
-	
+
 	public void setTurtleConnect(boolean flag) {
 		SimpleServiceLocator.ccProxy.setTurtleConnect(flag, this);
 	}
@@ -188,7 +188,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	// To remove IF TE supports BC pipes natively.
 	@Override
 	@Deprecated
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId = "CoFHCore")
 	public ItemStack sendItems(ItemStack stack, ForgeDirection dir) {
 		return insertItem(dir, stack);
 	}
@@ -200,27 +200,27 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@Override
 	@Deprecated
-	@ModDependentMethod(modId="CoFHCore")
+	@ModDependentMethod(modId = "CoFHCore")
 	public ItemStack insertItem(ForgeDirection dir, ItemStack stack, boolean simulate) {
-		if(this.injectItem(stack, !simulate, dir) == stack.stackSize) {
+		if (this.injectItem(stack, !simulate, dir) == stack.stackSize) {
 			return null;
 		} else {
 			return stack;
 		}
 	}
 
-	@ModDependentMethod(modId="ThermalExpansion")
+	@ModDependentMethod(modId = "ThermalExpansion")
 	public boolean canTEConduitConnect(ConduitBase conduit, int side) {
 		return pipe.canPipeConnect(conduit.getTile(), ForgeDirection.VALID_DIRECTIONS[side].getOpposite());
-		
+
 	}
 
-	@ModDependentMethod(modId="ThermalExpansion")
+	@ModDependentMethod(modId = "ThermalExpansion")
 	public LPConduitItem getTEConduit(int side) {
-		if(localConduit == null) {
+		if (localConduit == null) {
 			localConduit = new LPConduitItem[6];
 		}
-		if(localConduit[side] == null) {
+		if (localConduit[side] == null) {
 			localConduit[side] = new LPConduitItem(this, side);
 			localConduit[side].onNeighborChanged();
 		}
@@ -236,14 +236,14 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 
 	public LogisticsTileRenderController getRenderController() {
-		if(renderController == null) {
+		if (renderController == null) {
 			renderController = new LogisticsTileRenderController(this);
 		}
 		return renderController;
 	}
 
 	/* IPipeInformationProvider */
-	
+
 	@Override
 	public boolean isCorrect() {
 		return true;
@@ -276,7 +276,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@Override
 	public CoreRoutedPipe getRoutingPipe() {
-		if(pipe instanceof CoreRoutedPipe) {
+		if (pipe instanceof CoreRoutedPipe) {
 			return (CoreRoutedPipe) pipe;
 		}
 		throw new RuntimeException("This is no routing pipe");
@@ -289,7 +289,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@Override
 	public IFilter getFirewallFilter() {
-		if(pipe instanceof PipeItemsFirewall) {
+		if (pipe instanceof PipeItemsFirewall) {
 			return ((PipeItemsFirewall) pipe).getFilter();
 		}
 		throw new RuntimeException("This is no firewall pipe");
@@ -331,7 +331,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 
 	public void acceptBCTravelingItem(TravelingItem item, ForgeDirection dir) {
-		((PipeTransportLogistics)this.pipe.transport).injectItem(item, dir);
+		((PipeTransportLogistics) this.pipe.transport).injectItem(item, dir);
 	}
 
 	/**
@@ -340,7 +340,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	public boolean isBCPipeConnected(TileGenericPipe container, ForgeDirection o) {
 		return container.isPipeConnected(o);
 	}
-	
+
 	@Override
 	public int injectItem(ItemStack payload, boolean doAdd, ForgeDirection from) {
 		if (BlockGenericPipe.isValid(pipe) && pipe.transport instanceof PipeTransportLogistics && isPipeConnected(from)) {
@@ -351,19 +351,19 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 		}
 		return 0;
 	}
-	
+
 	public boolean isOpaque() {
 		return getCPipe().isOpaque();
 	}
 
 	public void enableRendering() {
-		if(pipe.transport instanceof PipeTransportLogistics) {
+		if (pipe.transport instanceof PipeTransportLogistics) {
 			((PipeTransportLogistics) pipe.transport).isRendering = true;
 		}
 	}
 
 	public void disableRendering() {
-		if(pipe.transport instanceof PipeTransportLogistics) {
+		if (pipe.transport instanceof PipeTransportLogistics) {
 			((PipeTransportLogistics) pipe.transport).isRendering = false;
 		}
 	}

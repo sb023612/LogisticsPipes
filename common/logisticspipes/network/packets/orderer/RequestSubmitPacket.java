@@ -31,4 +31,3 @@ public class RequestSubmitPacket extends RequestPacket {
 		RequestHandler.request(player, getStack(), (CoreRoutedPipe) pipe.pipe);
 	}
 }
-

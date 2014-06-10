@@ -21,19 +21,18 @@ public class DiskSetNamePacket extends StringCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
-			if(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk() == null) {
+		if (pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
+			if (((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk() == null) {
 				return;
 			}
-			if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
-				((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().setTagCompound(new NBTTagCompound("tag"));
+			if (!((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().hasTagCompound()) {
+				((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().setTagCompound(new NBTTagCompound("tag"));
 			}
-			NBTTagCompound nbt = ((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().getTagCompound();
+			NBTTagCompound nbt = ((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().getTagCompound();
 			nbt.setString("name", getString());
 		}
 	}
 }
-

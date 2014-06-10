@@ -17,11 +17,12 @@ public class GuiFreqCardContent extends LogisticsBaseGuiScreen {
 		super(180, 130, 0, 0);
 		DummyContainer dummy = new DummyContainer(player.inventory, card);
 		dummy.addRestrictedSlot(0, card, 82, 15, new ISlotCheck() {
+
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
-				if(itemStack == null) return false;
-				if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
-				if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
+				if (itemStack == null) return false;
+				if (itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+				if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
 				return true;
 			}
 		});
@@ -37,7 +38,7 @@ public class GuiFreqCardContent extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10,  guiTop + 45);
+		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 45);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 81, guiTop + 14);
 	}
 

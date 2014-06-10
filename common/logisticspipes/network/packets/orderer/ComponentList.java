@@ -18,17 +18,17 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ComponentList extends ModernPacket {
 
 	@Getter
 	@Setter
 	private Collection<ItemIdentifierStack> used = new ArrayList<ItemIdentifierStack>();
-	
+
 	@Getter
 	@Setter
 	private Collection<ItemIdentifierStack> missing = new ArrayList<ItemIdentifierStack>();
-	
+
 	public ComponentList(int id) {
 		super(id);
 	}
@@ -42,27 +42,27 @@ public class ComponentList extends ModernPacket {
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
 		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
+			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiOrderer) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiRequestTable) {
-			((GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiRequestTable)FMLClientHandler.instance().getClient().currentScreen, player);
+			((GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiRequestTable) FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
-			for(ItemIdentifierStack item:used) {
+			for (ItemIdentifierStack item : used) {
 				player.addChatMessage("Component: " + item.getFriendlyName());
 			}
-			for(ItemIdentifierStack item:missing) {
+			for (ItemIdentifierStack item : missing) {
 				player.addChatMessage("Missing: " + item.getFriendlyName());
 			}
 		}
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
-		for(ItemIdentifierStack item:used) {
+		for (ItemIdentifierStack item : used) {
 			data.write(1);
 			data.writeItemIdentifierStack(item);
 		}
 		data.write(0);
-		for(ItemIdentifierStack item:missing) {
+		for (ItemIdentifierStack item : missing) {
 			data.write(1);
 			data.writeItemIdentifierStack(item);
 		}
@@ -71,12 +71,11 @@ public class ComponentList extends ModernPacket {
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
-		while(data.read() != 0) {
+		while (data.read() != 0) {
 			used.add(data.readItemIdentifierStack());
 		}
-		while(data.read() != 0) {
+		while (data.read() != 0) {
 			missing.add(data.readItemIdentifierStack());
 		}
 	}
 }
-

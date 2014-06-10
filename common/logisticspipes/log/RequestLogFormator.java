@@ -12,9 +12,9 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 public class RequestLogFormator extends Formatter {
+
 	static final String LINE_SEPARATOR = System.getProperty("line.separator");
-	private SimpleDateFormat dateFormat = new SimpleDateFormat(
-			"yyyy-MM-dd HH:mm:ss");
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	@Override
 	public String format(LogRecord record) {
@@ -41,7 +41,7 @@ public class RequestLogFormator extends Formatter {
 		if (record.getLoggerName() != null && !record.getLoggerName().equals("LogisticsPipes|Request") && !record.getLoggerName().equals("")) {
 			msg.append("[" + record.getLoggerName() + "] ");
 		}
-		
+
 		msg.append(record.getMessage());
 		msg.append(LINE_SEPARATOR);
 		Throwable thr = record.getThrown();

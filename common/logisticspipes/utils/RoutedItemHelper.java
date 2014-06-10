@@ -6,10 +6,11 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
 
 public class RoutedItemHelper {
+
 	public LPTravelingItemServer createNewTravelItem(ItemStack item) {
 		return createNewTravelItem(ItemIdentifierStack.getFromStack(item));
 	}
-	
+
 	public LPTravelingItemServer createNewTravelItem(ItemIdentifierStack item) {
 		return new LPTravelingItemServer(item);
 	}

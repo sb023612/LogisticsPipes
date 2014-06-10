@@ -6,7 +6,6 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-
 package logisticspipes.utils.gui;
 
 import net.minecraft.client.Minecraft;
@@ -26,43 +25,36 @@ public class SmallGuiButton extends GuiButton {
 		super(i, j, k, s);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/widgets.png");
-	
 
-	
 	@Override
-	public void drawButton(Minecraft minecraft, int i, int j)
-    {
-        if(!drawButton)
-        {
-            return;
-        }
-        FontRenderer fontrenderer = minecraft.fontRenderer;
-        minecraft.renderEngine.bindTexture(TEXTURE);
-       // GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, minecraft.renderEngine.getTexture("/gui/gui.png"));
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        boolean flag = i >= xPosition && j >= yPosition && i < xPosition + width && j < yPosition + height;
-        int k = getHoverState(flag);
-        
-        drawTexturedModalRect(xPosition  			, yPosition				, 0			    , 46 + k * 20, width / 2 ,height / 2);
-        drawTexturedModalRect(xPosition + width / 2	, yPosition				, 200 - width / 2, 46 + k * 20, width / 2, height / 2);
-        
-        drawTexturedModalRect(xPosition  			, yPosition + height / 2, 0			    , 46 + 25 - height  +  k * 20, width / 2 ,height / 2);
-        drawTexturedModalRect(xPosition + width / 2	, yPosition + height / 2, 200 - width / 2, 46 + 25 - height +  k * 20, width / 2, height / 2);
+	public void drawButton(Minecraft minecraft, int i, int j) {
+		if (!drawButton) {
 
-        mouseDragged(minecraft, i, j);
-        if(!enabled)
-        {
-            drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xffa0a0a0);
-        } else
-        if(flag)
-        {
-            drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xffffa0);
-        } else
-        {
-            drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xe0e0e0);
-        }
-    }
+			return;
+		}
+		FontRenderer fontrenderer = minecraft.fontRenderer;
+		minecraft.renderEngine.bindTexture(TEXTURE);
+		// GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, minecraft.renderEngine.getTexture("/gui/gui.png"));
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		boolean flag = i >= xPosition && j >= yPosition && i < xPosition + width && j < yPosition + height;
+		int k = getHoverState(flag);
+
+		drawTexturedModalRect(xPosition, yPosition, 0, 46 + k * 20, width / 2, height / 2);
+		drawTexturedModalRect(xPosition + width / 2, yPosition, 200 - width / 2, 46 + k * 20, width / 2, height / 2);
+
+		drawTexturedModalRect(xPosition, yPosition + height / 2, 0, 46 + 25 - height + k * 20, width / 2, height / 2);
+		drawTexturedModalRect(xPosition + width / 2, yPosition + height / 2, 200 - width / 2, 46 + 25 - height + k * 20, width / 2, height / 2);
+
+		mouseDragged(minecraft, i, j);
+		if (!enabled) {
+			drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xffa0a0a0);
+		} else if (flag) {
+			drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xffffa0);
+		} else {
+			drawCenteredString(fontrenderer, displayString, xPosition + width / 2, yPosition + (height - 8) / 2, 0xe0e0e0);
+		}
+	}
 
 }

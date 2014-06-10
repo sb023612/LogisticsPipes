@@ -12,15 +12,18 @@ import buildcraft.core.inventory.ITransactor;
 import buildcraft.core.inventory.filters.IStackFilter;
 
 public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransactor {
+
 	public abstract boolean init();
+
 	public abstract boolean isType(TileEntity tile);
+
 	public abstract SpecialInventoryHandler getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
 
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
 		Map<ItemIdentifier, Integer> map = getItemsAndCount();
 		Integer count = map.get(itemIdent);
-		if(count==null) {
+		if (count == null) {
 			return 0;
 		}
 		return count;
@@ -31,12 +34,11 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 		if (itemCount(itemIdent) < count) return null;
 		ItemStack stack = null;
 		for (int i = 0; i < count; i++) {
-			if(stack == null) {
+			if (stack == null) {
 				stack = getSingleItem(itemIdent);
 			} else {
 				ItemStack newstack = getSingleItem(itemIdent);
-				if(newstack == null)
-					break;
+				if (newstack == null) break;
 				stack.stackSize += newstack.stackSize;
 			}
 		}
@@ -46,7 +48,7 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 	@Override
 	public ItemStack remove(IStackFilter filter, ForgeDirection orientation, boolean doRemove) {
 		//Currently unimplemented because LP has it's own methods
-		if(LogisticsPipes.DEBUG) {
+		if (LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException();
 		}
 		return null;

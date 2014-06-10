@@ -11,25 +11,25 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
-@ModDependentInterface(modId={"IC2"}, interfacePath={"ic2.api.energy.tile.IEnergySink"})
+@ModDependentInterface(modId = { "IC2" }, interfacePath = { "ic2.api.energy.tile.IEnergySink" })
 public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderTileEntity implements IEnergySink {
-	
+
 	public static final int MAX_STORAGE = 40000000;
 	public static final int MAX_MAXMODE = 8;
 	public static final int MAX_PROVIDE_PER_TICK = 2048 * 6; //TODO
 
-  	private boolean addedToEnergyNet = false;
-  	private boolean init = false;
-  	
+	private boolean addedToEnergyNet = false;
+	private boolean init = false;
+
 	public LogisticsIC2PowerProviderTileEntity() {
 		super();
 	}
-	
+
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		if(!init) {
-			if(!addedToEnergyNet) {
+		if (!init) {
+			if (!addedToEnergyNet) {
 				SimpleServiceLocator.IC2Proxy.registerToEneryNet(this);
 				addedToEnergyNet = true;
 			}
@@ -39,10 +39,10 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
-		if(addedToEnergyNet) {
+		if (addedToEnergyNet) {
 			SimpleServiceLocator.IC2Proxy.unregisterToEneryNet(this);
 			addedToEnergyNet = false;
 		}
@@ -51,10 +51,10 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 	@Override
 	public void validate() {
 		super.validate();
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			init = false;
 		}
-		if(!addedToEnergyNet) {
+		if (!addedToEnergyNet) {
 			init = false;
 		}
 	}
@@ -62,30 +62,28 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
-		if(addedToEnergyNet) {
+		if (addedToEnergyNet) {
 			SimpleServiceLocator.IC2Proxy.unregisterToEneryNet(this);
 			addedToEnergyNet = false;
 		}
 	}
 
 	public void addEnergy(float amount) {
-		if(MainProxy.isClient(getWorld())) return;
+		if (MainProxy.isClient(getWorld())) return;
 		internalStorage += amount;
-		if(internalStorage > MAX_STORAGE) {
+		if (internalStorage > MAX_STORAGE) {
 			internalStorage = MAX_STORAGE;
 		}
-		if(internalStorage >= getMaxStorage())
-			needMorePowerTriggerCheck=false;
+		if (internalStorage >= getMaxStorage()) needMorePowerTriggerCheck = false;
 	}
 
 	public float freeSpace() {
 		return getMaxStorage() - internalStorage;
 	}
-	
-	
+
 	public int getMaxStorage() {
 		maxMode = Math.min(MAX_MAXMODE, Math.max(1, maxMode));
 		return (MAX_STORAGE / maxMode);
@@ -142,7 +140,7 @@ public class LogisticsIC2PowerProviderTileEntity extends LogisticsPowerProviderT
 	@Override
 	@ModDependentMethod(modId = "IC2")
 	public double injectEnergyUnits(ForgeDirection dir, double amount) {
-		addEnergy((float)amount);
+		addEnergy((float) amount);
 		return 0;
 	}
 }

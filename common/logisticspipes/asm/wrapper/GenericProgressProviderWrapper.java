@@ -12,15 +12,15 @@ public class GenericProgressProviderWrapper extends AbstractWrapper implements I
 		this.provider = provider;
 		this.name = name;
 	}
-	
+
 	@Override
 	public boolean isType(TileEntity tile) {
-		if(this.state == WrapperState.Enabled) {
+		if (this.state == WrapperState.Enabled) {
 			try {
 				return provider.isType(tile);
-			} catch(Exception e) {
+			} catch (Exception e) {
 				handleException(e);
-			} catch(NoClassDefFoundError e) {
+			} catch (NoClassDefFoundError e) {
 				handleException(e);
 			}
 		}
@@ -29,29 +29,28 @@ public class GenericProgressProviderWrapper extends AbstractWrapper implements I
 
 	@Override
 	public byte getProgress(TileEntity tile) {
-		if(this.state == WrapperState.Enabled) {
+		if (this.state == WrapperState.Enabled) {
 			try {
 				return provider.getProgress(tile);
-			} catch(Exception e) {
+			} catch (Exception e) {
 				handleException(e);
-			} catch(NoClassDefFoundError e) {
+			} catch (NoClassDefFoundError e) {
 				handleException(e);
 			}
 		}
 		return 0;
 	}
 
-	
 	@Override
 	public void onDisable() {
 		this.provider = null;
 	}
-	
+
 	@Override
 	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public String getTypeName() {
 		return "ProgressProvider";

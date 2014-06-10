@@ -4,6 +4,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import net.minecraftforge.common.ForgeDirection;
 
 public abstract class ConnectionUpgrade implements IPipeUpgrade {
+
 	public abstract ForgeDirection getSide();
 
 	@Override

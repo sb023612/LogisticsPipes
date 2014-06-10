@@ -6,6 +6,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IIronChestProxy {
+
 	public boolean isIronChest(TileEntity tile);
-	public @SideOnly(Side.CLIENT) boolean isChestGui(GuiScreen gui);
+
+	@SideOnly(Side.CLIENT)
+	public boolean isChestGui(GuiScreen gui);
 }

@@ -17,10 +17,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 
 public class InventoryUtilFactory {
+
 	private final LinkedList<SpecialInventoryHandler> handler = new LinkedList<SpecialInventoryHandler>();
 
 	public void registerHandler(SpecialInventoryHandler invHandler) {
-		if(invHandler.init()) {
+		if (invHandler.init()) {
 			handler.addLast(invHandler);
 			LogisticsPipes.log.info("Loaded SpecialInventoryHandler: " + invHandler.getClass().getCanonicalName());
 		} else {
@@ -29,10 +30,10 @@ public class InventoryUtilFactory {
 	}
 
 	private TileEntity getTileEntityFromInventory(IInventory inv) {
-		if(inv instanceof TileEntity) {
+		if (inv instanceof TileEntity) {
 			return (TileEntity) inv;
-		} else if(inv instanceof SidedInventoryMinecraftAdapter) {
-			if(((SidedInventoryMinecraftAdapter) inv)._sidedInventory instanceof TileEntity) {
+		} else if (inv instanceof SidedInventoryMinecraftAdapter) {
+			if (((SidedInventoryMinecraftAdapter) inv)._sidedInventory instanceof TileEntity) {
 				return (TileEntity) ((SidedInventoryMinecraftAdapter) inv)._sidedInventory;
 			}
 		}
@@ -41,9 +42,9 @@ public class InventoryUtilFactory {
 
 	public SpecialInventoryHandler getUtilForInv(IInventory inv, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		TileEntity tile = getTileEntityFromInventory(inv);
-		if(tile == null) return null;
-		for(SpecialInventoryHandler invHandler:handler) {
-			if(invHandler.isType(tile)) {
+		if (tile == null) return null;
+		for (SpecialInventoryHandler invHandler : handler) {
+			if (invHandler.isType(tile)) {
 				return invHandler.getUtilForTile(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 			}
 		}
@@ -57,7 +58,7 @@ public class InventoryUtilFactory {
 	public IInventoryUtil getHidingInventoryUtil(IInventory inv, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		IInventoryUtil util = getUtilForInv(inv, hideOnePerStack, hideOne, cropStart, cropEnd);
 		if (util == null) {
-			util = new InventoryUtil(InventoryHelper.getInventory(inv), hideOnePerStack, hideOne, cropStart, cropEnd);;
+			util = new InventoryUtil(InventoryHelper.getInventory(inv), hideOnePerStack, hideOne, cropStart, cropEnd);
 		}
 		return util;
 	}

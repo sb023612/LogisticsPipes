@@ -10,26 +10,25 @@ package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 
-public class ActionDisableLogistics extends LPAction{
+public class ActionDisableLogistics extends LPAction {
 
 	public ActionDisableLogistics(int id) {
-		super(id,"LogisticsPipes.action.pipeDisable");
+		super(id, "LogisticsPipes.action.pipeDisable");
 	}
-	
+
 	@Override
 	public boolean hasParameter() {
 		return false;
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return "Disable Pipe";
 	}
-	
+
 	@Override
 	public int getIconIndex() {
 		return LPActionTriggerIconProvider.actionDisablePipeIconIndex;
 	}
 
-	
 }

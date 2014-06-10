@@ -49,18 +49,24 @@ import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ProxyManager {
+public final class ProxyManager {
+
+	private ProxyManager() {}
+
 	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy) {
 		try {
 			return LogisticsWrapperHandler.getWrappedProxy(modId, interfaze, proxyClazz, dummyProxy);
-		} catch(Exception e) {
-			if(e instanceof RuntimeException) {
+		} catch (Exception e) {
+			if (e instanceof RuntimeException) {
 				throw (RuntimeException) e;
 			}
 			throw new RuntimeException(e);
 		}
 	}
-	
+
+	//@formatter:off
+	//CHECKSTYLE:OFF
+
 	public static void load() {
 		SimpleServiceLocator.setForestryProxy(getWrappedProxy("Forestry", IForestryProxy.class, ForestryProxy.class, new IForestryProxy() {
 			@Override public boolean isBee(ItemStack item) {return false;}
@@ -202,7 +208,7 @@ public class ProxyManager {
 
 		SimpleServiceLocator.setIronChestProxy(getWrappedProxy("IronChest", IIronChestProxy.class, IronChestProxy.class, new IIronChestProxy() {
 			@Override public boolean isIronChest(TileEntity tile) {return false;}
-			@Override public @SideOnly(Side.CLIENT) boolean isChestGui(GuiScreen gui) {return false;}
+			@Override @SideOnly(Side.CLIENT) public boolean isChestGui(GuiScreen gui) {return false;}
 		}));
 		
 		SimpleServiceLocator.setEnderStorageProxy(getWrappedProxy("EnderStorage", IEnderStorageProxy.class, EnderStorageProxy.class, new IEnderStorageProxy() {

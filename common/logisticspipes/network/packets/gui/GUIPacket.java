@@ -12,7 +12,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class GUIPacket extends ModernPacket {
 
 	/**
@@ -35,11 +35,11 @@ public class GUIPacket extends ModernPacket {
 	@Getter
 	@Setter
 	private byte[] guiData;
-	
+
 	public GUIPacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		guiID = data.readInt();

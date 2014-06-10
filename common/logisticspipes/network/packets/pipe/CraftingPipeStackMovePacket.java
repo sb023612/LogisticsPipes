@@ -20,15 +20,14 @@ public class CraftingPipeStackMovePacket extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
-			if(((PipeItemsCraftingLogistics)pipe.pipe) instanceof PipeItemsCraftingLogistics) {
-				PipeItemsCraftingLogistics logic = (PipeItemsCraftingLogistics) ((PipeItemsCraftingLogistics)pipe.pipe);
+		if (pipe.pipe instanceof PipeItemsCraftingLogistics) {
+			if (((PipeItemsCraftingLogistics) pipe.pipe) instanceof PipeItemsCraftingLogistics) {
+				PipeItemsCraftingLogistics logic = (PipeItemsCraftingLogistics) ((PipeItemsCraftingLogistics) pipe.pipe);
 				logic.handleStackMove(getInteger());
 			}
 		}
 	}
 }
-

@@ -26,8 +26,8 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
-			if(MainProxy.isServer(getWorld())) {
+		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openRequest) {
 					ItemStack orderer = entityplayer.getCurrentEquippedItem();
 					RemoteOrderer.connectToPipe(orderer, this);
@@ -50,6 +50,5 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
-
 
 }

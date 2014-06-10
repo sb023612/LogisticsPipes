@@ -6,7 +6,6 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-
 public class ModuleAdvancedExtractorMK3 extends ModuleAdvancedExtractorMK2 {
 
 	public ModuleAdvancedExtractorMK3() {
@@ -14,12 +13,12 @@ public class ModuleAdvancedExtractorMK3 extends ModuleAdvancedExtractorMK2 {
 	}
 
 	@Override
-	protected int ticksToAction(){
+	protected int ticksToAction() {
 		return 1;
 	}
 
 	@Override
-	protected int itemsToExtract(){
+	protected int itemsToExtract() {
 		return 64;
 	}
 

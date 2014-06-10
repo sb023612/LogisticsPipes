@@ -10,22 +10,22 @@ import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class ExtractorModuleInHand extends ModuleInHandGuiProvider {
-	
+
 	public ExtractorModuleInHand(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsModule module = this.getLogisticsModule(player);
-		if(!(module instanceof ISneakyDirectionReceiver)) return null;
+		if (!(module instanceof ISneakyDirectionReceiver)) return null;
 		return new GuiExtractor(player.inventory, null, (ISneakyDirectionReceiver) module, -2);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		DummyContainer dummy = new DummyModuleContainer(player, getInvSlot());
-		if(!(((DummyModuleContainer)dummy).getModule() instanceof ISneakyDirectionReceiver)) return null;
+		if (!(((DummyModuleContainer) dummy).getModule() instanceof ISneakyDirectionReceiver)) return null;
 		return dummy;
 	}
 

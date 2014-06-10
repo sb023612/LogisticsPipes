@@ -5,7 +5,9 @@ import java.util.List;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 
-public class CraftingUtil {
+public final class CraftingUtil {
+
+	private CraftingUtil() {}
 
 	@SuppressWarnings("unchecked")
 	// Suppressed because getRecipeList shouldn't ever return something that

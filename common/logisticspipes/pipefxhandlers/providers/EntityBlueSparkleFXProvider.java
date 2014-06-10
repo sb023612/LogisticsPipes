@@ -7,6 +7,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EntityFX;
 
 public class EntityBlueSparkleFXProvider implements ParticleProvider {
+
 	float red = 0F;
 	float green = 0F;
 	float blue = 1F;
@@ -17,7 +18,7 @@ public class EntityBlueSparkleFXProvider implements ParticleProvider {
 		effect.setRed(red);
 		effect.setGreen(green);
 		effect.setBlue(blue);
-		
+
 		return effect;
 	}
 }

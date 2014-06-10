@@ -11,9 +11,14 @@ import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.ItemStack;
 
 public interface ISendRoutedItem {
+
 	int getSourceID();
+
 	IRouter getRouter();
+
 	Pair<Integer, SinkReply> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude);
+
 	IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode);
+
 	IRoutedItem sendStack(ItemStack stack, int destination, ItemSendMode mode);
 }

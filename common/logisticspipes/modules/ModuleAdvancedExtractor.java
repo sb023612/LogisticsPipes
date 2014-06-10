@@ -28,7 +28,6 @@ import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
@@ -66,7 +65,6 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
-
 	public ModuleAdvancedExtractor() {
 		_filterInventory.addListener(this);
 	}
@@ -84,12 +82,12 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 	}
 
 	@Override
-	public ForgeDirection getSneakyDirection(){
+	public ForgeDirection getSneakyDirection() {
 		return _sneakyDirection;
 	}
 
 	@Override
-	public void setSneakyDirection(ForgeDirection sneakyDirection){
+	public void setSneakyDirection(ForgeDirection sneakyDirection) {
 		_sneakyDirection = sneakyDirection;
 	}
 
@@ -97,25 +95,25 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound);
 		setItemsIncluded(nbttagcompound.getBoolean("itemsIncluded"));
-		if(nbttagcompound.hasKey("sneakydirection")) {
+		if (nbttagcompound.hasKey("sneakydirection")) {
 			_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
-		} else if(nbttagcompound.hasKey("sneakyorientation")) {
+		} else if (nbttagcompound.hasKey("sneakyorientation")) {
 			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
-			switch(t) {
-			default:
-			case 0:
-				_sneakyDirection = ForgeDirection.UNKNOWN;
-				break;
-			case 1:
-				_sneakyDirection = ForgeDirection.UP;
-				break;
-			case 2:
-				_sneakyDirection = ForgeDirection.SOUTH;
-				break;
-			case 3:
-				_sneakyDirection = ForgeDirection.DOWN;
-				break;
+			switch (t) {
+				default:
+				case 0:
+					_sneakyDirection = ForgeDirection.UNKNOWN;
+					break;
+				case 1:
+					_sneakyDirection = ForgeDirection.UP;
+					break;
+				case 2:
+					_sneakyDirection = ForgeDirection.SOUTH;
+					break;
+				case 3:
+					_sneakyDirection = ForgeDirection.DOWN;
+					break;
 			}
 		}
 	}
@@ -160,15 +158,14 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	@Override
 	public void tick() {
-		if (++currentTick < ticksToAction())
-			return;
+		if (++currentTick < ticksToAction()) return;
 		currentTick = 0;
 
 		ForgeDirection extractOrientation = _sneakyDirection;
-		if(extractOrientation == ForgeDirection.UNKNOWN) {
+		if (extractOrientation == ForgeDirection.UNKNOWN) {
 			extractOrientation = _invProvider.inventoryOrientation().getOpposite();
 		}
-		IInventoryUtil inventory = _invProvider.getSneakyInventory(extractOrientation,true);
+		IInventoryUtil inventory = _invProvider.getSneakyInventory(extractOrientation, true);
 		if (inventory == null) return;
 
 		checkExtract(inventory);
@@ -176,37 +173,36 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	private void checkExtract(IInventoryUtil invUtil) {
 		Map<ItemIdentifier, Integer> items = invUtil.getItemsAndCount();
-		for (Entry<ItemIdentifier, Integer> item :items.entrySet()) {
-			if(!CanExtract(item.getKey().makeNormalStack(item.getValue())))
-				continue;
+		for (Entry<ItemIdentifier, Integer> item : items.entrySet()) {
+			if (!canExtract(item.getKey().makeNormalStack(item.getValue()))) continue;
 			List<Integer> jamList = new LinkedList<Integer>();
 			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(item.getKey(), true, jamList);
 			if (reply == null) continue;
 
 			int itemsleft = itemsToExtract();
-			while(reply != null) {
+			while (reply != null) {
 				int count = Math.min(itemsleft, item.getValue());
 				count = Math.min(count, item.getKey().getMaxStackSize());
-				if(reply.getValue2().maxNumberOfItems > 0) {
+				if (reply.getValue2().maxNumberOfItems > 0) {
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
 
-				while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
+				while (!_power.useEnergy(neededEnergy() * count) && count > 0) {
 					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
 					count--;
 				}
 
-				if(count <= 0) {
+				if (count <= 0) {
 					break;
 				}
 
 				ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
-				if(stackToSend == null || stackToSend.stackSize == 0) break;
+				if (stackToSend == null || stackToSend.stackSize == 0) break;
 				count = stackToSend.stackSize;
 				_itemSender.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
-				if(itemsleft <= 0) break;
-				
+				if (itemsleft <= 0) break;
+
 				jamList.add(reply.getValue1());
 				reply = _itemSender.hasDestination(item.getKey(), true, jamList);
 			}
@@ -214,7 +210,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 		}
 	}
 
-	public boolean CanExtract(ItemStack item) {
+	public boolean canExtract(ItemStack item) {
 		for (int i = 0; i < this._filterInventory.getSizeInventory(); i++) {
 
 			ItemStack stack = this._filterInventory.getStackInSlot(i);
@@ -236,7 +232,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	public void setItemsIncluded(boolean flag) {
 		_itemsIncluded = flag;
-		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(slot).setInteger(areItemsIncluded() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		if (!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(slot).setInteger(areItemsIncluded() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}
 
 	@Override
@@ -250,36 +246,31 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 		return list;
 	}
 
-	@Override 
+	@Override
 	public void registerSlot(int slot) {
 		this.slot = slot;
 	}
-	
-	@Override 
+
+	@Override
 	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
+		if (slot >= 0) return this._invProvider.getX();
+		else return 0;
 	}
 
 	@Override
-	public void InventoryChanged(IInventory inventory) {
+	public final int getY() {
+		if (slot >= 0) return this._invProvider.getY();
+		else return -1;
+	}
+
+	@Override
+	public final int getZ() {
+		if (slot >= 0) return this._invProvider.getZ();
+		else return -1 - slot;
+	}
+
+	@Override
+	public void inventoryChanged(IInventory inventory) {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}
 
@@ -301,9 +292,9 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot).setInteger(_sneakyDirection.ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(slot).setInteger(areItemsIncluded() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot).setInteger(_sneakyDirection.ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(slot).setInteger(areItemsIncluded() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
 	}
 
 	@Override

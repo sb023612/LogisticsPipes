@@ -61,23 +61,23 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsEventListener implements IPlayerTracker, IConnectionHandler {
-	
+
 	@ForgeSubscribe
 	public void onEntitySpawn(EntityJoinWorldEvent event) {
-		if(event != null && event.entity instanceof EntityItem && event.entity.worldObj != null && !event.entity.worldObj.isRemote) {
-			ItemStack stack = ((EntityItem)event.entity).getEntityItem(); //Get ItemStack
-			if(stack != null && stack.getItem() instanceof IItemAdvancedExistance && !((IItemAdvancedExistance)stack.getItem()).canExistInWorld(stack)) {
+		if (event != null && event.entity instanceof EntityItem && event.entity.worldObj != null && !event.entity.worldObj.isRemote) {
+			ItemStack stack = ((EntityItem) event.entity).getEntityItem(); //Get ItemStack
+			if (stack != null && stack.getItem() instanceof IItemAdvancedExistance && !((IItemAdvancedExistance) stack.getItem()).canExistInWorld(stack)) {
 				event.setCanceled(true);
 			}
 		}
 	}
-	
+
 	/*
 	 * subscribe forge pre stich event to register common texture
 	 */
 	@ForgeSubscribe
 	@SideOnly(Side.CLIENT)
-	public void textureHook(TextureStitchEvent.Pre event) throws IOException{
+	public void textureHook(TextureStitchEvent.Pre event) throws IOException {
 		if (event.map.textureType == 1) {
 			LogisticsPipes.textures.registerItemIcons(event.map);
 		}
@@ -85,40 +85,40 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 			LogisticsPipes.textures.registerBlockIcons(event.map);
 		}
 	}
-	
+
 	public static final WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>> chestQuickSortConnection = new WeakHashMap<EntityPlayer, List<WeakReference<ModuleQuickSort>>>();
-	
+
 	@ForgeSubscribe
 	public void onPlayerInteract(final PlayerInteractEvent event) {
-		if(MainProxy.isServer(event.entityPlayer.worldObj)) {
-			if(event.action == Action.LEFT_CLICK_BLOCK) {
+		if (MainProxy.isServer(event.entityPlayer.worldObj)) {
+			if (event.action == Action.LEFT_CLICK_BLOCK) {
 				final TileEntity tile = event.entityPlayer.worldObj.getBlockTileEntity(event.x, event.y, event.z);
-				if(tile instanceof LogisticsTileGenericPipe) {
-					if(((LogisticsTileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
-						if(!((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).canBeDestroyedByPlayer(event.entityPlayer)) {
+				if (tile instanceof LogisticsTileGenericPipe) {
+					if (((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe) {
+						if (!((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).canBeDestroyedByPlayer(event.entityPlayer)) {
 							event.setCanceled(true);
 							event.entityPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission Denied"));
-							((LogisticsTileGenericPipe)tile).scheduleNeighborChange();
+							((LogisticsTileGenericPipe) tile).scheduleNeighborChange();
 							event.entityPlayer.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
-							((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).delayTo = System.currentTimeMillis() + 200;
-							((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).repeatFor = 10;
+							((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).delayTo = System.currentTimeMillis() + 200;
+							((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).repeatFor = 10;
 						} else {
-							((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).setDestroyByPlayer();
+							((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).setDestroyByPlayer();
 						}
 					}
 				}
 			}
-			if(event.action == Action.RIGHT_CLICK_BLOCK) {
+			if (event.action == Action.RIGHT_CLICK_BLOCK) {
 				final TileEntity tile = event.entityPlayer.worldObj.getBlockTileEntity(event.x, event.y, event.z);
-				if(tile instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tile)) {
+				if (tile instanceof TileEntityChest || SimpleServiceLocator.ironChestProxy.isIronChest(tile)) {
 					List<WeakReference<ModuleQuickSort>> list = new ArrayList<WeakReference<ModuleQuickSort>>();
-					for(AdjacentTile adj:new WorldUtil(tile).getAdjacentTileEntities()) {
-						if(adj.tile instanceof LogisticsTileGenericPipe) {
-							if(((LogisticsTileGenericPipe)adj.tile).pipe instanceof PipeLogisticsChassi) {
-								if(((PipeLogisticsChassi)((LogisticsTileGenericPipe)adj.tile).pipe).getOrientation() == adj.orientation.getOpposite()) {
-									PipeLogisticsChassi chassi = (PipeLogisticsChassi)((LogisticsTileGenericPipe)adj.tile).pipe;
-									for(int i=0;i<chassi.getChassiSize();i++) {
-										if(chassi.getLogisticsModule().getSubModule(i) instanceof ModuleQuickSort) {
+					for (AdjacentTile adj : new WorldUtil(tile).getAdjacentTileEntities()) {
+						if (adj.tile instanceof LogisticsTileGenericPipe) {
+							if (((LogisticsTileGenericPipe) adj.tile).pipe instanceof PipeLogisticsChassi) {
+								if (((PipeLogisticsChassi) ((LogisticsTileGenericPipe) adj.tile).pipe).getOrientation() == adj.orientation.getOpposite()) {
+									PipeLogisticsChassi chassi = (PipeLogisticsChassi) ((LogisticsTileGenericPipe) adj.tile).pipe;
+									for (int i = 0; i < chassi.getChassiSize(); i++) {
+										if (chassi.getLogisticsModule().getSubModule(i) instanceof ModuleQuickSort) {
 											list.add(new WeakReference<ModuleQuickSort>((ModuleQuickSort) chassi.getLogisticsModule().getSubModule(i)));
 										}
 									}
@@ -126,7 +126,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 							}
 						}
 					}
-					if(!list.isEmpty()) {
+					if (!list.isEmpty()) {
 						chestQuickSortConnection.put(event.entityPlayer, list);
 					}
 				}
@@ -135,24 +135,24 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 	}
 
 	public static HashMap<Integer, Long> WorldLoadTime = new HashMap<Integer, Long>();
-	
+
 	@ForgeSubscribe
-	public void WorldLoad(WorldEvent.Load event) {
-		if(MainProxy.isServer(event.world)) {
+	public void worldLoad(WorldEvent.Load event) {
+		if (MainProxy.isServer(event.world)) {
 			int dim = MainProxy.getDimensionForWorld(event.world);
-			if(!WorldLoadTime.containsKey(dim)) {
+			if (!WorldLoadTime.containsKey(dim)) {
 				WorldLoadTime.put(dim, System.currentTimeMillis());
 			}
 		}
-		if(MainProxy.isClient(event.world)) {
+		if (MainProxy.isClient(event.world)) {
 			SimpleServiceLocator.routerManager.clearClientRouters();
 			LogisticsHUDRenderer.instance().clear();
 		}
 	}
 
 	@ForgeSubscribe
-	public void WorldUnload(WorldEvent.Unload event) {
-		if(MainProxy.isServer(event.world)) {
+	public void worldUnload(WorldEvent.Unload event) {
+		if (MainProxy.isServer(event.world)) {
 			int dim = MainProxy.getDimensionForWorld(event.world);
 			SimpleServiceLocator.routerManager.dimensionUnloaded(dim);
 		}
@@ -161,29 +161,29 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 	public static Map<ChunkCoordIntPair, PlayerCollectionList> watcherList = new ConcurrentHashMap<ChunkCoordIntPair, PlayerCollectionList>();
 
 	int taskCount = 0;
-	
+
 	@ForgeSubscribe
 	public void watchChunk(Watch event) {
-		if(!watcherList.containsKey(event.chunk)) {
+		if (!watcherList.containsKey(event.chunk)) {
 			watcherList.put(event.chunk, new PlayerCollectionList());
 		}
 		watcherList.get(event.chunk).add(event.player);
 	}
-	
+
 	@ForgeSubscribe
 	public void unWatchChunk(UnWatch event) {
-		if(watcherList.containsKey(event.chunk)) {
+		if (watcherList.containsKey(event.chunk)) {
 			watcherList.get(event.chunk).remove(event.player);
 		}
 	}
-	
+
 	@Override
 	public void onPlayerLogin(EntityPlayer player) {
-		if(MainProxy.isServer(player.worldObj)) {
+		if (MainProxy.isServer(player.worldObj)) {
 			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(player);
 			SimpleServiceLocator.craftingPermissionManager.sendCraftingPermissionsToPlayer(player);
 		}
-		if(VersionChecker.hasNewVersion) {
+		if (VersionChecker.hasNewVersion) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Use \"/logisticspipes changelog\" to see a changelog."));
 		}
@@ -200,6 +200,7 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 
 	@AllArgsConstructor
 	private static class GuiEntry {
+
 		@Getter
 		private final int xCoord;
 		@Getter
@@ -208,21 +209,22 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 		private final int zCoord;
 		@Getter
 		private final int guiID;
-		@Getter @Setter
+		@Getter
+		@Setter
 		private boolean isActive;
 	}
 
-	@Getter(lazy=true)
+	@Getter(lazy = true)
 	private static final Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
 
 	//Handle GuiRepoen
 	@ForgeSubscribe
 	@SideOnly(Side.CLIENT)
 	public void onGuiOpen(GuiOpenEvent event) {
-		if(!getGuiPos().isEmpty()) {
-			if(event.gui == null) {
+		if (!getGuiPos().isEmpty()) {
+			if (event.gui == null) {
 				GuiEntry part = getGuiPos().peek();
-				if(part.isActive()) {
+				if (part.isActive()) {
 					part = getGuiPos().poll();
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiReopenPacket.class).setGuiID(part.getGuiID()).setPosX(part.getXCoord()).setPosY(part.getYCoord()).setPosZ(part.getZCoord()));
 					LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(false);
@@ -232,10 +234,10 @@ public class LogisticsEventListener implements IPlayerTracker, IConnectionHandle
 				part.setActive(true);
 			}
 		}
-		if(event.gui == null) {
+		if (event.gui == null) {
 			LogisticsGuiOverrenderer.getInstance().setOverlaySlotActive(false);
 		}
-		if(event.gui instanceof GuiChest || SimpleServiceLocator.ironChestProxy.isChestGui(event.gui)) {
+		if (event.gui instanceof GuiChest || SimpleServiceLocator.ironChestProxy.isChestGui(event.gui)) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ChestGuiOpened.class));
 		} else {
 			QuickSortChestMarkerStorage.getInstance().disable();

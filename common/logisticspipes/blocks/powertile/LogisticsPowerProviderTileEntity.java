@@ -43,71 +43,71 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public abstract class LogisticsPowerProviderTileEntity extends TileEntity implements IGuiTileEntity, ISubSystemPowerProvider, IPowerLevelDisplay, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
+
 	public static final int BC_COLOR = 0x00ffff;
 	public static final int RF_COLOR = 0xff0000;
 	public static final int IC2_COLOR = 0xffff00;
-	
-	
+
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
 
 	protected Map<Integer, Float> orders = new HashMap<Integer, Float>();
 	protected BitSet reOrdered = new BitSet(ServerRouter.getBiggestSimpleID());
 	protected boolean pauseRequesting = false;
-	
+
 	protected float internalStorage = 0;
-  	private float lastUpdateStorage = 0;
+	private float lastUpdateStorage = 0;
 	protected int maxMode = 1;
 
 	private PlayerCollectionList guiListener = new PlayerCollectionList();
 	private PlayerCollectionList watcherList = new PlayerCollectionList();
 	private IHeadUpDisplayRenderer HUD;
 	private boolean init = false;
-	
+
 	protected LogisticsPowerProviderTileEntity() {
 		HUD = new HUDPowerLevel(this);
 	}
-	
+
 	@Override
 	public void updateEntity() {
 		pauseRequesting = false;
-		if(!init) {
-			if(MainProxy.isClient(getWorld())) {
+		if (!init) {
+			if (MainProxy.isClient(getWorld())) {
 				LogisticsHUDRenderer.instance().add(this);
 			}
 			init = true;
 		}
 		float globalRequest = 0;
-		for(Entry<Integer, Float> order:orders.entrySet()) {
+		for (Entry<Integer, Float> order : orders.entrySet()) {
 			globalRequest += order.getValue();
 		}
-		if(globalRequest > 0) {
+		if (globalRequest > 0) {
 			float fullfullratio = Math.min(1, Math.min(internalStorage, getMaxProvidePerTick()) / globalRequest);
-			if(fullfullratio > 0) {
-				for(Entry<Integer, Float> order:orders.entrySet()) {
+			if (fullfullratio > 0) {
+				for (Entry<Integer, Float> order : orders.entrySet()) {
 					float toSend = order.getValue() * fullfullratio;
-					if(toSend > internalStorage) {
+					if (toSend > internalStorage) {
 						toSend = internalStorage;
 					}
 					IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(order.getKey());
-					if(destinationRouter != null && destinationRouter.getPipe() != null) {
+					if (destinationRouter != null && destinationRouter.getPipe() != null) {
 						WorldUtil util = new WorldUtil(getWorldObj(), xCoord, yCoord, zCoord);
 						outerTiles:
-						for(AdjacentTile adjacent: util.getAdjacentTileEntities(false)) {
-							if(adjacent.tile instanceof LogisticsTileGenericPipe) {
-								if(((LogisticsTileGenericPipe)adjacent.tile).pipe instanceof CoreRoutedPipe) {
-									IRouter sourceRouter = ((CoreRoutedPipe)((LogisticsTileGenericPipe)adjacent.tile).pipe).getRouter();
-									if(sourceRouter != null) {
+						for (AdjacentTile adjacent : util.getAdjacentTileEntities(false)) {
+							if (adjacent.tile instanceof LogisticsTileGenericPipe) {
+								if (((LogisticsTileGenericPipe) adjacent.tile).pipe instanceof CoreRoutedPipe) {
+									IRouter sourceRouter = ((CoreRoutedPipe) ((LogisticsTileGenericPipe) adjacent.tile).pipe).getRouter();
+									if (sourceRouter != null) {
 										outerRouters:
-										for(ExitRoute exit:sourceRouter.getDistanceTo(destinationRouter)) {
-											if(exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
-												for(IFilter filter:exit.filters) {
-													if(filter.blockPower()) continue outerRouters;
+										for (ExitRoute exit : sourceRouter.getDistanceTo(destinationRouter)) {
+											if (exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
+												for (IFilter filter : exit.filters) {
+													if (filter.blockPower()) continue outerRouters;
 												}
 												//MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, sourceRouter.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(this.getLaserColor()).setPos(sourceRouter.getLPPosition()).setDir(adjacent.orientation.getOpposite()).setReverse(true).setLength(1));
 												CoreRoutedPipe pipe = sourceRouter.getPipe();
-												if(pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
-													((LogisticsTileGenericPipe)pipe.container).addLaser(adjacent.orientation.getOpposite(), 1, this.getLaserColor(), true, true);
+												if (pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
+													((LogisticsTileGenericPipe) pipe.container).addLaser(adjacent.orientation.getOpposite(), 1, this.getLaserColor(), true, true);
 												}
 												sendPowerLaserPackets(sourceRouter, destinationRouter, exit.exitOrientation);
 												internalStorage -= toSend;
@@ -124,8 +124,8 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 			}
 		}
 		orders.clear();
-		if(MainProxy.isServer(worldObj)) {
-			if(internalStorage != lastUpdateStorage) {
+		if (MainProxy.isServer(worldObj)) {
+			if (internalStorage != lastUpdateStorage) {
 				updateClients();
 				lastUpdateStorage = internalStorage;
 			}
@@ -135,23 +135,23 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 	protected abstract void handlePower(CoreRoutedPipe pipe, float toSend);
 
 	private void sendPowerLaserPackets(IRouter sourceRouter, IRouter destinationRouter, ForgeDirection exitOrientation) {
-		if(sourceRouter == destinationRouter) return;
+		if (sourceRouter == destinationRouter) return;
 		List<ExitRoute> exits = sourceRouter.getRoutersOnSide(exitOrientation);
-		for(ExitRoute exit:exits) {
-			if(exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) { // Find only result (caused by only straight connections)
+		for (ExitRoute exit : exits) {
+			if (exit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) { // Find only result (caused by only straight connections)
 				int distance = sourceRouter.getDistanceToNextPowerPipe(exit.exitOrientation);
 				//MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, sourceRouter.getDimension(), PacketHandler.getPacket(PowerPacketLaser.class).setColor(this.getLaserColor()).setPos(sourceRouter.getLPPosition()).setDir(exit.exitOrientation).setRenderBall(true).setLength(distance));
 				CoreRoutedPipe pipe = sourceRouter.getPipe();
-				if(pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
-					((LogisticsTileGenericPipe)pipe.container).addLaser(exit.exitOrientation, distance, this.getLaserColor(), false, true);
+				if (pipe != null && pipe.container instanceof LogisticsTileGenericPipe) {
+					((LogisticsTileGenericPipe) pipe.container).addLaser(exit.exitOrientation, distance, this.getLaserColor(), false, true);
 				}
 				sourceRouter = exit.destination; // Use new sourceRouter
-				if(sourceRouter == destinationRouter) return;
+				if (sourceRouter == destinationRouter) return;
 				outerRouters:
-				for(ExitRoute newExit:sourceRouter.getDistanceTo(destinationRouter)) {
-					if(newExit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
-						for(IFilter filter:newExit.filters) {
-							if(filter.blockPower()) continue outerRouters;
+				for (ExitRoute newExit : sourceRouter.getDistanceTo(destinationRouter)) {
+					if (newExit.containsFlag(PipeRoutingConnectionType.canPowerSubSystemFrom)) {
+						for (IFilter filter : newExit.filters) {
+							if (filter.blockPower()) continue outerRouters;
 						}
 						sendPowerLaserPackets(sourceRouter, destinationRouter, newExit.exitOrientation);
 					}
@@ -161,13 +161,13 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 	}
 
 	protected abstract float getMaxProvidePerTick();
-	
+
 	protected abstract int getLaserColor();
 
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
 	}
@@ -175,7 +175,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 	@Override
 	public void validate() {
 		super.validate();
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			init = false;
 		}
 	}
@@ -183,19 +183,19 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
 	}
-	
+
 	@Override
 	public void requestPower(int destination, float amount) {
-		if(pauseRequesting) return;
-		if(this.getBrand().equals("EU")) {
+		if (pauseRequesting) return;
+		if (this.getBrand().equals("EU")) {
 			System.out.print("");
 		}
-		if(orders.containsKey(destination)) {
-			if(reOrdered.get(destination)) {
+		if (orders.containsKey(destination)) {
+			if (reOrdered.get(destination)) {
 				pauseRequesting = true;
 				reOrdered.clear();
 			} else {
@@ -222,7 +222,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 		super.readFromNBT(nbt);
 		internalStorage = nbt.getFloat("internalStorage");
 		maxMode = nbt.getInteger("maxMode");
-		
+
 	}
 
 	@Override
@@ -282,7 +282,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 	public boolean isHUDExistent() {
 		return getWorld().getBlockTileEntity(xCoord, yCoord, zCoord) == this;
 	}
-	
+
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
 		guiListener.add(player);
@@ -293,12 +293,12 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 	public void guiClosedByPlayer(EntityPlayer player) {
 		guiListener.remove(player);
 	}
-	
+
 	public void updateClients() {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerProviderLevel.class).setFloat(internalStorage).setTilePos(this), guiListener);
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerProviderLevel.class).setFloat(internalStorage).setTilePos(this), watcherList);
 	}
-	
+
 	@Override
 	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
 		super.func_85027_a(par1CrashReportCategory);
@@ -306,7 +306,7 @@ public abstract class LogisticsPowerProviderTileEntity extends TileEntity implem
 	}
 
 	public void handlePowerPacket(float float1) {
-		if(MainProxy.isClient(this.getWorld())) {
+		if (MainProxy.isClient(this.getWorld())) {
 			internalStorage = float1;
 		}
 	}

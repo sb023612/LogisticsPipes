@@ -14,19 +14,19 @@ import buildcraft.transport.Pipe;
 public class TriggerHasDestination extends LPTrigger implements ITriggerPipe {
 
 	public TriggerHasDestination(int id) {
-		super(id,"LogisticsPipes.trigger.hasDestination");
+		super(id, "LogisticsPipes.trigger.hasDestination");
 	}
 
 	@Override
 	public int getIconIndex() {
 		return LPActionTriggerIconProvider.triggerHasDestinationIconIndex;
 	}
-	
+
 	@Override
 	public boolean hasParameter() {
 		return true;
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return "Item has destination";

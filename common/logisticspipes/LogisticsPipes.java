@@ -110,50 +110,58 @@ import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
 
+/*
+ * @formatter:off
+ */
+
 @Mod(
 		modid = "LogisticsPipes|Main",
 		name = "Logistics Pipes",
 		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */
-		dependencies = "required-after:Forge@[9.10.1.850,);" +
-				"required-after:BuildCraft|Core;" +
-				"required-after:BuildCraft|Transport;" +
-				"required-after:BuildCraft|Silicon;" +
-				"after:IC2;" +
-				"after:Forestry;" +
-				"after:Thaumcraft;" +
-				"after:CCTurtle;" +
-				"after:ComputerCraft;" +
-				"after:factorization;" +
-				"after:GregTech_Addon;" +
-				"after:AppliedEnergistics;" +
-				"after:ThermalExpansion;" +
-				"after:BetterStorage")
+		dependencies = "required-after:Forge@[9.10.1.850,);"
+				+ "required-after:BuildCraft|Core;"
+				+ "required-after:BuildCraft|Transport;"
+				+ "required-after:BuildCraft|Silicon;"
+				+ "after:IC2;"
+				+ "after:Forestry;"
+				+ "after:Thaumcraft;"
+				+ "after:CCTurtle;"
+				+ "after:ComputerCraft;"
+				+ "after:factorization;"
+				+ "after:GregTech_Addon;"
+				+ "after:AppliedEnergistics;"
+				+ "after:ThermalExpansion;"
+				+ "after:BetterStorage")
 @NetworkMod(
-		channels = {LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME},
+		channels = { LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME },
 		packetHandler = PacketHandler.class,
 		clientSideRequired = true)
 public class LogisticsPipes {
 
+	/*
+	 * @formatter:on
+	 */
+
 	public LogisticsPipes() {
-		LaunchClassLoader loader = (LaunchClassLoader)LogisticsPipes.class.getClassLoader();
+		LaunchClassLoader loader = (LaunchClassLoader) LogisticsPipes.class.getClassLoader();
 		boolean found = false;
-		for(IClassTransformer transformer:loader.getTransformers()) {
-			if(transformer.getClass().getName().equals("logisticspipes.asm.LogisticsClassTransformer")) {
+		for (IClassTransformer transformer : loader.getTransformers()) {
+			if (transformer.getClass().getName().equals("logisticspipes.asm.LogisticsClassTransformer")) {
 				found = true;
 				break;
 			}
 		}
-		if(!found) {
+		if (!found) {
 			throw new RuntimeException("LogisticsPipes could not find its class transformer. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes/issues'.");
 		}
 		PacketHandler.intialize();
 		NewGuiHandler.intialize();
 	}
-	
+
 	@Instance("LogisticsPipes|Main")
 	public static LogisticsPipes instance;
-	
+
 	//Network CHannel
 	public static final String LOGISTICS_PIPES_CHANNEL_NAME = "BCLP"; // BCLP: Buildcraft-Logisticspipes
 
@@ -165,7 +173,7 @@ public class LogisticsPipes {
 	public static final String VERSION = "%VERSION%:%DEBUG%";
 	public static final boolean DEV_BUILD = VERSION.contains(".dev.") || DEBUG;
 	public static boolean WATCHDOG = false;
-	
+
 	private boolean certificateError = false;
 
 	// Logistics Pipes
@@ -190,11 +198,11 @@ public class LogisticsPipes {
 	public static Item LogisticsDestinationPipe;
 	public static Item LogisticsFirewallPipe;
 	public static Item logisticsRequestTable;
-	
+
 	// Logistics Apiarist's Pipes
 	public static Item LogisticsApiaristAnalyzerPipe;
 	public static Item LogisticsApiaristSinkPipe;
-	
+
 	// Logistics Fluid Pipes
 	public static Item LogisticsFluidBasicPipe;
 	public static Item LogisticsFluidRequestPipe;
@@ -209,7 +217,7 @@ public class LogisticsPipes {
 	// Logistics Modules/Upgrades
 	public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
-	
+
 	// Miscellaneous Items
 	public static Item LogisticsNetworkMonitior;
 	public static Item LogisticsRemoteOrderer;
@@ -221,37 +229,37 @@ public class LogisticsPipes {
 	public static Item LogisticsUpgradeManager;
 	public static Item LogisticsFluidContainer;
 	public static Item LogisticsBrokenItem;
-	
+
 	// Logistics Blocks
 	public static Block LogisticsSolidBlock;
 
 	public static Textures textures = new Textures();
-	
+
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
-	
+
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
-	
+
 	public static Logger log;
 	public static Logger requestLog;
-	
+
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		String BCVersion = null;
 		try {
 			Field versionField = buildcraft.core.Version.class.getDeclaredField("VERSION");
 			BCVersion = (String) versionField.get(null);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		String expectedBCVersion = "4.2.2";
-		if(BCVersion != null) {
-			if(!BCVersion.equals("@VERSION@") && !BCVersion.contains(expectedBCVersion)) {
+		if (BCVersion != null) {
+			if (!BCVersion.equals("@VERSION@") && !BCVersion.contains(expectedBCVersion)) {
 				throw new VersionNotSupportedException("BC", BCVersion, expectedBCVersion, "");
 			}
 		} else {
 			log.info("Couldn't check the BC Version.");
 		}
-		
+
 		RouterManager manager = new RouterManager();
 		SimpleServiceLocator.setRouterManager(manager);
 		SimpleServiceLocator.setDirectConnectionManager(manager);
@@ -265,22 +273,22 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setCraftingPermissionManager(new CraftingPermissionManager());
 		SimpleServiceLocator.setMachineProgressProvider(new MachineProgressProvider());
 		SimpleServiceLocator.setRoutedItemHelper(new RoutedItemHelper());
-		
-		if(event.getSide().isClient()) {
+
+		if (event.getSide().isClient()) {
 			//SimpleServiceLocator.buildCraftProxy.registerLocalization();
 		}
 		NetworkRegistry.instance().registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
-		if(event.getSide().equals(Side.CLIENT)) {
+		if (event.getSide().equals(Side.CLIENT)) {
 			TickRegistry.registerTickHandler(new RenderTickHandler(), Side.CLIENT);
 		}
 		TickRegistry.registerTickHandler(new WorldTickHandler(), Side.SERVER);
 		TickRegistry.registerTickHandler(new WorldTickHandler(), Side.CLIENT);
 		TickRegistry.registerTickHandler(new QueuedTasks(), Side.SERVER);
-		if(event.getSide() == Side.CLIENT) {
+		if (event.getSide() == Side.CLIENT) {
 			SimpleServiceLocator.setClientPacketBufferHandlerThread(new ClientPacketBufferHandlerThread());
 		}
-		SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());	
-		for(int i=0; i<Configs.MULTI_THREAD_NUMBER; i++) {
+		SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());
+		for (int i = 0; i < Configs.MULTI_THREAD_NUMBER; i++) {
 			new RoutingTableUpdateThread(i);
 		}
 		LogisticsEventListener eventListener = new LogisticsEventListener();
@@ -289,19 +297,19 @@ public class LogisticsPipes {
 		NetworkRegistry.instance().registerConnectionHandler(eventListener);
 		NetworkRegistry.instance().registerChatListener(new LPChatListener());
 		textures.registerBlockIcons(null);
-		
+
 		SimpleServiceLocator.buildCraftProxy.initProxyAndCheckVersion();
 
-		if(event.getSide().equals(Side.CLIENT)) {
+		if (event.getSide().equals(Side.CLIENT)) {
 			TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.CLIENT);
 		}
 		TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.SERVER);
-		
-//		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
-//		 .getPackage().getName()
-//		 + ".waila.WailaRegister.register");
+
+		//		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
+		//		 .getPackage().getName()
+		//		 + ".waila.WailaRegister.register");
 	}
-	
+
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent evt) {
 		Configs.load();
@@ -315,10 +323,10 @@ public class LogisticsPipes {
 			fileHandler.setLevel(Level.ALL);
 			requestLog.addHandler(fileHandler);
 		} catch (Exception e) {}
-		if(DEBUG) {
+		if (DEBUG) {
 			log.setLevel(Level.ALL);
 		}
-		if(certificateError) {
+		if (certificateError) {
 			log.severe("Certificate not correct");
 			log.severe("This in not a LogisticsPipes version from RS485.");
 		}
@@ -341,12 +349,12 @@ public class LogisticsPipes {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		
+
 		boolean isClient = event.getSide() == Side.CLIENT;
-		
+
 		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
 		SpecialTankHandlerManager.load();
@@ -354,63 +362,63 @@ public class LogisticsPipes {
 		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new EnderIOHyperCubeConnection());
-		
+
 		Object renderer = null;
-		if(isClient) {
+		if (isClient) {
 			renderer = new FluidContainerRenderer();
 		}
-		
+
 		LogisticsNetworkMonitior = new LogisticsNetworkManager(Configs.LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setUnlocalizedName("networkMonitorItem");
-		
+
 		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
 		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
-		if(isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsItemCard.itemID, (FluidContainerRenderer)renderer);
+		if (isClient) {
+			MinecraftForgeClient.registerItemRenderer(LogisticsItemCard.itemID, (FluidContainerRenderer) renderer);
 		}
-		
+
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
 		LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
 
 		ItemPipeSignCreator.registerPipeSignTypes();
 		LogisticsCraftingSignCreator = new ItemPipeSignCreator(Configs.LOGISTICSCRAFTINGSIGNCREATOR_ID);
 		LogisticsCraftingSignCreator.setUnlocalizedName("ItemPipeSignCreator");
-		
+
 		int renderIndex;
-		if(isClient) {
+		if (isClient) {
 			renderIndex = RenderingRegistry.addNewArmourRendererPrefix("LogisticsHUD");
 		} else {
 			renderIndex = 0;
 		}
 		LogisticsHUDArmor = new ItemHUDArmor(Configs.ITEM_HUD_ID, renderIndex);
 		LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
-		
+
 		LogisticsParts = new ItemParts(Configs.ITEM_PARTS_ID);
 		LogisticsParts.setUnlocalizedName("logisticsParts");
-		
+
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
-		
+
 		ModuleItem = new ItemModule(Configs.ITEM_MODULE_ID);
 		ModuleItem.setUnlocalizedName("itemModule");
 		ModuleItem.loadModules();
-		
+
 		LogisticsItemDisk = new ItemDisk(Configs.ITEM_DISK_ID);
 		LogisticsItemDisk.setUnlocalizedName("itemDisk");
 
 		UpgradeItem = new ItemUpgrade(Configs.ITEM_UPGRADE_ID);
 		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
-		
+
 		//TODO make it visible in creative search
 		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
-		
+
 		LogisticsFluidContainer = new LogisticsFluidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
 		LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
-		if(isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsFluidContainer.itemID, (FluidContainerRenderer)renderer);
+		if (isClient) {
+			MinecraftForgeClient.registerItemRenderer(LogisticsFluidContainer.itemID, (FluidContainerRenderer) renderer);
 		}
-		
+
 		LogisticsBrokenItem = new LogisticsBrokenItem(Configs.ITEM_BROKEN_ID);
 		LogisticsBrokenItem.setUnlocalizedName("brokenItem");
 
@@ -418,9 +426,9 @@ public class LogisticsPipes {
 		LogisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
 		LogisticsSolidBlock.setUnlocalizedName("logisticsSolidBlock");
-		
+
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
-		
+
 		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
 		SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes();
@@ -434,23 +442,23 @@ public class LogisticsPipes {
 		SimpleServiceLocator.addCraftingRecipeProvider(LogisticsWrapperHandler.getWrappedRecipeProvider("Tubestuff", "ImmibisCraftingTableMk2", ImmibisCraftingTableMk2.class));
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
 		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
-		
+
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("Forestry", "Generic", ForestryProgressProvider.class));
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("ThermalExpansion", "Generic", ThermalExpansionProgressProvider.class));
 		SimpleServiceLocator.machineProgressProvider.registerProgressProvider(LogisticsWrapperHandler.getWrappedProgressProvider("IC2", "Generic", IC2ProgressProvider.class));
-		
+
 		SolderingStationRecipes.loadRecipe();
-		
+
 		MainProxy.proxy.registerTileEntities();
 
 		RecipeManager.loadRecipes();
-		
+
 		//Registering special particles
 		MainProxy.proxy.registerParticles();
-		
+
 		//init Modular Powersuits modules
 		SimpleServiceLocator.mpsProxy.initModules();
-		
+
 		//init Fluids
 		FluidIdentifier.initFromForge(false);
 
@@ -460,7 +468,7 @@ public class LogisticsPipes {
 		}
 		new VersionChecker();
 	}
-	
+
 	@EventHandler
 	public void cleanup(FMLServerStoppingEvent event) {
 		SimpleServiceLocator.routerManager.serverStopClean();
@@ -469,19 +477,19 @@ public class LogisticsPipes {
 		PipeItemsSatelliteLogistics.cleanup();
 		PipeFluidSatellite.cleanup();
 		ServerRouter.cleanup();
-		if(event.getSide().equals(Side.CLIENT)) {
+		if (event.getSide().equals(Side.CLIENT)) {
 			LogisticsHUDRenderer.instance().clear();
 		}
 	}
-	
+
 	@EventHandler
 	public void registerCommands(FMLServerStartingEvent event) {
 		event.registerServerCommand(new LogisticsPipesCommand());
 	}
-	
+
 	@EventHandler
 	public void certificateWarning(FMLFingerprintViolationEvent warning) {
-		if(!DEBUG) {
+		if (!DEBUG) {
 			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");
 			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.expectedFingerprint);
 			System.out.println("[LogisticsPipes|Certificate] File: " + warning.source.getAbsolutePath());

@@ -17,13 +17,13 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SupplierPipeMode extends IntegerCoordinatesPacket {
 
 	@Getter
 	@Setter
 	private boolean hasPatternUpgrade;
-	
+
 	public SupplierPipeMode(int id) {
 		super(id);
 	}
@@ -42,7 +42,7 @@ public class SupplierPipeMode extends IntegerCoordinatesPacket {
 		if (!(pipe.pipe instanceof PipeItemsSupplierLogistics)) {
 			return;
 		}
-		if(hasPatternUpgrade) {
+		if (hasPatternUpgrade) {
 			((PipeItemsSupplierLogistics) pipe.pipe).setPatternMode(PatternMode.values()[getInteger()]);
 		} else {
 			((PipeItemsSupplierLogistics) pipe.pipe).setSupplyMode(SupplyMode.values()[getInteger()]);
@@ -63,5 +63,5 @@ public class SupplierPipeMode extends IntegerCoordinatesPacket {
 		super.writeData(data);
 		data.writeBoolean(hasPatternUpgrade);
 	}
-	
+
 }

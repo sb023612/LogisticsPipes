@@ -14,24 +14,24 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class RoutingLaserPacket extends ModernPacket {
 
 	@Setter
 	@Getter
 	List<LaserData> lasers = new ArrayList<LaserData>();
-	
+
 	public RoutingLaserPacket(int id) {
 		super(id);
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
-		while(data.readBoolean()) {
+		while (data.readBoolean()) {
 			lasers.add(new LaserData().readData(data));
 		}
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsHUDRenderer.instance().setLasers(getLasers());
@@ -39,16 +39,16 @@ public class RoutingLaserPacket extends ModernPacket {
 
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
-		for(LaserData laser:lasers) {
+		for (LaserData laser : lasers) {
 			data.writeBoolean(true);
 			laser.writeData(data);
 		}
 		data.writeBoolean(false);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new RoutingLaserPacket(getId());
 	}
-	
+
 }

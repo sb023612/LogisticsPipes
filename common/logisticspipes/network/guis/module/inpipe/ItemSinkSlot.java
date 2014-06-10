@@ -16,13 +16,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
-	
+
 	@Getter
 	@Setter
 	private boolean isDefaultRoute;
-	
+
 	public ItemSinkSlot(int id) {
 		super(id);
 	}
@@ -42,14 +42,14 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
+		if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
 		ModuleItemSink module;
 		int slot = 0;
-		if(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleItemSink) {
-			module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
-		} else if (((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(getSlot()) instanceof ModuleItemSink) {
+		if (((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleItemSink) {
+			module = (ModuleItemSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule();
+		} else if (((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(getSlot()) instanceof ModuleItemSink) {
 			slot = getSlot() + 1;
-			module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(getSlot());
+			module = (ModuleItemSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(getSlot());
 		} else {
 			return null;
 		}
@@ -60,12 +60,12 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
+		if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
 		ModuleItemSink module;
-		if(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleItemSink) {
-			module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
-		} else if(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(getSlot()) instanceof ModuleItemSink) {
-			module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(getSlot());
+		if (((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleItemSink) {
+			module = (ModuleItemSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule();
+		} else if (((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(getSlot()) instanceof ModuleItemSink) {
+			module = (ModuleItemSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(getSlot());
 		} else {
 			return null;
 		}
@@ -73,11 +73,11 @@ public class ItemSinkSlot extends ModuleCoordinatesGuiProvider {
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots
-	    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-	    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-	    }
-	    
-	    return dummy;
+		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+		}
+
+		return dummy;
 	}
 
 	@Override

@@ -13,99 +13,103 @@ import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
 import logisticspipes.utils.tuples.Triplet;
 
-public class CCHelper {
+public final class CCHelper {
+
+	private CCHelper() {}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Object getAnswer(Object input) {
-		if(input instanceof Object[]) {
+		if (input instanceof Object[]) {
 			Object[] array = (Object[]) input;
-			for(int i=0;i<array.length;i++) {
+			for (int i = 0; i < array.length; i++) {
 				array[i] = getAnswer(array[i]);
 			}
 			return array;
-		} else if(input instanceof List) {
+		} else if (input instanceof List) {
 			List list = (List) input;
 			Map map = new HashMap();
-			for(int i=0;i<list.size();i++) {
+			for (int i = 0; i < list.size(); i++) {
 				map.put((i + 1), getAnswer(list.get(i)));
 			}
 			return map;
-		} else if(input instanceof Map) {
+		} else if (input instanceof Map) {
 			Map oldMap = (Map) input;
 			Map map = new HashMap();
-			for(Object key: oldMap.keySet()) {
+			for (Object key : oldMap.keySet()) {
 				map.put(getAnswer(key), getAnswer(oldMap.get(key)));
 			}
 			return map;
-		} else if(input instanceof ItemIdentifier) {
-			return ((ItemIdentifier)input).getId();
-		} else if(input instanceof Quartet) {
+		} else if (input instanceof ItemIdentifier) {
+			return ((ItemIdentifier) input).getId();
+		} else if (input instanceof Quartet) {
 			Quartet pair = (Quartet) input;
 			Map map = new HashMap();
-			map.put(1,getAnswer(pair.getValue1()));
-			map.put(2,getAnswer(pair.getValue2()));
-			map.put(3,getAnswer(pair.getValue3()));
-			map.put(4,getAnswer(pair.getValue4()));
+			map.put(1, getAnswer(pair.getValue1()));
+			map.put(2, getAnswer(pair.getValue2()));
+			map.put(3, getAnswer(pair.getValue3()));
+			map.put(4, getAnswer(pair.getValue4()));
 			return map;
-		} else if(input instanceof Triplet) {
+		} else if (input instanceof Triplet) {
 			Triplet pair = (Triplet) input;
 			Map map = new HashMap();
-			map.put(1,getAnswer(pair.getValue1()));
-			map.put(2,getAnswer(pair.getValue2()));
-			map.put(3,getAnswer(pair.getValue3()));
+			map.put(1, getAnswer(pair.getValue1()));
+			map.put(2, getAnswer(pair.getValue2()));
+			map.put(3, getAnswer(pair.getValue3()));
 			return map;
-		} else if(input instanceof Pair) {
+		} else if (input instanceof Pair) {
 			Pair pair = (Pair) input;
 			Map map = new HashMap();
-			map.put(1,getAnswer(pair.getValue1()));
-			map.put(2,getAnswer(pair.getValue2()));
+			map.put(1, getAnswer(pair.getValue1()));
+			map.put(2, getAnswer(pair.getValue2()));
 			return map;
-		} else if(input instanceof ItemIdentifierStack) {
+		} else if (input instanceof ItemIdentifierStack) {
 			ItemIdentifierStack mes = (ItemIdentifierStack) input;
 			Map map = new HashMap();
-			map.put(1,getAnswer(mes.getItem()));
-			map.put(2,getAnswer(mes.getStackSize()));
+			map.put(1, getAnswer(mes.getItem()));
+			map.put(2, getAnswer(mes.getStackSize()));
 			return map;
 		}
 		return checkForAnnotations(input);
 	}
-	
+
 	public static Object[] createArray(Object input) {
-		if(input instanceof Object[]) {
+		if (input instanceof Object[]) {
 			return (Object[]) input;
 		}
-		if(input == null) return null;
-		return new Object[]{input};
+		if (input == null) return null;
+		return new Object[] { input };
 	}
-	
+
 	private static String checkForTypeAnotation(Class<?> clazz) {
-		if(clazz.getAnnotation(CCType.class) != null) {
+		if (clazz.getAnnotation(CCType.class) != null) {
 			return clazz.getAnnotation(CCType.class).name();
 		}
-		String result=null;
-		if(!clazz.getSuperclass().equals(Object.class)) {
-			if(!(result = checkForTypeAnotation(clazz.getSuperclass())).equals("")) {
+		String result = null;
+		if (!clazz.getSuperclass().equals(Object.class)) {
+			result = checkForTypeAnotation(clazz.getSuperclass());
+			if (!result.equals("")) {
 				return result;
 			}
 		}
 		return "";
 	}
-	
+
 	public static Object checkForAnnotations(Object object) {
-		if(object == null) return null;
+		if (object == null) return null;
 		CCInfos info = ccMapings.get(object.getClass());
-		if(info == null) {
+		if (info == null) {
 			info = new CCInfos();
 			String type = checkForTypeAnotation(object.getClass());
-			if(!type.equals("")) {
+			if (!type.equals("")) {
 				info.isCCType = true;
 				info.type = type;
 				Class<?> clazz = object.getClass();
 				int i = 0;
-				while(clazz != Object.class) {
-					for(Method method: clazz.getDeclaredMethods()) {
-						if(!method.isAnnotationPresent(CCCommand.class)) continue;
-						for(Class<?> param:method.getParameterTypes()) {
-							if(!param.getName().startsWith("java")) {
+				while (clazz != Object.class) {
+					for (Method method : clazz.getDeclaredMethods()) {
+						if (!method.isAnnotationPresent(CCCommand.class)) continue;
+						for (Class<?> param : method.getParameterTypes()) {
+							if (!param.getName().startsWith("java")) {
 								throw new InternalError("Internal Excption (Code: 2)");
 							}
 						}
@@ -118,11 +122,11 @@ public class CCHelper {
 			}
 			ccMapings.put(object.getClass(), info);
 		}
-		if(!info.isCCType) {
-			return object;	
+		if (!info.isCCType) {
+			return object;
 		}
 		return new CCCommandWrapper(info, object);
 	}
-	
+
 	private static Map<Class<?>, CCInfos> ccMapings = new HashMap<Class<?>, CCInfos>();
 }

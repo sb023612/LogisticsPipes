@@ -8,7 +8,7 @@ public class SpeedUpgrade implements IPipeUpgrade {
 	public boolean needsUpdate() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean isAllowed(CoreRoutedPipe pipe) {
 		return true;

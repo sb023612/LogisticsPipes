@@ -29,6 +29,7 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+
 public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClientInformationProvider, IModuleWatchReciver {
 
 	private IInventoryProvider _invProvider;
@@ -67,13 +68,14 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.APIARIST_Analyser, 0, true, false, 3, 0);
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier itemID, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		ItemStack item = itemID.makeNormalStack(1);
-		if(SimpleServiceLocator.forestryProxy.isBee(item)) {
-			if(!SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-				if(_power.canUseEnergy(3)) {
+		if (SimpleServiceLocator.forestryProxy.isBee(item)) {
+			if (!SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
+				if (_power.canUseEnergy(3)) {
 					return _sinkReply;
 				}
 			}
@@ -98,8 +100,7 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 				if (SimpleServiceLocator.forestryProxy.isBee(item)) {
 					if (SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
 						Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
-						if (reply == null)
-							continue;
+						if (reply == null) continue;
 						if (_power.useEnergy(6)) {
 							_itemSender.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 						}
@@ -109,35 +110,28 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 		}
 	}
 
-
-	@Override 
+	@Override
 	public void registerSlot(int slot) {
 		this.slot = slot;
 	}
-	
-	@Override 
+
+	@Override
 	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
+		if (slot >= 0) return this._invProvider.getX();
+		else return 0;
 	}
 
+	@Override
+	public final int getY() {
+		if (slot >= 0) return this._invProvider.getY();
+		else return -1;
+	}
+
+	@Override
+	public final int getZ() {
+		if (slot >= 0) return this._invProvider.getZ();
+		else return -1 - slot;
+	}
 
 	@Override
 	public boolean hasGenericInterests() {
@@ -150,10 +144,10 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean interestedInUndamagedID() {
 		return false;
@@ -168,10 +162,10 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	public int getGuiHandlerID() {
 		return GuiIDs.GUI_Module_Apiarist_Analyzer;
 	}
-	
+
 	public void setExtractMode(int mode) {
 		if (getExtractMode() == mode) return;
-		
+
 		if (mode == 1) {
 			extractMode = true;
 		} else if (mode == 0) {
@@ -179,15 +173,15 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 		}
 		modeChanged();
 	}
-		
+
 	public int getExtractMode() {
-		return extractMode?1:0;
+		return extractMode ? 1 : 0;
 	}
-	
+
 	public void modeChanged() {
-		if(_world != null) {
-			if(MainProxy.isServer(_world.getWorld())) {
-				if(getY() >= 0) {
+		if (_world != null) {
+			if (MainProxy.isServer(_world.getWorld())) {
+				if (getY() >= 0) {
 					MainProxy.sendToPlayerList(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 				}
 			} else {
@@ -202,14 +196,14 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	public List<String> getClientInformation() {
 		List<String> info = new ArrayList<String>();
 		info.add("Extract Mode:");
-		info.add(" - " + (extractMode?"on":"off"));
+		info.add(" - " + (extractMode ? "on" : "off"));
 		return info;
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
 	}
 
 	@Override

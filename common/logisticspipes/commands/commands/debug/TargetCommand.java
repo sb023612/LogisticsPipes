@@ -13,19 +13,19 @@ public class TargetCommand implements ICommandHandler {
 
 	@Override
 	public String[] getNames() {
-		return new String[]{"target", "look", "watch"};
+		return new String[] { "target", "look", "watch" };
 	}
-	
+
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
 		return sender instanceof EntityPlayer;
 	}
-	
+
 	@Override
 	public String[] getDescription() {
-		return new String[]{"Starts debugging the TileEntity", "or Entitiy you are currently looking at."};
+		return new String[] { "Starts debugging the TileEntity", "or Entitiy you are currently looking at." };
 	}
-	
+
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugAskForTarget.class), (Player) sender);

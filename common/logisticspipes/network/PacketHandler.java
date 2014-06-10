@@ -40,6 +40,7 @@ public class PacketHandler implements IPacketHandler {
 	public static final void intialize() {
 		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath.from(PacketHandler.class.getClassLoader()).getTopLevelClassesRecursive("logisticspipes.network.packets"));
 		Collections.sort(classes, new Comparator<ClassInfo>() {
+
 			@Override
 			public int compare(ClassInfo o1, ClassInfo o2) {
 				return o1.getSimpleName().compareTo(o2.getSimpleName());
@@ -72,13 +73,13 @@ public class PacketHandler implements IPacketHandler {
 	}
 
 	public static void onPacketData(final LPDataInputStream data, final Player player) throws IOException {
-		if(player == null) return;
+		if (player == null) return;
 		final int packetID = data.readInt();
 		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
 		packet.readData(data);
 		try {
 			packet.processPacket((EntityPlayer) player);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			LogisticsPipes.log.severe(packet.getClass().getName());
 			LogisticsPipes.log.severe(packet.toString());
 			throw new RuntimeException(e);

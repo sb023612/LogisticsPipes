@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class PlayerList extends StringListPacket {
 
 	public PlayerList(int id) {
@@ -22,8 +22,7 @@ public class PlayerList extends StringListPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof PlayerListReciver) {
-			((PlayerListReciver)FMLClientHandler.instance().getClient().currentScreen).recivePlayerList(getStringList());
+			((PlayerListReciver) FMLClientHandler.instance().getClient().currentScreen).recivePlayerList(getStringList());
 		}
 	}
 }
-

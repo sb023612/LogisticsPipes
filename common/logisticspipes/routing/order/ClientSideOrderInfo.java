@@ -23,7 +23,7 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 	private final List<Float> progresses;
 	@Getter
 	private final byte machineProgress;
-	
+
 	public ClientSideOrderInfo(ItemIdentifierStack item, boolean isFinished, RequestType type, boolean inProgress, int routerId, List<Float> progresses, byte machineProgress) {
 		this.item = item;
 		this.isFinished = isFinished;
@@ -33,7 +33,8 @@ public class ClientSideOrderInfo implements IOrderInfoProvider {
 		this.progresses = progresses;
 		this.machineProgress = machineProgress;
 	}
-	
+
 	//Ignore this call
-	@Override public void setWatched() {}
+	@Override
+	public void setWatched() {}
 }

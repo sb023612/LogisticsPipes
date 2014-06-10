@@ -45,7 +45,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ClientProxy implements IProxy {
-	
+
 	@Override
 	public String getSide() {
 		return "Client";
@@ -70,7 +70,7 @@ public class ClientProxy implements IProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 		SimpleServiceLocator.buildCraftProxy.resetItemRotation(lrp);
 		Object brp = TileEntityRenderer.instance.specialRendererMap.get(TileGenericPipe.class);
-		if(brp instanceof PipeRendererTESR) {
+		if (brp instanceof PipeRendererTESR) {
 			SimpleServiceLocator.buildCraftProxy.resetItemRotation((PipeRendererTESR) brp);
 		}
 		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
@@ -85,7 +85,7 @@ public class ClientProxy implements IProxy {
 	public boolean isMainThreadRunning() {
 		return FMLClientHandler.instance().getClient().running;
 	}
-	
+
 	@Override
 	public void registerParticles() {
 		PipeFXRenderHandler.registerParticleHandler(Particles.WhiteParticle, new EntityWhiteSparkleFXProvider());
@@ -96,29 +96,29 @@ public class ClientProxy implements IProxy {
 		PipeFXRenderHandler.registerParticleHandler(Particles.VioletParticle, new EntityVioletSparkleFXProvider());
 		PipeFXRenderHandler.registerParticleHandler(Particles.OrangeParticle, new EntityOrangeSparkleFXProvider());
 	}
-	
+
 	@Override
 	public String getName(ItemIdentifier item) {
 		String name = "???";
 		try {
 			name = Item.itemsList[item.itemID].getItemDisplayName(item.unsafeMakeNormalStack(1));
-			if(name == null) {
+			if (name == null) {
 				throw new Exception();
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			try {
 				name = Item.itemsList[item.itemID].getUnlocalizedName(item.unsafeMakeNormalStack(1));
-				if(name == null) {
+				if (name == null) {
 					throw new Exception();
 				}
-			} catch(Exception e1) {
+			} catch (Exception e1) {
 				try {
 					name = Item.itemsList[item.itemID].getUnlocalizedName();
-					if(name == null) {
+					if (name == null) {
 						throw new Exception();
 					}
-				} catch(Exception e2) {
-					name = "???"; 
+				} catch (Exception e2) {
+					name = "???";
 				}
 			}
 		}
@@ -134,6 +134,7 @@ public class ClientProxy implements IProxy {
 	public void tick() {
 		//Not Client Side
 	}
+
 	@Override
 	public void sendNameUpdateRequest(Player player) {
 		//Not Client Side
@@ -141,11 +142,11 @@ public class ClientProxy implements IProxy {
 
 	@Override
 	public int getDimensionForWorld(World world) {
-		if(world instanceof WorldServer) {
-			return ((WorldServer)world).provider.dimensionId;
+		if (world instanceof WorldServer) {
+			return ((WorldServer) world).provider.dimensionId;
 		}
-		if(world instanceof WorldClient) {
-			return ((WorldClient)world).provider.dimensionId;
+		if (world instanceof WorldClient) {
+			return ((WorldClient) world).provider.dimensionId;
 		}
 		return world.getWorldInfo().getVanillaDimension();
 	}
@@ -166,7 +167,7 @@ public class ClientProxy implements IProxy {
 	 * @return
 	 */
 	private static LogisticsTileGenericPipe getPipe(World world, int x, int y, int z) {
-		if(world == null) {
+		if (world == null) {
 			return null;
 		}
 		if (!world.blockExists(x, y, z)) {
@@ -180,22 +181,23 @@ public class ClientProxy implements IProxy {
 
 		return (LogisticsTileGenericPipe) tile;
 	}
+
 	// BuildCraft method end
 
 	@Override
 	public void addLogisticsPipesOverride(IconRegister par1IconRegister, int index, String override1, String override2, boolean flag) {
-		if(par1IconRegister != null) {
-			if(flag) {
-				Textures.LPpipeIconProvider.setIcon(index, par1IconRegister.registerIcon("logisticspipes:"+override1));
+		if (par1IconRegister != null) {
+			if (flag) {
+				Textures.LPpipeIconProvider.setIcon(index, par1IconRegister.registerIcon("logisticspipes:" + override1));
 			} else {
-				Textures.LPpipeIconProvider.setIcon(index, par1IconRegister.registerIcon("logisticspipes:"+override1.replace("pipes/", "pipes/overlay_gen/")+"/"+override2.replace("pipes/status_overlay/","")));
+				Textures.LPpipeIconProvider.setIcon(index, par1IconRegister.registerIcon("logisticspipes:" + override1.replace("pipes/", "pipes/overlay_gen/") + "/" + override2.replace("pipes/status_overlay/", "")));
 			}
 		}
 	}
 
 	@Override
 	public void sendBroadCast(String message) {
-		if(Minecraft.getMinecraft().thePlayer != null) {
+		if (Minecraft.getMinecraft().thePlayer != null) {
 			Minecraft.getMinecraft().thePlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Client: " + message));
 		}
 	}

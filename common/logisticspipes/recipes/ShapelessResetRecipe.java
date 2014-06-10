@@ -6,6 +6,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 
 public class ShapelessResetRecipe implements IRecipe {
+
 	private final int itemID;
 	private final int meta;
 	private final ItemStack output;
@@ -21,9 +22,8 @@ public class ShapelessResetRecipe implements IRecipe {
 		int nmatches = 0;
 		for (int i = 0; i < var1.getSizeInventory(); i++) {
 			ItemStack slot = var1.getStackInSlot(i);
-			if(slot == null)
-				continue;
-			if(slot.itemID != itemID || slot.getItemDamage() != meta) {
+			if (slot == null) continue;
+			if (slot.itemID != itemID || slot.getItemDamage() != meta) {
 				return false;
 			}
 			nmatches++;
@@ -35,8 +35,7 @@ public class ShapelessResetRecipe implements IRecipe {
 	public ItemStack getCraftingResult(InventoryCrafting var1) {
 		int nmatches = 0;
 		for (int i = 0; i < var1.getSizeInventory(); i++) {
-			if(var1.getStackInSlot(i) == null)
-				continue;
+			if (var1.getStackInSlot(i) == null) continue;
 			nmatches++;
 		}
 		return new ItemStack(itemID, nmatches, meta);

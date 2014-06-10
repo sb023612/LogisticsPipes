@@ -23,15 +23,13 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientInformationProvider {
-	
+
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested liquids", 1);
-
-
 
 	private IWorldProvider _world;
 	IRoutedPowerProvider _power;
-	
-	public IInventory getFilterInventory(){
+
+	public IInventory getFilterInventory() {
 		return _filterInventory;
 	}
 
@@ -42,10 +40,11 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 0, 0);
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if (_filterInventory.containsItem(item)){
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		if (_filterInventory.containsItem(item)) {
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), _world.getWorld(), 2);
 			return _sinkReply;
 		}
@@ -56,9 +55,11 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 	public int getGuiHandlerID() {
 		return GuiIDs.GUI_Module_FluidSupplier_ID;
 	}
-	
+
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -67,12 +68,12 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-    	_filterInventory.writeToNBT(nbttagcompound, "");
+		_filterInventory.writeToNBT(nbttagcompound, "");
 	}
 
 	@Override
 	public void tick() {}
-	
+
 	@Override
 	public List<String> getClientInformation() {
 		List<String> list = new ArrayList<String>();
@@ -82,21 +83,20 @@ public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientIn
 		return list;
 	}
 
+	@Override
+	public void registerSlot(int slot) {}
 
-	@Override 
-	public void registerSlot(int slot) {
-	}
-	
-	@Override 
+	@Override
 	public final int getX() {
 		return this._power.getX();
 	}
-	@Override 
+
+	@Override
 	public final int getY() {
 		return this._power.getY();
 	}
-	
-	@Override 
+
+	@Override
 	public final int getZ() {
 		return this._power.getZ();
 	}

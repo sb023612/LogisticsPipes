@@ -22,72 +22,72 @@ import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 
 public class WorldTickHandler implements ITickHandler {
-	
+
 	public static LinkedList<TileGenericPipe> clientPipesToReplace = new LinkedList<TileGenericPipe>();
 	public static LinkedList<TileGenericPipe> serverPipesToReplace = new LinkedList<TileGenericPipe>();
-	
+
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
 
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		LinkedList<TileGenericPipe> localList;
-		if(type.contains(TickType.CLIENT)) {
+		if (type.contains(TickType.CLIENT)) {
 			MainProxy.proxy.tickClient();
 			localList = clientPipesToReplace;
-		} else if(type.contains(TickType.SERVER)) {
+		} else if (type.contains(TickType.SERVER)) {
 			MainProxy.proxy.tickServer();
 			localList = serverPipesToReplace;
 		} else {
 			System.out.println("not client, not server ... what is " + type);
 			return;
 		}
-		while(localList.size() > 0) {
+		while (localList.size() > 0) {
 			//try {
-				TileGenericPipe tile = localList.get(0);
-				int x = tile.xCoord;
-				int y = tile.yCoord;
-				int z = tile.zCoord;
-				World world = tile.worldObj;
+			TileGenericPipe tile = localList.get(0);
+			int x = tile.xCoord;
+			int y = tile.yCoord;
+			int z = tile.zCoord;
+			World world = tile.worldObj;
 
-				//TE or its chunk might've gone away while we weren't looking
-				TileEntity tilecheck = world.getBlockTileEntity(x, y, z);
-				if(tilecheck != tile) {
-					localList.remove(0);
-					continue;
+			//TE or its chunk might've gone away while we weren't looking
+			TileEntity tilecheck = world.getBlockTileEntity(x, y, z);
+			if (tilecheck != tile) {
+				localList.remove(0);
+				continue;
+			}
+
+			TileGenericPipe newTile = new LogisticsTileGenericPipe();
+			for (Field field : tile.getClass().getDeclaredFields()) {
+				try {
+					field.setAccessible(true);
+					field.set(newTile, field.get(tile));
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
 				}
-
-				TileGenericPipe newTile = new LogisticsTileGenericPipe();
-				for(Field field:tile.getClass().getDeclaredFields()) {
-					try {
-						field.setAccessible(true);
-						field.set(newTile, field.get(tile));
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
+			}
+			tile.pipe = null;
+			world.setBlockTileEntity(x, y, z, newTile);
+			if (newTile.pipe != null) {
+				newTile.pipe.setTile(newTile);
+				if (newTile.pipe.transport instanceof PipeTransportItems) {
+					for (TravelingItem entity : ((PipeTransportItems) newTile.pipe.transport).items) {
+						entity.setContainer(newTile);
 					}
 				}
-				tile.pipe = null;
-				world.setBlockTileEntity(x, y, z, newTile);
-				if(newTile.pipe != null) {
-					newTile.pipe.setTile(newTile);
-					if(newTile.pipe.transport instanceof PipeTransportItems) {
-						for(TravelingItem entity:((PipeTransportItems)newTile.pipe.transport).items) {
-							entity.setContainer(newTile);
-						}
-					}
-				}
+			}
 
-				//getTile creates the TileCache as needed.
-				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
-					TileEntity tileSide = newTile.getTile(o);
+			//getTile creates the TileCache as needed.
+			for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
+				TileEntity tileSide = newTile.getTile(o);
 
-					if (tileSide instanceof ITileBufferHolder) {
-						((ITileBufferHolder) tileSide).blockCreated(o, BuildCraftTransport.genericPipeBlock.blockID, newTile);
-					}
+				if (tileSide instanceof ITileBufferHolder) {
+					((ITileBufferHolder) tileSide).blockCreated(o, BuildCraftTransport.genericPipeBlock.blockID, newTile);
 				}
-				//newTile.scheduleNeighborChange();
+			}
+			//newTile.scheduleNeighborChange();
 			/*} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}*/
@@ -95,14 +95,14 @@ public class WorldTickHandler implements ITickHandler {
 		}
 		ItemIdentifier.tick();
 		FluidIdentifier.initFromForge(true);
-		if(type.contains(TickType.SERVER)) {
+		if (type.contains(TickType.SERVER)) {
 			HudUpdateTick.tick();
 			SimpleServiceLocator.craftingPermissionManager.tick();
-			if(LogisticsPipes.WATCHDOG) {
+			if (LogisticsPipes.WATCHDOG) {
 				Watchdog.tickServer();
 			}
 		} else {
-			if(LogisticsPipes.WATCHDOG) {
+			if (LogisticsPipes.WATCHDOG) {
 				Watchdog.tickClient();
 			}
 		}

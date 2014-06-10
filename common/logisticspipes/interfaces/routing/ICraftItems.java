@@ -15,10 +15,14 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-public interface ICraftItems extends IProvideItems, IRequestItems{
+public interface ICraftItems extends IProvideItems, IRequestItems {
+
 	void registerExtras(LogisticsPromise promise);
+
 	CraftingTemplate addCrafting(ItemIdentifier toCraft);
+
 	//void canCraft(LogisticsTransaction transaction);
 	List<ItemIdentifierStack> getCraftedItems();
+
 	int getTodo();
 }

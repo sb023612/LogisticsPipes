@@ -27,14 +27,14 @@ public class GuiElectricManager extends ModuleBaseGui {
 	private final ModuleElectricManager _module;
 	private final int slot;
 
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
-	    //Default item toggle:
+		//Default item toggle:
 		buttonList.clear();
 		buttonList.add(new GuiStringHandlerButton(0, width / 2 - 6, height / 2 - 34, 88, 20, new GuiStringHandlerButton.StringHandler() {
+
 			@Override
 			public String getContent() {
 				return _module.isDischargeMode() ? "Discharge Items" : "Charge Items";
@@ -44,11 +44,10 @@ public class GuiElectricManager extends ModuleBaseGui {
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		switch(guibutton.id)
-		{
+		switch (guibutton.id) {
 			case 0:
 				_module.setDischargeMode(!_module.isDischargeMode());
-				if(slot >= 0) {
+				if (slot >= 0) {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setInteger2(slot - 1).setInteger((_module.isDischargeMode() ? 1 : 0)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 				} else {
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setInteger2(slot).setInteger((_module.isDischargeMode() ? 1 : 0)).setPosX(_module.getX()).setPosY(_module.getY()).setPosZ(_module.getZ()));
@@ -58,14 +57,14 @@ public class GuiElectricManager extends ModuleBaseGui {
 	}
 
 	public GuiElectricManager(IInventory playerInventory, CoreRoutedPipe pipe, ModuleElectricManager module, int slot) {
-		super(null,pipe);
+		super(null, pipe);
 		_module = module;
 		this.slot = slot;
 		DummyContainer dummy = new DummyContainer(playerInventory, _module.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots
-		for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
+		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
 			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 		}
 		this.inventorySlots = dummy;
@@ -78,7 +77,9 @@ public class GuiElectricManager extends ModuleBaseGui {
 		fontRenderer.drawString(_module.getFilterInventory().getInvName(), 8, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

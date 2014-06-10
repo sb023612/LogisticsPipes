@@ -8,7 +8,7 @@ import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class InvSysConResistance extends IntegerCoordinatesPacket {
 
 	public InvSysConResistance(int id) {
@@ -22,21 +22,21 @@ public class InvSysConResistance extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.worldObj)) {
 			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
+			if (pipe == null) {
 				return;
 			}
-			if(pipe.pipe instanceof PipeItemsInvSysConnector) {
+			if (pipe.pipe instanceof PipeItemsInvSysConnector) {
 				PipeItemsInvSysConnector invCon = (PipeItemsInvSysConnector) pipe.pipe;
 				invCon.resistance = getInteger();
 			}
 		} else {
 			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
+			if (pipe == null) {
 				return;
 			}
-			if(pipe.pipe instanceof PipeItemsInvSysConnector) {
+			if (pipe.pipe instanceof PipeItemsInvSysConnector) {
 				PipeItemsInvSysConnector invCon = (PipeItemsInvSysConnector) pipe.pipe;
 				invCon.resistance = getInteger();
 				invCon.getRouter().update(true, invCon);
@@ -44,4 +44,3 @@ public class InvSysConResistance extends IntegerCoordinatesPacket {
 		}
 	}
 }
-

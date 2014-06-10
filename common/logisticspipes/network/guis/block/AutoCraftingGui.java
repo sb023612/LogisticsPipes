@@ -12,23 +12,23 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class AutoCraftingGui extends CoordinatesGuiProvider {
-	
+
 	boolean isFuzzy;
 	boolean[] ignore_dmg = new boolean[9];
 	boolean[] ignore_nbt = new boolean[9];
 	boolean[] use_od = new boolean[9];
 	boolean[] use_category = new boolean[9];
-	
+
 	public AutoCraftingGui(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsCraftingTableTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsCraftingTableTileEntity.class);
-		if(tile == null) return null;
-		if(tile.isFuzzy()) {
-			for(int i=0;i<9;i++) {
+		if (tile == null) return null;
+		if (tile.isFuzzy()) {
+			for (int i = 0; i < 9; i++) {
 				tile.fuzzyFlags[i].ignore_dmg = ignore_dmg[i];
 				tile.fuzzyFlags[i].ignore_nbt = ignore_nbt[i];
 				tile.fuzzyFlags[i].use_od = use_od[i];
@@ -41,18 +41,18 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		LogisticsCraftingTableTileEntity tile = this.getTile(player.getEntityWorld(), LogisticsCraftingTableTileEntity.class);
-		if(tile == null) return null;
+		if (tile == null) return null;
 		DummyContainer dummy = new DummyContainer(player.inventory, tile.matrix);
 
-		for(int X=0;X<3;X++) {
-			for(int Y=0;Y<3;Y++) {
-				dummy.addDummySlot(Y*3 + X, 35 + X*18, 10 + Y*18);
+		for (int X = 0; X < 3; X++) {
+			for (int Y = 0; Y < 3; Y++) {
+				dummy.addDummySlot(Y * 3 + X, 35 + X * 18, 10 + Y * 18);
 			}
 		}
 		dummy.addUnmodifiableSlot(0, tile.resultInv, 125, 28);
-		for(int Y=0;Y<2;Y++) {
-			for(int X=0;X<9;X++) {
-				dummy.addNormalSlot(Y*9 + X, tile.inv, 8 + X*18, 80 + Y*18);
+		for (int Y = 0; Y < 2; Y++) {
+			for (int X = 0; X < 9; X++) {
+				dummy.addNormalSlot(Y * 9 + X, tile.inv, 8 + X * 18, 80 + Y * 18);
 			}
 		}
 		dummy.addNormalSlotsForPlayerInventory(8, 135);
@@ -63,8 +63,8 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
 		data.writeBoolean(isFuzzy);
-		if(isFuzzy) {
-			for(int i=0;i<9;i++) {
+		if (isFuzzy) {
+			for (int i = 0; i < 9; i++) {
 				data.writeBoolean(ignore_dmg[i]);
 				data.writeBoolean(ignore_nbt[i]);
 				data.writeBoolean(use_od[i]);
@@ -76,8 +76,8 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
-		if(data.readBoolean()) {
-			for(int i=0;i<9;i++) {
+		if (data.readBoolean()) {
+			for (int i = 0; i < 9; i++) {
 				ignore_dmg[i] = data.readBoolean();
 				ignore_nbt[i] = data.readBoolean();
 				use_od[i] = data.readBoolean();
@@ -88,9 +88,9 @@ public class AutoCraftingGui extends CoordinatesGuiProvider {
 
 	public AutoCraftingGui setCraftingTable(LogisticsCraftingTableTileEntity tile) {
 		this.setTilePos(tile);
-		if(tile.isFuzzy()) {
+		if (tile.isFuzzy()) {
 			isFuzzy = true;
-			for(int i=0;i<9;i++) {
+			for (int i = 0; i < 9; i++) {
 				ignore_dmg[i] = tile.fuzzyFlags[i].ignore_dmg;
 				ignore_nbt[i] = tile.fuzzyFlags[i].ignore_nbt;
 				use_od[i] = tile.fuzzyFlags[i].use_od;

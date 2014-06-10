@@ -8,9 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class FloatCoordinatesPacket extends CoordinatesPacket {
-	
+
 	@Getter
 	@Setter
 	private float Float;
@@ -18,7 +18,7 @@ public abstract class FloatCoordinatesPacket extends CoordinatesPacket {
 	public FloatCoordinatesPacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);

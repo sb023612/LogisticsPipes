@@ -8,7 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatMessageComponent;
 
 public class PipeDebugLogResponse extends CoordinatesPacket {
-	
+
 	public PipeDebugLogResponse(int id) {
 		super(id);
 	}
@@ -16,12 +16,12 @@ public class PipeDebugLogResponse extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
-		if(tile != null) {
+		if (tile != null) {
 			((CoreRoutedPipe) tile.pipe).debug.openForPlayer(player);
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Debug log enabled."));
 		}
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new PipeDebugLogResponse(getId());

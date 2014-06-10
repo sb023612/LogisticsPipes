@@ -41,21 +41,21 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Terminated items", 1);
 
 	private int slot;
-	
+
 	private IRoutedPowerProvider _power;
-	
+
 	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	
+
 	public ModuleTerminus() {
 		_filterInventory.addListener(this);
 	}
-	
-	public IInventory getFilterInventory(){
+
+	public IInventory getFilterInventory() {
 		return _filterInventory;
 	}
-	
+
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
@@ -68,20 +68,21 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-    	_filterInventory.writeToNBT(nbttagcompound, "");
-    }
+		_filterInventory.writeToNBT(nbttagcompound, "");
+	}
 
 	@Override
 	public int getGuiHandlerID() {
 		return GuiIDs.GUI_Module_Simple_Filter_ID;
 	}
-	
+
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 2, 0);
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if (_filterInventory.containsUndamagedItem(item.getUndamaged())){
-			if(_power.canUseEnergy(2)) {
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		if (_filterInventory.containsUndamagedItem(item.getUndamaged())) {
+			if (_power.canUseEnergy(2)) {
 				return _sinkReply;
 			}
 		}
@@ -90,7 +91,9 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	@Override
 	public void tick() {}
@@ -104,35 +107,28 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 		return list;
 	}
 
-
-	@Override 
+	@Override
 	public void registerSlot(int slot) {
 		this.slot = slot;
 	}
-	
-	@Override 
+
+	@Override
 	public final int getX() {
-		if(slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-slot;
+		if (slot >= 0) return this._power.getX();
+		else return 0;
 	}
 
+	@Override
+	public final int getY() {
+		if (slot >= 0) return this._power.getY();
+		else return -1;
+	}
+
+	@Override
+	public final int getZ() {
+		if (slot >= 0) return this._power.getZ();
+		else return -1 - slot;
+	}
 
 	@Override
 	public void startWatching() {
@@ -161,7 +157,7 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public void InventoryChanged(IInventory inventory) {
+	public void inventoryChanged(IInventory inventory) {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}
 
@@ -169,6 +165,7 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 	public void handleInvContent(Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
+
 	@Override
 	public boolean hasGenericInterests() {
 		return false;
@@ -177,16 +174,16 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+		List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(mapIC.size());
 		li.addAll(mapIC.keySet());
-		for(ItemIdentifier id:mapIC.keySet()){
+		for (ItemIdentifier id : mapIC.keySet()) {
 			li.add(id.getUndamaged());
 		}
 		return li;
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 	}
 

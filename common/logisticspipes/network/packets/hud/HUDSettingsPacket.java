@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatMessageComponent;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class HUDSettingsPacket extends ModernPacket {
 
 	@Getter
@@ -28,7 +28,7 @@ public class HUDSettingsPacket extends ModernPacket {
 	@Getter
 	@Setter
 	private int slot;
-	
+
 	public HUDSettingsPacket(int id) {
 		super(id);
 	}
@@ -40,10 +40,10 @@ public class HUDSettingsPacket extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(player.inventory.getStackInSlot(slot) == null) return;
+		if (player.inventory.getStackInSlot(slot) == null) return;
 		IHUDConfig config;
-		if(SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
-			if(SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3))) {
+		if (SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
+			if (SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3))) {
 				config = SimpleServiceLocator.mpsProxy.getConfigFor(player.inventory.armorItemInSlot(3));
 			} else {
 				config = new HUDConfig(player.inventory.armorItemInSlot(3));
@@ -51,10 +51,10 @@ public class HUDSettingsPacket extends ModernPacket {
 		} else {
 			config = new HUDConfig(player.inventory.getStackInSlot(slot));
 		}
-		switch(buttonId) {
+		switch (buttonId) {
 			case 0:
 				config.setHUDChassie(state);
-				if(config.isHUDChassie()) {
+				if (config.isHUDChassie()) {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Chassie."));
 				} else {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Chassie."));
@@ -62,7 +62,7 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 1:
 				config.setHUDCrafting(state);
-				if(config.isHUDCrafting()) {
+				if (config.isHUDCrafting()) {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Crafting."));
 				} else {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Crafting."));
@@ -70,7 +70,7 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 2:
 				config.setHUDInvSysCon(state);
-				if(config.isHUDInvSysCon()) {
+				if (config.isHUDInvSysCon()) {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled InvSysCon."));
 				} else {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled InvSysCon."));
@@ -78,7 +78,7 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 3:
 				config.setHUDPowerJunction(state);
-				if(config.isHUDPowerLevel()) {
+				if (config.isHUDPowerLevel()) {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Power Junction."));
 				} else {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Power Junction."));
@@ -86,7 +86,7 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 4:
 				config.setHUDProvider(state);
-				if(config.isHUDProvider()) {
+				if (config.isHUDProvider()) {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Provider."));
 				} else {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Provider."));
@@ -94,14 +94,14 @@ public class HUDSettingsPacket extends ModernPacket {
 				break;
 			case 5:
 				config.setHUDSatellite(state);
-				if(config.isHUDSatellite()) {
+				if (config.isHUDSatellite()) {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Enabled Satellite."));
 				} else {
 					player.sendChatToPlayer(ChatMessageComponent.createFromText("Disabled Satellite."));
 				}
 				break;
 		}
-		if(player.inventoryContainer != null) {
+		if (player.inventoryContainer != null) {
 			player.inventoryContainer.detectAndSendChanges();
 		}
 	}
@@ -120,4 +120,3 @@ public class HUDSettingsPacket extends ModernPacket {
 		data.writeInt(slot);
 	}
 }
-

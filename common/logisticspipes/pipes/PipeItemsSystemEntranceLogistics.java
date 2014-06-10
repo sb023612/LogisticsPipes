@@ -17,22 +17,22 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
-	
+
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "Freq Slot", 1);
-	
+
 	public PipeItemsSystemEntranceLogistics(int itemID) {
 		super(new EntrencsTransport(), itemID);
-		((EntrencsTransport)this.transport).pipe = this;
+		((EntrencsTransport) this.transport).pipe = this;
 	}
-	
+
 	public UUID getLocalFreqUUID() {
-		if(inv.getStackInSlot(0) == null) return null;
-		if(!inv.getStackInSlot(0).hasTagCompound()) return null;
-		if(!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) return null;
+		if (inv.getStackInSlot(0) == null) return null;
+		if (!inv.getStackInSlot(0).hasTagCompound()) return null;
+		if (!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) return null;
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
 		return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
 	}
-	
+
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
@@ -66,12 +66,12 @@ public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 	}
 
 	private void dropFreqCard() {
-		if(inv.getStackInSlot(0) == null) return;
-		EntityItem item = new EntityItem(getWorld(),this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));
+		if (inv.getStackInSlot(0) == null) return;
+		EntityItem item = new EntityItem(getWorld(), this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));
 		getWorld().spawnEntityInWorld(item);
 		inv.clearInventorySlotContents(0);
 	}
-	
+
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), getX(), getY(), getZ());

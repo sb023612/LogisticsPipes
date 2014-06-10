@@ -13,22 +13,22 @@ import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class CCBasedQuickSortMode extends Integer2CoordinatesPacket {
-	
+
 	public CCBasedQuickSortMode(int id) {
 		super(id);
 	}
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(getInteger2() < 0) {
-			if(MainProxy.isClient(player.worldObj)) {
+		if (getInteger2() < 0) {
+			if (MainProxy.isClient(player.worldObj)) {
 				if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiCCBasedQuickSort) {
 					((GuiCCBasedQuickSort) FMLClientHandler.instance().getClient().currentScreen).setTimeOut(getInteger());
 				}
 			} else {
-				if(player.openContainer instanceof DummyModuleContainer) {
+				if (player.openContainer instanceof DummyModuleContainer) {
 					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-					if(dummy.getModule() instanceof ModuleCCBasedQuickSort) {
+					if (dummy.getModule() instanceof ModuleCCBasedQuickSort) {
 						final ModuleCCBasedQuickSort module = (ModuleCCBasedQuickSort) dummy.getModule();
 						module.setTimeout(getInteger());
 					}
@@ -37,15 +37,15 @@ public class CCBasedQuickSortMode extends Integer2CoordinatesPacket {
 			return;
 		}
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) return;
-		if(pipe.pipe instanceof PipeLogisticsChassi) {
-			LogisticsModule module = ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
-			if(module instanceof ModuleCCBasedQuickSort) {
-				((ModuleCCBasedQuickSort)module).setTimeout(getInteger());
+		if (pipe == null) return;
+		if (pipe.pipe instanceof PipeLogisticsChassi) {
+			LogisticsModule module = ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2());
+			if (module instanceof ModuleCCBasedQuickSort) {
+				((ModuleCCBasedQuickSort) module).setTimeout(getInteger());
 			}
 		}
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new CCBasedQuickSortMode(getId());

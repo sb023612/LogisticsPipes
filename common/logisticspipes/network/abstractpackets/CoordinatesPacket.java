@@ -54,7 +54,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		this.setPosZ(tile.zCoord);
 		return this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	/**
 	 * Retrieves tileEntity at packet coordinates if any.
@@ -68,7 +68,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 			return null;
 		}
 		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
-			if(LogisticsPipes.DEBUG) {
+			if (LogisticsPipes.DEBUG) {
 				LogisticsPipes.log.severe(this.toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
 			}
@@ -76,16 +76,16 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		}
 
 		final TileEntity tile = world.getBlockTileEntity(getPosX(), getPosY(), getPosZ());
-		if(tile != null) {
-			if(!(clazz.isAssignableFrom(tile.getClass()))) {
-				if(LogisticsPipes.DEBUG) {
+		if (tile != null) {
+			if (!(clazz.isAssignableFrom(tile.getClass()))) {
+				if (LogisticsPipes.DEBUG) {
 					LogisticsPipes.log.severe(this.toString());
 					new RuntimeException("Couldn't find " + clazz.getName() + ", found " + tile.getClass()).printStackTrace();
 				}
 				return null;
 			}
 		} else {
-			if(LogisticsPipes.DEBUG) {
+			if (LogisticsPipes.DEBUG) {
 				LogisticsPipes.log.severe(this.toString());
 				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
 			}

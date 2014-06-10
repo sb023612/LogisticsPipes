@@ -29,4 +29,3 @@ public class FluidCraftingAdvancedSatelliteId extends Integer2CoordinatesPacket 
 		((PipeItemsCraftingLogistics) pipe.pipe).setFluidSatelliteId(getInteger(), getInteger2());
 	}
 }
-

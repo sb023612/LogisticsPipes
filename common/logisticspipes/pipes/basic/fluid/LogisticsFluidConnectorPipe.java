@@ -11,7 +11,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class LogisticsFluidConnectorPipe extends Pipe<LogisitcsFluidConnectionTransport> {
 
 	public LogisticsFluidConnectorPipe(int itemID) {
-		super(new LogisitcsFluidConnectionTransport(),  itemID);
+		super(new LogisitcsFluidConnectionTransport(), itemID);
 
 		((PipeTransportFluids) transport).flowRate = 40;
 		((PipeTransportFluids) transport).travelDelay = 4;
@@ -20,9 +20,8 @@ public class LogisticsFluidConnectorPipe extends Pipe<LogisitcsFluidConnectionTr
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIconProvider getIconProvider() {
-		return Textures.LPpipeIconProvider;	
+		return Textures.LPpipeIconProvider;
 	}
-
 
 	@Override
 	public int getIconIndex(ForgeDirection direction) {

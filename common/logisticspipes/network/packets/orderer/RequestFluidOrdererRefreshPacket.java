@@ -32,4 +32,3 @@ public class RequestFluidOrdererRefreshPacket extends IntegerCoordinatesPacket {
 		RequestHandler.refreshFluid(player, (CoreRoutedPipe) pipe.pipe);
 	}
 }
-

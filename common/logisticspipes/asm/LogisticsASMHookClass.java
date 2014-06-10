@@ -14,41 +14,42 @@ import net.minecraft.item.ItemStack;
 import buildcraft.transport.TravelerSet;
 import buildcraft.transport.TravelingItem;
 
+public final class LogisticsASMHookClass {
 
-public class LogisticsASMHookClass {
-	
+	private LogisticsASMHookClass() {}
+
 	public static Field toLoad;
-	
+
 	public static void callingClearedMethod() {
 		throw new RuntimeException("This Method should never be called");
 	}
-	
+
 	public static void clearInvalidFluidContainers(TravelerSet items) {
 		try {
-        	if(toLoad == null) {
-        		toLoad = TravelerSet.class.getDeclaredField("toLoad");
-        		toLoad.setAccessible(true);
-        	}
-        	@SuppressWarnings("unchecked")
+			if (toLoad == null) {
+				toLoad = TravelerSet.class.getDeclaredField("toLoad");
+				toLoad.setAccessible(true);
+			}
+			@SuppressWarnings("unchecked")
 			HashSet<TravelingItem> toLoadSet = (HashSet<TravelingItem>) toLoad.get(items);
-        	Iterator<TravelingItem> iterator = toLoadSet.iterator();
-        	while(iterator.hasNext()) {
-        		TravelingItem item = iterator.next();
-        		ItemStack stack = item.getItemStack();
-        		if(stack != null && stack.getItem() instanceof LogisticsFluidContainer && SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(stack)) == null) {
-        			iterator.remove();
-        		}
-        	}
-        } catch(Exception e) {
-        	LogisticsPipes.log.severe(e.getMessage());
-        	LogisticsPipes.log.severe(Arrays.toString(e.getStackTrace()));
-        	e.printStackTrace();
-        }
+			Iterator<TravelingItem> iterator = toLoadSet.iterator();
+			while (iterator.hasNext()) {
+				TravelingItem item = iterator.next();
+				ItemStack stack = item.getItemStack();
+				if (stack != null && stack.getItem() instanceof LogisticsFluidContainer && SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(stack)) == null) {
+					iterator.remove();
+				}
+			}
+		} catch (Exception e) {
+			LogisticsPipes.log.severe(e.getMessage());
+			LogisticsPipes.log.severe(Arrays.toString(e.getStackTrace()));
+			e.printStackTrace();
+		}
 	}
-	
+
 	public static String getCrashReportAddition() {
 		StringBuilder string = new StringBuilder();
-		if(Configs.TE_PIPE_SUPPORT) {
+		if (Configs.TE_PIPE_SUPPORT) {
 			string.append("YOU HAVE ENABLED THE LP SUPPORT FOR TE CONDUITS.");
 			string.append("\n");
 			string.append("DON'T REPORT BUGS TO TE IN THIS CONFIGURATION. LP MODIFIES TE, SO THEY COULD BE CAUSED BY LP.");

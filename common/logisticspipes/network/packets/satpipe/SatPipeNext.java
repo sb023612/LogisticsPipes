@@ -32,6 +32,5 @@ public class SatPipeNext extends CoordinatesPacket {
 			((PipeFluidSatellite) pipe.pipe).setNextId(player);
 		}
 	}
-	
-}
 
+}

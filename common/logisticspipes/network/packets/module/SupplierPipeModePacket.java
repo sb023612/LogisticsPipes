@@ -33,19 +33,16 @@ public class SupplierPipeModePacket extends CoordinatesPacket {
 			return;
 		}
 		final PipeItemsSupplierLogistics logic = (PipeItemsSupplierLogistics) pipe.pipe;
-		int  mode;
-		if(logic.getUpgradeManager().hasPatternUpgrade()) {
-			mode = logic.getPatternMode().ordinal() +1;
-			if(mode >= PatternMode.values().length)
-				mode=0;
+		int mode;
+		if (logic.getUpgradeManager().hasPatternUpgrade()) {
+			mode = logic.getPatternMode().ordinal() + 1;
+			if (mode >= PatternMode.values().length) mode = 0;
 			logic.setPatternMode(PatternMode.values()[mode]);
 		} else {
-			mode = logic.getSupplyMode().ordinal() +1;
-			if(mode >= SupplyMode.values().length)
-				mode=0;
+			mode = logic.getSupplyMode().ordinal() + 1;
+			if (mode >= SupplyMode.values().length) mode = 0;
 			logic.setSupplyMode(SupplyMode.values()[mode]);
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(logic.getUpgradeManager().hasPatternUpgrade()).setInteger(mode).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(logic.getUpgradeManager().hasPatternUpgrade()).setInteger(mode).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 	}
 }
-

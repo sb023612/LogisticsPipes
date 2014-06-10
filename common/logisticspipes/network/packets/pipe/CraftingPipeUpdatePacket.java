@@ -14,33 +14,33 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class CraftingPipeUpdatePacket extends CoordinatesPacket {
-	
+
 	@Getter
 	@Setter
 	private int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	
+
 	@Getter
 	@Setter
 	private int[] liquidSatelliteIdArray = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
-	
+
 	@Getter
 	@Setter
 	private int liquidSatelliteId = 0;
-	
+
 	@Getter
 	@Setter
 	private int satelliteId = 0;
-	
+
 	@Getter
 	@Setter
 	private int[] advancedSatelliteIdArray = new int[9];
-	
+
 	@Getter
 	@Setter
 	private int[] fuzzyCraftingFlagArray = new int[9];
-	
+
 	@Getter
 	@Setter
 	private int priority = 0;
@@ -52,9 +52,9 @@ public class CraftingPipeUpdatePacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) return;
-		if(!(pipe.pipe instanceof PipeItemsCraftingLogistics)) return;
-		((PipeItemsCraftingLogistics)pipe.pipe).handleCraftingUpdatePacket(this);
+		if (pipe == null) return;
+		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) return;
+		((PipeItemsCraftingLogistics) pipe.pipe).handleCraftingUpdatePacket(this);
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class CraftingPipeUpdatePacket extends CoordinatesPacket {
 		fuzzyCraftingFlagArray = data.readIntegerArray();
 		priority = data.readInt();
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new CraftingPipeUpdatePacket(getId());

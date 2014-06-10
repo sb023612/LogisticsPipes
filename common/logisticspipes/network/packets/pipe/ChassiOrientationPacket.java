@@ -10,13 +10,13 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeDirection;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ChassiOrientationPacket extends CoordinatesPacket {
-	
+
 	@Getter
 	@Setter
 	private ForgeDirection dir;
-	
+
 	public ChassiOrientationPacket(int id) {
 		super(id);
 	}
@@ -24,10 +24,10 @@ public class ChassiOrientationPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return;
-		((PipeLogisticsChassi)pipe.pipe).setClientOrientation(dir);
+		if (pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return;
+		((PipeLogisticsChassi) pipe.pipe).setClientOrientation(dir);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new ChassiOrientationPacket(getId());

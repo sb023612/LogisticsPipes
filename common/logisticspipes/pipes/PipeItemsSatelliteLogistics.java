@@ -50,12 +50,12 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver {
-	
+
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
-	
+
 	public PipeItemsSatelliteLogistics(int itemID) {
 		super(itemID);
 		throttleTime = 40;
@@ -69,7 +69,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(getWorld().getTotalWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
+		if (getWorld().getTotalWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
 			updateInv(false);
 		}
 	}
@@ -93,58 +93,58 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public void stopWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
-	
+
 	private IInventory getRawInventory(ForgeDirection ori) {
 		Position pos = new Position(this.getX(), this.getY(), this.getZ(), ori);
 		pos.moveForwards(1);
-		TileEntity tile = this.getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+		TileEntity tile = this.getWorld().getBlockTileEntity((int) pos.x, (int) pos.y, (int) pos.z);
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
 	}
-	
+
 	private IInventory getInventory(ForgeDirection ori) {
 		IInventory rawInventory = getRawInventory(ori);
 		if (rawInventory instanceof net.minecraft.inventory.ISidedInventory) return new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) rawInventory, ori.getOpposite(), false);
 		return rawInventory;
 	}
-	
+
 	private void addToList(ItemIdentifierStack stack) {
-		for(ItemIdentifierStack ident:itemList) {
-			if(ident.getItem().equals(stack.getItem())) {
+		for (ItemIdentifierStack ident : itemList) {
+			if (ident.getItem().equals(stack.getItem())) {
 				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
 				return;
 			}
 		}
 		itemList.addLast(stack);
 	}
-	
+
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for(ForgeDirection ori:ForgeDirection.values()) {
+		for (ForgeDirection ori : ForgeDirection.values()) {
 			IInventory inv = getInventory(ori);
-			if(inv != null) {
-				for(int i=0;i<inv.getSizeInventory();i++) {
-					if(inv.getStackInSlot(i) != null) {
+			if (inv != null) {
+				for (int i = 0; i < inv.getSizeInventory(); i++) {
+					if (inv.getStackInSlot(i) != null) {
 						addToList(ItemIdentifierStack.getFromStack(inv.getStackInSlot(i)));
 					}
 				}
 			}
 		}
-		if(!itemList.equals(oldList) || force) {
+		if (!itemList.equals(oldList) || force) {
 			oldList.clear();
 			oldList.addAll(itemList);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(itemList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 		}
 	}
-	
+
 	@Override
 	public void playerStartWatching(EntityPlayer player, int mode) {
-		if(mode == 1) {
+		if (mode == 1) {
 			localModeWatchers.add(player);
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			//TODO Must be handled manualy
+			MainProxy.sendPacketToPlayer(packet, (Player) player);
 			updateInv(true);
 		} else {
 			super.playerStartWatching(player, mode);
@@ -174,6 +174,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public static void cleanup() {
 		AllSatellites.clear();
 	}
+
 	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<ItemIdentifierStack>();
 
 	public int satelliteId;
@@ -192,7 +193,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	protected int findId(int increment) {
-		if(MainProxy.isClient(this.getWorld())) return satelliteId;
+		if (MainProxy.isClient(this.getWorld())) return satelliteId;
 		int potentialId = satelliteId;
 		boolean conflict = true;
 		while (conflict) {
@@ -212,7 +213,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	protected void ensureAllSatelliteStatus() {
-		if(MainProxy.isClient()) return;
+		if (MainProxy.isClient()) return;
 		if (satelliteId == 0 && AllSatellites.contains(this)) {
 			AllSatellites.remove(this);
 		}
@@ -226,12 +227,12 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		ensureAllSatelliteStatus();
 		if (MainProxy.isClient(player.worldObj)) {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeNext.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
+			//TODO Must be handled manualy
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			//TODO Must be handled manualy
+			MainProxy.sendPacketToPlayer(packet, (Player) player);
 		}
 		updateWatchers();
 	}
@@ -241,23 +242,23 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		ensureAllSatelliteStatus();
 		if (MainProxy.isClient(player.worldObj)) {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipePrev.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
+			//TODO Must be handled manualy
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet,(Player) player);
+			//TODO Must be handled manualy
+			MainProxy.sendPacketToPlayer(packet, (Player) player);
 		}
 		updateWatchers();
 	}
 
 	private void updateWatchers() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), ((PipeItemsSatelliteLogistics)this.container.pipe).localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), ((PipeItemsSatelliteLogistics) this.container.pipe).localModeWatchers);
 	}
 
 	@Override
 	public void onAllowedRemoval() {
-		if(MainProxy.isClient(this.getWorld())) return;
+		if (MainProxy.isClient(this.getWorld())) return;
 		if (AllSatellites.contains(this)) {
 			AllSatellites.remove(this);
 		}
@@ -267,8 +268,8 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		// Send the satellite id when opening gui
 		final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
-		MainProxy.sendPacketToPlayer(packet, (Player)entityplayer);
+		//TODO Must be handled manualy
+		MainProxy.sendPacketToPlayer(packet, (Player) entityplayer);
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), getX(), getY(), getZ());
 	}
 
@@ -282,8 +283,8 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		while (iterator.hasNext()) {
 			ItemIdentifierStack stack = iterator.next();
 			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
-			if(received > 0) {
-				if(received == stack.getStackSize()) {
+			if (received > 0) {
+				if (received == stack.getStackSize()) {
 					iterator.remove();
 				} else {
 					stack.setStackSize(stack.getStackSize() - received);
@@ -298,12 +299,10 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item) {
-	}
+	public void itemArrived(ItemIdentifierStack item) {}
 
 	public void setSatelliteId(int integer) {
 		satelliteId = integer;
 	}
 
-	
 }

@@ -16,7 +16,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class OreDictItemSinkList extends NBTCoordinatesPacket {
 
 	@Getter
@@ -34,31 +34,31 @@ public class OreDictItemSinkList extends NBTCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.worldObj)) {
 			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
+			if (pipe == null) {
 				return;
 			}
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleOreDictItemSink) {
-				((ModuleOreDictItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
+			if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleOreDictItemSink) {
+				((ModuleOreDictItemSink) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
 			}
 		} else {
-			if(getSlot() < 0) {
-				if(player.openContainer instanceof DummyModuleContainer) {
+			if (getSlot() < 0) {
+				if (player.openContainer instanceof DummyModuleContainer) {
 					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-					if(dummy.getModule() instanceof ModuleOreDictItemSink) {
-						((ModuleOreDictItemSink)dummy.getModule()).readFromNBT(getTag());
+					if (dummy.getModule() instanceof ModuleOreDictItemSink) {
+						((ModuleOreDictItemSink) dummy.getModule()).readFromNBT(getTag());
 						return;
 					}
 				}
 			}
 			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
+			if (pipe == null) {
 				return;
 			}
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleOreDictItemSink) {
-				((ModuleOreDictItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
-				((ModuleOreDictItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).OreListChanged();
+			if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleOreDictItemSink) {
+				((ModuleOreDictItemSink) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
+				((ModuleOreDictItemSink) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot())).oreListChanged();
 			}
 		}
 	}

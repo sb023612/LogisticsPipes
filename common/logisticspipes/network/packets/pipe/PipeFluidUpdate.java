@@ -18,25 +18,25 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class PipeFluidUpdate extends CoordinatesPacket {
 
 	public PipeFluidUpdate(int id) {
 		super(id);
 	}
 
-	@Getter(value=AccessLevel.PRIVATE)
+	@Getter(value = AccessLevel.PRIVATE)
 	@Setter
 	private FluidStack[] renderCache = new FluidStack[ForgeDirection.values().length];
 
-	@Getter(value=AccessLevel.PRIVATE)
+	@Getter(value = AccessLevel.PRIVATE)
 	@Setter
 	private BitSet delta;
 
-	@Getter(value=AccessLevel.PRIVATE)
-	@Setter(value=AccessLevel.PRIVATE)
+	@Getter(value = AccessLevel.PRIVATE)
+	@Setter(value = AccessLevel.PRIVATE)
 	private DataInputStream dataStream;
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
@@ -90,24 +90,24 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 				if (renderCache[dir.ordinal()] == null) {
 					renderCache[dir.ordinal()] = new FluidStack(0, 0);
 				}
-				
+
 				if (delta.get(dir.ordinal() * 3 + 0)) {
 					//FIXME:handle NBT
-					renderCache[dir.ordinal()]=new FluidStack(getDataStream().readShort(),renderCache[dir.ordinal()].amount);
+					renderCache[dir.ordinal()] = new FluidStack(getDataStream().readShort(), renderCache[dir.ordinal()].amount);
 				}
 				if (delta.get(dir.ordinal() * 3 + 1)) {
 					//FIXME:handle NBT
-					renderCache[dir.ordinal()]= new FluidStack(renderCache[dir.ordinal()].fluidID, renderCache[dir.ordinal()].amount);
+					renderCache[dir.ordinal()] = new FluidStack(renderCache[dir.ordinal()].fluidID, renderCache[dir.ordinal()].amount);
 				}
 				if (delta.get(dir.ordinal() * 3 + 2)) {
-					if(dir != ForgeDirection.UNKNOWN) {
+					if (dir != ForgeDirection.UNKNOWN) {
 						renderCache[dir.ordinal()].amount = Math.min(((PipeFluidTransportLogistics) pipe.pipe.transport).getSideCapacity(), getDataStream().readShort());
 					} else {
 						renderCache[dir.ordinal()].amount = Math.min(((PipeFluidTransportLogistics) pipe.pipe.transport).getInnerCapacity(), getDataStream().readShort());
 					}
 				}
 			}
-		} catch(IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

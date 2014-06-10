@@ -8,9 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class ModuleCoordinatesGuiProvider extends CoordinatesGuiProvider {
-	
+
 	public ModuleCoordinatesGuiProvider(int id) {
 		super(id);
 	}

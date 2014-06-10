@@ -20,14 +20,14 @@ public class RequestCraftingPipeUpdatePacket extends CoordinatesPacket {
 	public ModernPacket template() {
 		return new RequestCraftingPipeUpdatePacket(getId());
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
+		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			Thread.dumpStack();
 			return;
 		}
@@ -36,4 +36,3 @@ public class RequestCraftingPipeUpdatePacket extends CoordinatesPacket {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((PipeItemsCraftingLogistics) pipe.pipe).getDummyInventory()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
 	}
 }
-

@@ -16,43 +16,43 @@ import appeng.api.me.tiles.ITileInterfaceApi;
 import appeng.api.me.util.InterfaceCraftingResponse;
 
 public class AECraftingTemplate extends CraftingTemplate {
+
 	ITileInterfaceApi _interface;
-	
+
 	public AECraftingTemplate(ITileInterfaceApi _interface, ICraftItems crafter, int priority) {
 		super(null, crafter, priority);
 		this._interface = _interface;
 	}
-	
+
 	public AECraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {
-		super( result,  crafter, priority);
+		super(result, crafter, priority);
 	}
-	
-	
+
 	@Override
 	public int getResultStackSize() {
 		return 1;
 	}
-	
+
 	@Override
 	public void addRequirement(CraftingRequirement stack, IRequestItems crafter) {
-	
+
 	}
-	
+
 	@Override
 	public boolean canCraft(ItemIdentifier item) {
 		List<ItemStack> results = _interface.getCraftingOptions();
 		item.getId();
-		
-		for(ItemStack r:results){
-			if(ItemIdentifier.get(r).equals(item)) {
+
+		for (ItemStack r : results) {
+			if (ItemIdentifier.get(r).equals(item)) {
 				this._result = item.makeStack(1);
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	@Override 
+
+	@Override
 	public LogisticsPromise generatePromise(int nResultSets) {
 		InterfaceCraftingResponse response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
 		LogisticsPromise promise = new LogisticsPromise();
@@ -62,13 +62,12 @@ public class AECraftingTemplate extends CraftingTemplate {
 		return promise;
 	}
 
-	public int getSubRequests(int nCraftingSetsNeeded, RequestTree root, RequestTreeNode currentNode){
+	public int getSubRequests(int nCraftingSetsNeeded, RequestTree root, RequestTreeNode currentNode) {
 		InterfaceCraftingResponse response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
 		return response.Request.stackSize;
 	}
-	
 
-	protected int generateRequestTreeFor(int workSetsAvailable, RequestTree root, RequestTreeNode currentNode) {		
+	protected int generateRequestTreeFor(int workSetsAvailable, RequestTree root, RequestTreeNode currentNode) {
 		InterfaceCraftingResponse response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
 		return response.Request.stackSize;
 	}

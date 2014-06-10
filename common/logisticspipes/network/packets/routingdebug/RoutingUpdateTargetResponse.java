@@ -31,31 +31,29 @@ import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain = true)
 public class RoutingUpdateTargetResponse extends ModernPacket {
-	
+
 	public RoutingUpdateTargetResponse(int id) {
 		super(id);
 	}
-	
+
 	public enum TargetMode {
-		Block,
-		Entity,
-		None;
+		Block, Entity, None;
 	}
-	
+
 	@Getter
 	@Setter
 	private TargetMode mode;
-	
+
 	@Getter
 	@Setter
 	private Object[] additions = new Object[0];
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		mode = TargetMode.values()[data.readByte()];
 		int size = data.readInt();
 		additions = new Object[size];
-		for(int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			int arraySize = data.readInt();
 			byte[] bytes = new byte[arraySize];
 			data.read(bytes);
@@ -65,17 +63,17 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 			try {
 				Object o = in.readObject();
 				additions[i] = o;
-			} catch(ClassNotFoundException e) {
+			} catch (ClassNotFoundException e) {
 				throw new UnsupportedOperationException(e);
 			}
 		}
 	}
-	
+
 	@Override
 	public void processPacket(final EntityPlayer player) {
-		if(mode == TargetMode.None) {
+		if (mode == TargetMode.None) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No Target Found"));
-		} else if(mode == TargetMode.Block) {
+		} else if (mode == TargetMode.Block) {
 			int x = (Integer) additions[0];
 			int y = (Integer) additions[1];
 			int z = (Integer) additions[2];
@@ -83,18 +81,19 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 			int id = player.worldObj.getBlockId(x, y, z);
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Found Block with Id: " + id));
 			final TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);
-			if(tile == null) {
+			if (tile == null) {
 				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No TileEntity found"));
 			} else if (!(tile instanceof LogisticsTileGenericPipe)) {
 				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No LogisticsTileGenericPipe found"));
-			} else if (!(((LogisticsTileGenericPipe)tile).pipe instanceof CoreRoutedPipe)) {
+			} else if (!(((LogisticsTileGenericPipe) tile).pipe instanceof CoreRoutedPipe)) {
 				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "No CoreRoutedPipe found"));
 			} else {
-				LPChatListener.addTask(new Callable<Boolean>(){
+				LPChatListener.addTask(new Callable<Boolean>() {
+
 					@Override
 					public Boolean call() throws Exception {
 						player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.GREEN + "Starting RoutingTable debug update."));
-						DebugController.instance(player).debug(((ServerRouter)((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).getRouter()));
+						DebugController.instance(player).debug(((ServerRouter) ((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).getRouter()));
 						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
 						return true;
 					}
@@ -102,16 +101,16 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 				player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.AQUA + "Start RoutingTable debug update ? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">"));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
 			}
-		} else if(mode == TargetMode.Entity) {
+		} else if (mode == TargetMode.Entity) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText(ChatColor.RED + "Entity not allowed"));
 		}
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		data.writeByte(mode.ordinal());
 		data.writeInt(additions.length);
-		for(int i = 0; i < additions.length; i++) {
+		for (int i = 0; i < additions.length; i++) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutput out = null;
 			out = new ObjectOutputStream(bos);
@@ -121,7 +120,7 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 			data.write(bytes);
 		}
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new RoutingUpdateTargetResponse(getId());
@@ -132,4 +131,3 @@ public class RoutingUpdateTargetResponse extends ModernPacket {
 		return true;
 	}
 }
-

@@ -18,15 +18,15 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IReque
 	public PipeFluidRequestLogistics(int itemID) {
 		super(itemID);
 	}
-	
+
 	public void openGui(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Fluid_Orderer_ID, this.getWorld(), this.getX() , this.getY(), this.getZ());
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Fluid_Orderer_ID, this.getWorld(), this.getX(), this.getY(), this.getZ());
 	}
-	
+
 	@Override
 	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
-			if(MainProxy.isServer(getWorld())) {
+			if (MainProxy.isServer(getWorld())) {
 				if (settings == null || settings.openRequest) {
 					openGui(entityplayer);
 				} else {

@@ -17,11 +17,14 @@ import buildcraft.transport.pipes.events.PipeEventItem;
 import buildcraft.transport.utils.TransportUtils;
 import cpw.mods.fml.common.network.PacketDispatcher;
 
-public class InjectItemHook {
+public final class InjectItemHook {
+
+	private InjectItemHook() {}
+
 	public static void handleInjectItem(PipeTransportItems pipe, TravelingItem item, ForgeDirection inputOrientation) {
 		if (item.isCorrupted())
-			// Safe guard - if for any reason the item is corrupted at this
-			// stage, avoid adding it to the pipe to avoid further exceptions.
+		// Safe guard - if for any reason the item is corrupted at this
+		// stage, avoid adding it to the pipe to avoid further exceptions.
 			return;
 
 		item.reset();
@@ -29,7 +32,6 @@ public class InjectItemHook {
 
 		pipe.readjustSpeed(item);
 		readjustPosition(pipe, item);
-
 
 		if (!pipe.container.worldObj.isRemote) {
 			item.output = pipe.resolveDestination(item);
@@ -41,8 +43,7 @@ public class InjectItemHook {
 
 		PipeEventItem.Entered event = new PipeEventItem.Entered(item);
 		pipe.container.pipe.handlePipeEvent(event);
-		if (event.cancelled)
-			return;
+		if (event.cancelled) return;
 
 		pipe.items.scheduleAdd(item);
 
@@ -52,7 +53,7 @@ public class InjectItemHook {
 			int stackCount = 0;
 			int numItems = 0;
 			for (TravelingItem travellingItem : pipe.items) {
-				if(!(travellingItem instanceof LPRoutedBCTravelingItem)) {
+				if (!(travellingItem instanceof LPRoutedBCTravelingItem)) {
 					ItemStack stack = travellingItem.getItemStack();
 					if (stack != null && stack.stackSize > 0) {
 						numItems += stack.stackSize;
@@ -68,7 +69,7 @@ public class InjectItemHook {
 			stackCount = 0;
 			numItems = 0;
 			for (TravelingItem travellingItem : pipe.items) {
-				if(!(travellingItem instanceof LPRoutedBCTravelingItem)) {
+				if (!(travellingItem instanceof LPRoutedBCTravelingItem)) {
 					ItemStack stack = travellingItem.getItemStack();
 					if (stack != null && stack.stackSize > 0) {
 						numItems += stack.stackSize;

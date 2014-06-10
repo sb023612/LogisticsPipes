@@ -45,13 +45,10 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	private IRoutedPowerProvider _power;
 	private int slot = 0;
 
-
-
-	
 	private IHUDModuleRenderer HUD = new HUDSimpleFilterModule(this);
-	
+
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
-	
+
 	public ModulePassiveSupplier() {
 		_filterInventory.addListener(this);
 	}
@@ -62,25 +59,26 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 		_power = powerprovider;
 	}
 
-	public IInventory getFilterInventory(){
+	public IInventory getFilterInventory() {
 		return _filterInventory;
 	}
-	
+
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, 0);
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		if (bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 
 		IInventoryUtil targetUtil = _invProvider.getSneakyInventory(false);
 		if (targetUtil == null) return null;
-		
+
 		if (!_filterInventory.containsItem(item)) return null;
-		
+
 		int targetCount = _filterInventory.itemCount(item);
 		int haveCount = targetUtil.itemCount(item);
 		if (targetCount <= haveCount) return null;
-		
-		if(_power.canUseEnergy(2)) {
+
+		if (_power.canUseEnergy(2)) {
 			return new SinkReply(_sinkReply, targetCount - haveCount);
 		}
 		return null;
@@ -90,7 +88,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	public int getGuiHandlerID() {
 		return GuiIDs.GUI_Module_Simple_Filter_ID;
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
@@ -102,7 +100,9 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	public LogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	@Override
 	public void tick() {}
@@ -116,36 +116,29 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 		return list;
 	}
 
-
-	@Override 
+	@Override
 	public void registerSlot(int slot) {
 		this.slot = slot;
 	}
-	
-	@Override 
+
+	@Override
 	public final int getX() {
-		if(slot>=0)
-			return this._invProvider.getX();
-		else 
-			return 0;
-	}
-	@Override 
-	public final int getY() {
-		if(slot>=0)
-			return this._invProvider.getY();
-		else 
-			return -1;
-	}
-	
-	@Override 
-	public final int getZ() {
-		if(slot>=0)
-			return this._invProvider.getZ();
-		else 
-			return -1-slot;
+		if (slot >= 0) return this._invProvider.getX();
+		else return 0;
 	}
 
-	
+	@Override
+	public final int getY() {
+		if (slot >= 0) return this._invProvider.getY();
+		else return -1;
+	}
+
+	@Override
+	public final int getZ() {
+		if (slot >= 0) return this._invProvider.getZ();
+		else return -1 - slot;
+	}
+
 	@Override
 	public void startWatching() {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
@@ -159,7 +152,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
 	}
 
 	@Override
@@ -178,7 +171,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	}
 
 	@Override
-	public void InventoryChanged(IInventory inventory) {
+	public void inventoryChanged(IInventory inventory) {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}
 
@@ -190,14 +183,14 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+		List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(mapIC.size());
 		li.addAll(mapIC.keySet());
 		return li;
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
-		return false; 
+	public boolean interestedInAttachedInventory() {
+		return false;
 	}
 
 	@Override

@@ -11,10 +11,11 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class GuiPowerProvider extends LogisticsBaseGuiScreen {
+
 	private static final String PREFIX = "gui.powerprovider.";
 
 	private final LogisticsPowerProviderTileEntity junction;
-	
+
 	public GuiPowerProvider(EntityPlayer player, LogisticsPowerProviderTileEntity junction) {
 		super(176, 166, 0, 0);
 		DummyContainer dummy = new DummyContainer(player, null, junction);
@@ -22,7 +23,7 @@ public class GuiPowerProvider extends LogisticsBaseGuiScreen {
 		this.inventorySlots = dummy;
 		this.junction = junction;
 	}
-	
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/power_junction.png");
 
 	@Override

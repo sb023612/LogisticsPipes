@@ -9,8 +9,10 @@ import net.minecraft.inventory.InventoryLargeChest;
  *
  */
 public class InventoryLargeChestLogistics extends InventoryLargeChest {
+
 	private final IInventory _upperChest;
 	private final IInventory _lowerChest;
+
 	public InventoryLargeChestLogistics(String par1Str, IInventory par2IInventory, IInventory par3IInventory) {
 		super(par1Str, par2IInventory, par3IInventory);
 		this._upperChest = par2IInventory;
@@ -19,7 +21,7 @@ public class InventoryLargeChestLogistics extends InventoryLargeChest {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(!(obj instanceof InventoryLargeChestLogistics)) return false;
+		if (!(obj instanceof InventoryLargeChestLogistics)) return false;
 		InventoryLargeChestLogistics b = (InventoryLargeChestLogistics) obj;
 		return (this._upperChest == b._upperChest && this._lowerChest == b._lowerChest);
 	}

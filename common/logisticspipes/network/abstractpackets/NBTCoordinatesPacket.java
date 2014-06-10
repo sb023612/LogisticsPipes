@@ -10,13 +10,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.nbt.NBTTagCompound;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class NBTCoordinatesPacket extends CoordinatesPacket {
-	
+
 	@Getter
 	@Setter
 	private NBTTagCompound tag;
-	
+
 	public NBTCoordinatesPacket(int id) {
 		super(id);
 	}
@@ -32,7 +32,7 @@ public abstract class NBTCoordinatesPacket extends CoordinatesPacket {
 		super.readData(data);
 		tag = data.readNBTTagCompound();
 	}
-	
+
 	public NBTCoordinatesPacket readFromProvider(INBTPacketProvider provider) {
 		tag = new NBTTagCompound("tag");
 		provider.writeToPacketNBT(tag);

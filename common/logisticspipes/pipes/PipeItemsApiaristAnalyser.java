@@ -47,15 +47,18 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 
 	@Override
 	public TransportLayer getTransportLayer() {
-		if (this._transportLayer == null){
+		if (this._transportLayer == null) {
 			_transportLayer = new TransportLayer() {
-				@Override public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
+
+				@Override
+				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
 					ForgeDirection pointed = getPointedOrientation();
-					if(blocked != null && blocked.equals(pointed))
-						return null;
+					if (blocked != null && blocked.equals(pointed)) return null;
 					return pointed;
 				}
-				@Override public boolean stillWantItem(IRoutedItem item) {
+
+				@Override
+				public boolean stillWantItem(IRoutedItem item) {
 					return true;
 				}
 			};
@@ -65,7 +68,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 
 	@Override
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
-		if (connection.equals(getPointedOrientation())){
+		if (connection.equals(getPointedOrientation())) {
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
 		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
@@ -85,8 +88,8 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	public IRoutedItem sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stack);
 		itemToSend.setDestination(reply.getValue1());
-		if (reply.getValue2().isPassive){
-			if (reply.getValue2().isDefault){
+		if (reply.getValue2().isPassive) {
+			if (reply.getValue2().isDefault) {
 				itemToSend.setTransportMode(TransportMode.Default);
 			} else {
 				itemToSend.setTransportMode(TransportMode.Passive);
@@ -106,13 +109,13 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	}
 
 	private ForgeDirection getPointedOrientation() {
-		for(ForgeDirection ori:ForgeDirection.values()) {
+		for (ForgeDirection ori : ForgeDirection.values()) {
 			Position pos = new Position(this.container);
 			pos.orientation = ori;
 			pos.moveForwards(1);
-			TileEntity tile = this.getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
-			if(tile != null) {
-				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile)) {
+			TileEntity tile = this.getWorld().getBlockTileEntity((int) pos.x, (int) pos.y, (int) pos.z);
+			if (tile != null) {
+				if (SimpleServiceLocator.forestryProxy.isTileAnalyser(tile)) {
 					return ori;
 				}
 			}
@@ -122,9 +125,9 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 
 	private TileEntity getPointedTileEntity() {
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
-			if(tile.tile != null) {
-				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile.tile)) {
+		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)) {
+			if (tile.tile != null) {
+				if (SimpleServiceLocator.forestryProxy.isTileAnalyser(tile.tile)) {
 					return tile.tile;
 				}
 			}
@@ -155,19 +158,19 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	@Override
 	public IInventoryUtil getUnsidedInventory() {
 		IInventory inv = getRealInventory();
-		if(inv == null) return null;
+		if (inv == null) return null;
 		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 	}
 
 	@Override
 	public IInventory getRealInventory() {
 		TileEntity tile = getPointedTileEntity();
-		if (tile == null ) return null;
+		if (tile == null) return null;
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
 	}
-	
+
 	@Override
 	public ForgeDirection inventoryOrientation() {
 		return getPointedOrientation();
@@ -193,5 +196,5 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	public boolean hasGenericInterests() {
 		return true;
 	}
-	
+
 }

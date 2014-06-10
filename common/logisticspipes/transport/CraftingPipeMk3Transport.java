@@ -5,9 +5,9 @@ import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class CraftingPipeMk3Transport extends PipeTransportLogistics {
-	
+
 	public PipeItemsCraftingLogisticsMk3 pipe;
-	
+
 	public CraftingPipeMk3Transport() {
 		super();
 	}
@@ -15,7 +15,7 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 	@Override
 	protected void reverseItem(LPTravelingItemServer data, ItemIdentifierStack itemStack) {
 		itemStack.setStackSize(pipe.inv.addCompressed(itemStack.makeNormalStack(), true));
-		if(itemStack.getStackSize() > 0) {
+		if (itemStack.getStackSize() > 0) {
 			super.reverseItem(data, itemStack);
 		}
 	}

@@ -19,7 +19,7 @@ public class ECInterfaceHandler implements ISpecialTankAccessHandler {
 		try {
 			Class.forName("extracells.integration.logisticspipes.IFluidNetworkAccess");
 			return true;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 	}
@@ -32,16 +32,16 @@ public class ECInterfaceHandler implements ISpecialTankAccessHandler {
 	@Override
 	public List<TileEntity> getBaseTilesFor(TileEntity tile) {
 		List<TileEntity> tiles = new ArrayList<TileEntity>(1);
-		tiles.add(((IFluidNetworkAccess)tile).getNetworkController());
+		tiles.add(((IFluidNetworkAccess) tile).getNetworkController());
 		return tiles;
 	}
 
 	@Override
 	public Map<FluidIdentifier, Long> getAvailableLiquid(TileEntity tile) {
 		Map<FluidIdentifier, Long> map = new HashMap<FluidIdentifier, Long>();
-		List<SpecialFluidStack> list = ((IFluidNetworkAccess)tile).getFluidsInNetwork();
-		if(list == null) return map;
-		for(SpecialFluidStack stack:list) {
+		List<SpecialFluidStack> list = ((IFluidNetworkAccess) tile).getFluidsInNetwork();
+		if (list == null) return map;
+		for (SpecialFluidStack stack : list) {
 			map.put(FluidIdentifier.get(stack.getFluidStack()), stack.amount);
 		}
 		return map;
@@ -49,7 +49,7 @@ public class ECInterfaceHandler implements ISpecialTankAccessHandler {
 
 	@Override
 	public FluidStack drainFrom(TileEntity tile, FluidIdentifier ident, Integer amount, boolean drain) {
-		long resultAmount = ((IFluidNetworkAccess)tile).drainFromNetwork(ident.makeFluidStack(amount), drain);
+		long resultAmount = ((IFluidNetworkAccess) tile).drainFromNetwork(ident.makeFluidStack(amount), drain);
 		FluidStack stack = ident.makeFluidStack((int) resultAmount);
 		return stack;
 	}

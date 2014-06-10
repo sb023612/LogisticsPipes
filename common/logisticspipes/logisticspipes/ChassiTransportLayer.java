@@ -5,17 +5,17 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.SinkReply;
 import net.minecraftforge.common.ForgeDirection;
 
-public class ChassiTransportLayer extends TransportLayer{
+public class ChassiTransportLayer extends TransportLayer {
 
 	private final PipeLogisticsChassi _chassiPipe;
-	
+
 	public ChassiTransportLayer(PipeLogisticsChassi chassiPipe) {
 		_chassiPipe = chassiPipe;
 	}
 
 	@Override
 	public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
-		if (item.getItemIdentifierStack() != null){
+		if (item.getItemIdentifierStack() != null) {
 			_chassiPipe.recievedItem(item.getItemIdentifierStack().getStackSize());
 		}
 		return _chassiPipe.getPointedOrientation();
@@ -28,20 +28,20 @@ public class ChassiTransportLayer extends TransportLayer{
 			_chassiPipe.notifyOfItemArival(item.getInfo());
 			return false;
 		}
-		if (!_chassiPipe.isEnabled())  {
+		if (!_chassiPipe.isEnabled()) {
 			_chassiPipe.notifyOfItemArival(item.getInfo());
 			return false;
 		}
-		SinkReply reply = module.sinksItem(item.getItemIdentifierStack().getItem(), -1, 0, true,false);
+		SinkReply reply = module.sinksItem(item.getItemIdentifierStack().getItem(), -1, 0, true, false);
 		if (reply == null) {
 			_chassiPipe.notifyOfItemArival(item.getInfo());
 			return false;
 		}
-		
-		if (reply.maxNumberOfItems != 0 && item.getItemIdentifierStack().getStackSize() > reply.maxNumberOfItems){
+
+		if (reply.maxNumberOfItems != 0 && item.getItemIdentifierStack().getStackSize() > reply.maxNumberOfItems) {
 			ForgeDirection o = _chassiPipe.getPointedOrientation();
 			if (o == null || o == ForgeDirection.UNKNOWN) o = ForgeDirection.UP;
-			
+
 			item.split(reply.maxNumberOfItems, o);
 		}
 		return true;

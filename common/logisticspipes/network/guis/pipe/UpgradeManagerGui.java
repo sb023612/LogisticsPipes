@@ -9,23 +9,23 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class UpgradeManagerGui extends CoordinatesGuiProvider {
-	
+
 	public UpgradeManagerGui(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
-		if(pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
+		if (pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
 		return new GuiUpgradeManager(player, (CoreRoutedPipe) pipe.pipe);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
-		if(pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
-		return ((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getDummyContainer(player);
+		if (pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
+		return ((CoreRoutedPipe) pipe.pipe).getUpgradeManager().getDummyContainer(player);
 	}
 
 	@Override

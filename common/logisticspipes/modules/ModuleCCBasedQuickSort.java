@@ -52,40 +52,39 @@ public class ModuleCCBasedQuickSort extends ModuleQuickSort implements IClientIn
 
 	@Getter
 	private int timeout = 100;
-	
+
 	@Getter
 	private int sinkSize = 0;
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	private IHUDModuleRenderer HUD = new HUDCCBasedQuickSort(this);
-	
+
 	private void createSinkMessage(int slot, ItemIdentifierStack stack) {
 		List<CCSinkResponder> respones = new ArrayList<CCSinkResponder>();
 		IRouter sourceRouter = this._itemSender.getRouter();
 		if (sourceRouter == null) return;
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(null); // get only pipes with generic interest
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
-		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
+		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i + 1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i, false);
 			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
-			if (exits!=null) {
-				for(ExitRoute e:exits) {
-					if(e.containsFlag(PipeRoutingConnectionType.canRouteTo))
-						validDestinations.add(e);
+			if (exits != null) {
+				for (ExitRoute e : exits) {
+					if (e.containsFlag(PipeRoutingConnectionType.canRouteTo)) validDestinations.add(e);
 				}
 			}
 		}
 		Collections.sort(validDestinations);
-		
-outer:
-		for (ExitRoute candidateRouter : validDestinations){
-			if(candidateRouter.destination.getId().equals(sourceRouter.getId())) continue;
 
-			for(IFilter filter:candidateRouter.filters) {
-				if(filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack.getItem()))) continue outer;
+		outer:
+		for (ExitRoute candidateRouter : validDestinations) {
+			if (candidateRouter.destination.getId().equals(sourceRouter.getId())) continue;
+
+			for (IFilter filter : candidateRouter.filters) {
+				if (filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack.getItem()))) continue outer;
 			}
-			if(candidateRouter.destination != null && candidateRouter.destination.getLogisticsModule() != null) {
+			if (candidateRouter.destination != null && candidateRouter.destination.getLogisticsModule() != null) {
 				respones.addAll(candidateRouter.destination.getLogisticsModule().queueCCSinkEvent(stack));
 			}
 		}
@@ -98,49 +97,44 @@ outer:
 		if (invUtil == null) return;
 		handleSinkResponses(invUtil);
 		if (--currentTick > 0) return;
-		if(stalled)
-			currentTick = stalledDelay;
-		else
-			currentTick = normalDelay;
-		
+		if (stalled) currentTick = stalledDelay;
+		else currentTick = normalDelay;
+
 		//Extract Item
 
-		if(!_power.canUseEnergy(500)) {
+		if (!_power.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
-		
-		if((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_power.canUseEnergy(500)) {
+
+		if ((!(invUtil instanceof SpecialInventoryHandler) && invUtil.getSizeInventory() == 0) || !_power.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}
-		
-		if(lastSuceededStack >= invUtil.getSizeInventory())
-			lastSuceededStack = 0;
-		
+
+		if (lastSuceededStack >= invUtil.getSizeInventory()) lastSuceededStack = 0;
+
 		//incremented at the end of the previous loop.
-		if (lastStackLookedAt >= invUtil.getSizeInventory())
-			lastStackLookedAt = 0;
-		
+		if (lastStackLookedAt >= invUtil.getSizeInventory()) lastStackLookedAt = 0;
+
 		ItemStack slot = invUtil.getStackInSlot(lastStackLookedAt);
 
-		while(slot==null) {
+		while (slot == null) {
 			lastStackLookedAt++;
-			if (lastStackLookedAt >= invUtil.getSizeInventory())
-				lastStackLookedAt = 0;
+			if (lastStackLookedAt >= invUtil.getSizeInventory()) lastStackLookedAt = 0;
 			slot = invUtil.getStackInSlot(lastStackLookedAt);
-			if(lastStackLookedAt == lastSuceededStack) {
+			if (lastStackLookedAt == lastSuceededStack) {
 				stalled = true;
 				send();
 				return; // then we have been around the list without sending, halt for now
 			}
 		}
 		send();
-		
-		if(!sinkResponses.containsKey(lastStackLookedAt)) {
+
+		if (!sinkResponses.containsKey(lastStackLookedAt)) {
 			createSinkMessage(lastStackLookedAt, ItemIdentifierStack.getFromStack(slot));
 		}
-		
+
 		lastStackLookedAt++;
 		checkSize();
 	}
@@ -148,18 +142,18 @@ outer:
 	private void handleSinkResponses(IInventoryUtil invUtil) {
 		boolean changed = false;
 		Iterator<Entry<Integer, Pair<Integer, List<CCSinkResponder>>>> iter = sinkResponses.entrySet().iterator();
-		while(iter.hasNext()) {
+		while (iter.hasNext()) {
 			Entry<Integer, Pair<Integer, List<CCSinkResponder>>> pair = iter.next();
 			pair.getValue().setValue1(pair.getValue().getValue1() + 1);
 			boolean canBeHandled = true;
-			for(CCSinkResponder response: pair.getValue().getValue2()) {
-				if(!response.isDone()) {
+			for (CCSinkResponder response : pair.getValue().getValue2()) {
+				if (!response.isDone()) {
 					canBeHandled = false;
 					break;
 				}
 			}
-			if(canBeHandled || pair.getValue().getValue1() > timeout) {
-				if(handle(invUtil, pair.getKey(), pair.getValue().getValue2())) {
+			if (canBeHandled || pair.getValue().getValue1() > timeout) {
+				if (handle(invUtil, pair.getKey(), pair.getValue().getValue2())) {
 					this.stalled = false;
 					this.lastSuceededStack = pair.getKey();
 				}
@@ -167,50 +161,52 @@ outer:
 				changed = true;
 			}
 		}
-		if(changed) {
+		if (changed) {
 			checkSize();
 		}
 	}
 
 	private boolean handle(IInventoryUtil invUtil, int slot, List<CCSinkResponder> list) {
-		if(list.isEmpty()) return false;
+		if (list.isEmpty()) return false;
 		ItemIdentifier ident = list.get(0).getStack().getItem();
 		ItemStack stack = invUtil.getStackInSlot(slot);
-		if(stack == null || ItemIdentifier.get(stack) != ident) return false;
+		if (stack == null || ItemIdentifier.get(stack) != ident) return false;
 		final IRouter source = this._itemSender.getRouter();
 		List<Triplet<Integer, Integer, CCSinkResponder>> posibilities = new ArrayList<Triplet<Integer, Integer, CCSinkResponder>>();
-		for(CCSinkResponder sink:list) {
-			if(!sink.isDone()) continue;
-			if(sink.getCanSink() < 1) continue;
+		for (CCSinkResponder sink : list) {
+			if (!sink.isDone()) continue;
+			if (sink.getCanSink() < 1) continue;
 			IRouter r = SimpleServiceLocator.routerManager.getRouter(sink.getRouterId());
-			if(r == null) continue;
+			if (r == null) continue;
 			List<ExitRoute> ways = source.getDistanceTo(r);
 			int minDistance = Integer.MAX_VALUE;
 			outer:
-			for(ExitRoute route: ways) {
-				for(IFilter filter: route.filters) {
-					if(filter.blockRouting() || filter.isFilteredItem(ident) == filter.isBlocked()) continue outer;
+			for (ExitRoute route : ways) {
+				for (IFilter filter : route.filters) {
+					if (filter.blockRouting() || filter.isFilteredItem(ident) == filter.isBlocked()) continue outer;
 				}
 				minDistance = Math.min(route.distanceToDestination, minDistance);
 			}
-			if(minDistance != Integer.MAX_VALUE) {
+			if (minDistance != Integer.MAX_VALUE) {
 				posibilities.add(new Triplet<Integer, Integer, CCSinkResponder>(sink.getPriority(), minDistance, sink));
 			}
 		}
-		if(posibilities.isEmpty()) return false;
+		if (posibilities.isEmpty()) return false;
 		Collections.sort(posibilities, new Comparator<Triplet<Integer, Integer, CCSinkResponder>>() {
+
 			@Override
 			public int compare(Triplet<Integer, Integer, CCSinkResponder> o1, Triplet<Integer, Integer, CCSinkResponder> o2) {
 				int c = o2.getValue1() - o1.getValue1();
-				if(c == 0) c = o1.getValue2() - o2.getValue2();
+				if (c == 0) c = o1.getValue2() - o2.getValue2();
 				return c;
-			}});
+			}
+		});
 		boolean sended = false;
-		for(Triplet<Integer, Integer, CCSinkResponder> triple:posibilities) {
+		for (Triplet<Integer, Integer, CCSinkResponder> triple : posibilities) {
 			CCSinkResponder sink = triple.getValue3();
-			if(sink.getCanSink() < 0) continue;
+			if (sink.getCanSink() < 0) continue;
 			stack = invUtil.getStackInSlot(slot);
-			if(stack == null || stack.stackSize <= 0) continue;
+			if (stack == null || stack.stackSize <= 0) continue;
 			int amount = Math.min(stack.stackSize, sink.getCanSink());
 			ItemStack extracted = invUtil.decrStackSize(slot, amount);
 			_itemSender.sendStack(extracted, sink.getRouterId(), ItemSendMode.Fast);
@@ -224,31 +220,25 @@ outer:
 	public Icon getIconTexture(IconRegister register) {
 		return register.registerIcon("logisticspipes:itemModule/ModuleCCQuickSort");
 	}
-	
-	@Override 
+
+	@Override
 	public final int getX() {
-		if(_slot>=0)
-			return this._power.getX();
-		else 
-			return 0;
+		if (_slot >= 0) return this._power.getX();
+		else return 0;
 	}
-	
-	@Override 
+
+	@Override
 	public final int getY() {
-		if(_slot>=0)
-			return this._power.getY();
-		else 
-			return -1;
+		if (_slot >= 0) return this._power.getY();
+		else return -1;
 	}
-	
-	@Override 
+
+	@Override
 	public final int getZ() {
-		if(_slot>=0)
-			return this._power.getZ();
-		else 
-			return -1-_slot;
+		if (_slot >= 0) return this._power.getZ();
+		else return -1 - _slot;
 	}
-	
+
 	@Override
 	public int getGuiHandlerID() {
 		return GuiIDs.GUI_Module_CC_Based_QuickSort_ID;
@@ -263,7 +253,7 @@ outer:
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		timeout = nbttagcompound.getInteger("Timeout");
-		if(timeout == 0) timeout = 100;
+		if (timeout == 0) timeout = 100;
 	}
 
 	@Override
@@ -280,7 +270,7 @@ outer:
 	}
 
 	private void checkSize() {
-		if(sinkSize != sinkResponses.size()) {
+		if (sinkSize != sinkResponses.size()) {
 			sinkSize = sinkResponses.size();
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(_slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 		}
@@ -299,8 +289,8 @@ outer:
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(_slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(_slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(_slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortSinkSize.class).setInteger2(_slot).setInteger(sinkSize).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) player);
 	}
 
 	@Override
@@ -312,14 +302,14 @@ outer:
 	public IHUDModuleRenderer getRenderer() {
 		return HUD;
 	}
-	
+
 	public void setTimeout(int time) {
 		this.timeout = time;
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(_slot).setInteger(timeout).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}
 
 	public void setSinkSize(int integer) {
-		if(MainProxy.isClient(this._world.getWorld())) {
+		if (MainProxy.isClient(this._world.getWorld())) {
 			this.sinkSize = integer;
 		}
 	}

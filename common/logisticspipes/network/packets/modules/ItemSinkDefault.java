@@ -25,25 +25,24 @@ public class ItemSinkDefault extends Integer2CoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if(getInteger2() == -1) {
+		if (getInteger2() == -1) {
 			if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 				return;
 			}
-			if(!(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleItemSink)) {
+			if (!(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleItemSink)) {
 				return;
 			}
-			ModuleItemSink module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
+			ModuleItemSink module = (ModuleItemSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule();
 			module.setDefaultRoute(getInteger() == 1);
 			return;
 		}
 		if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
 			return;
 		}
-		if(((PipeLogisticsChassi)pipe.pipe).getModules() == null) return;
-		if(((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleItemSink) {
-			ModuleItemSink module = (ModuleItemSink) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
+		if (((PipeLogisticsChassi) pipe.pipe).getModules() == null) return;
+		if (((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleItemSink) {
+			ModuleItemSink module = (ModuleItemSink) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2());
 			module.setDefaultRoute(getInteger() == 1);
 		}
 	}
 }
-

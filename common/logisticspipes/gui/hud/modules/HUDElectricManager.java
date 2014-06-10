@@ -14,9 +14,9 @@ import org.lwjgl.opengl.GL11;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class HUDElectricManager implements IHUDModuleRenderer {
-	
+
 	private final ModuleElectricManager module;
-	
+
 	public HUDElectricManager(ModuleElectricManager moduleElectricManager) {
 		this.module = moduleElectricManager;
 	}
@@ -27,11 +27,11 @@ public class HUDElectricManager implements IHUDModuleRenderer {
 		GL11.glScalef(1.0F, 1.0F, -0.000001F);
 		BasicGuiHelper.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, mc, false, false, true, true);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.000001F);
-		mc.fontRenderer.drawString("Charge:" , -29, 25, 0);
-		if(module.isDischargeMode()) {
-			mc.fontRenderer.drawString("No" , 15, 25, 0);
+		mc.fontRenderer.drawString("Charge:", -29, 25, 0);
+		if (module.isDischargeMode()) {
+			mc.fontRenderer.drawString("No", 15, 25, 0);
 		} else {
-			mc.fontRenderer.drawString("Yes" , 11, 25, 0);
+			mc.fontRenderer.drawString("Yes", 11, 25, 0);
 		}
 	}
 

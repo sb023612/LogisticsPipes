@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class Pair<T1, T2> {
+
 	protected T1 value1;
 	protected T2 value2;
 

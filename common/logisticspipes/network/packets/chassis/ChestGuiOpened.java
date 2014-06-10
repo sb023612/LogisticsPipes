@@ -15,29 +15,29 @@ import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.common.network.Player;
 
 public class ChestGuiOpened extends ModernPacket {
-	
+
 	public ChestGuiOpened(int id) {
 		super(id);
 	}
 
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		List<WeakReference<ModuleQuickSort>> list = LogisticsEventListener.chestQuickSortConnection.get(player);
-		if(list == null || list.isEmpty()) return;
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(EnableQuickSortMarker.class), (Player) player); 
-		for(WeakReference<ModuleQuickSort> sorter:list) {
+		if (list == null || list.isEmpty()) return;
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(EnableQuickSortMarker.class), (Player) player);
+		for (WeakReference<ModuleQuickSort> sorter : list) {
 			ModuleQuickSort module = sorter.get();
-			if(module == null) continue;
+			if (module == null) continue;
 			module.addWatchingPlayer(player);
 		}
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new ChestGuiOpened(getId());

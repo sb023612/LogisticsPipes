@@ -19,9 +19,8 @@ public class HUDStartBlockWatchingPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		IBlockWatchingHandler tile = this.getTile(player.worldObj, IBlockWatchingHandler.class);
-		if(tile != null) {
+		if (tile != null) {
 			tile.playerStartWatching(player);
 		}
 	}
 }
-

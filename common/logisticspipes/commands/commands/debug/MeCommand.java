@@ -8,25 +8,25 @@ import net.minecraft.util.ChatMessageComponent;
 import cpw.mods.fml.common.network.Player;
 
 public class MeCommand implements ICommandHandler {
-	
+
 	@Override
 	public String[] getNames() {
-		return new String[]{"me", "self"};
+		return new String[] { "me", "self" };
 	}
-	
+
 	@Override
 	public boolean isCommandUsableBy(ICommandSender sender) {
 		return sender instanceof EntityPlayer;
 	}
-	
+
 	@Override
 	public String[] getDescription() {
-		return new String[]{"Start debugging the CommandSender"};
+		return new String[] { "Start debugging the CommandSender" };
 	}
-	
+
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		DebugGuiTickHandler.instance().startWatchingOf(sender, (Player)sender);
+		DebugGuiTickHandler.instance().startWatchingOf(sender, (Player) sender);
 		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Starting SelfDebuging"));
 	}
 }

@@ -12,13 +12,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class GuiArgument extends GenericPacket {
 
 	@Getter
 	@Setter
 	private int guiID;
-	
+
 	public GuiArgument(int id) {
 		super(id);
 	}
@@ -45,4 +45,3 @@ public class GuiArgument extends GenericPacket {
 		data.writeInt(getGuiID());
 	}
 }
-

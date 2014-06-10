@@ -17,10 +17,11 @@ import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
 public class WorldUtil {
+
 	private int _x;
 	private int _y;
 	private int _z;
-	
+
 	private World _worldObj;
 
 	public WorldUtil(World worldObj, int x, int y, int z) {
@@ -44,20 +45,20 @@ public class WorldUtil {
 	public LinkedList<AdjacentTile> getAdjacentTileEntities(boolean flag) {
 		LinkedList<AdjacentTile> foundTiles = new LinkedList<AdjacentTile>();
 		TileEntity tilePipe = null;
-		if(flag) {
+		if (flag) {
 			tilePipe = _worldObj.getBlockTileEntity(_x, _y, _z);
 		}
 		for (ForgeDirection o : ForgeDirection.values()) {
 			if (o == ForgeDirection.UNKNOWN) continue;
-			
+
 			TileEntity tile = getAdjacentTileEntitie(o);
-			
+
 			if (tile == null) continue;
-			
-			if(flag) {
-				if(tilePipe instanceof TileGenericPipe) {
-					if(((TileGenericPipe)tilePipe).pipe != null) {
-						if(!((TileGenericPipe)tilePipe).pipe.canPipeConnect(tile, o)) {
+
+			if (flag) {
+				if (tilePipe instanceof TileGenericPipe) {
+					if (((TileGenericPipe) tilePipe).pipe != null) {
+						if (!((TileGenericPipe) tilePipe).pipe.canPipeConnect(tile, o)) {
 							continue;
 						}
 					}
@@ -67,10 +68,10 @@ public class WorldUtil {
 		}
 		return foundTiles;
 	}
-	
+
 	public TileEntity getAdjacentTileEntitie(ForgeDirection direction) {
 		Position p = new Position(_x, _y, _z, direction);
 		p.moveForwards(1);
-		return _worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
+		return _worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 	}
 }

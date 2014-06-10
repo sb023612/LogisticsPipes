@@ -25,10 +25,10 @@ public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final int slot = getInteger();
-		if(slot < 0) {
-			if(player.openContainer instanceof DummyModuleContainer) {
+		if (slot < 0) {
+			if (player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-				if(dummy.getModule() instanceof ModuleAdvancedExtractor) {
+				if (dummy.getModule() instanceof ModuleAdvancedExtractor) {
 					player.closeScreen();
 					//player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * getInteger()), player.worldObj, getPosX(), getPosY(), getPosZ());
 					NewGuiHandler.getGui(ExtractorModuleInHand.class).setInvSlot(getPosZ()).open(player);
@@ -37,17 +37,17 @@ public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
 			return;
 		}
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(!(pipe.pipe instanceof CoreRoutedPipe)) {
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 			return;
 		}
 		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
-		if(piperouted.getLogisticsModule() == null) {
+		if (piperouted.getLogisticsModule() == null) {
 			return;
 		}
-		if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleAdvancedExtractor) {
+		if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleAdvancedExtractor) {
 			final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor) piperouted.getLogisticsModule().getSubModule(slot - 1);
 			NewGuiHandler.getGui(ExtractorModuleSlot.class).setSneakyOrientation(module.getSneakyDirection()).setSlot(slot - 1).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).open(player);
 			//player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * getInteger()), player.worldObj, getPosX(), getPosY(), getPosZ());
@@ -56,4 +56,3 @@ public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
 		}
 	}
 }
-

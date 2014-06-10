@@ -19,10 +19,9 @@ public class SecurityAddCCIdPacket extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
-		if(tile != null) {
+		if (tile != null) {
 			tile.addCCToList(getInteger());
 			tile.requestList(player);
 		}
 	}
 }
-

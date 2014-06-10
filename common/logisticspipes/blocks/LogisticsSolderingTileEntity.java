@@ -38,7 +38,7 @@ import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;
 
 public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTileEntity, IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
-	
+
 	private PowerHandler provider;
 	private ItemIdentifierInventory inv = new ItemIdentifierInventory(12, "Soldering Inventory", 64);
 	public int heat = 0;
@@ -46,7 +46,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	public boolean hasWork = false;
 	public int rotation = 0;
 	private boolean init = false;
-	
+
 	private PlayerCollectionList listener = new PlayerCollectionList();
 
 	public LogisticsSolderingTileEntity() {
@@ -55,47 +55,47 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	}
 
 	public boolean checkSlot(ItemStack stack, int slotNumber) {
-		if(getRecipeForTaget() == null || getRecipeForTaget().length <= slotNumber) {
+		if (getRecipeForTaget() == null || getRecipeForTaget().length <= slotNumber) {
 			return true;
 		}
 		ItemStack allowed = getRecipeForTaget()[slotNumber];
-		if(allowed == null) {
+		if (allowed == null) {
 			return stack == null;
 		}
 		return stack.itemID == allowed.itemID && stack.getItemDamage() == allowed.getItemDamage();
 	}
-	
+
 	public boolean areStacksEmpty() {
-		for(int i=0; i<9;i++) {
-			if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).itemID != 0) {
+		for (int i = 0; i < 9; i++) {
+			if (inv.getStackInSlot(i) != null && inv.getStackInSlot(i).itemID != 0) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	public ItemStack[] getRecipeForTaget() {
 		return getRecipeForTaget(inv.getStackInSlot(11));
 	}
-	
+
 	public ItemStack[] getRecipeForTaget(ItemStack target) {
-		if(target == null) return null;
-		for(SolderingStationRecipe recipe:SolderingStationRecipes.getRecipes()) {
-			if(target.itemID == recipe.result.itemID && target.getItemDamage() == recipe.result.getItemDamage()) {
+		if (target == null) return null;
+		for (SolderingStationRecipe recipe : SolderingStationRecipes.getRecipes()) {
+			if (target.itemID == recipe.result.itemID && target.getItemDamage() == recipe.result.getItemDamage()) {
 				return recipe.source;
 			}
 		}
 		return null;
 	}
-	
+
 	public ItemStack getTargetForTaget() {
 		return getTargetForTaget(inv.getStackInSlot(11));
 	}
-	
+
 	public ItemStack getTargetForTaget(ItemStack target) {
-		if(target == null) return null;
-		for(SolderingStationRecipe recipe:SolderingStationRecipes.getRecipes()) {
-			if(target.itemID == recipe.result.itemID && target.getItemDamage() == recipe.result.getItemDamage()) {
+		if (target == null) return null;
+		for (SolderingStationRecipe recipe : SolderingStationRecipes.getRecipes()) {
+			if (target.itemID == recipe.result.itemID && target.getItemDamage() == recipe.result.getItemDamage()) {
 				return recipe.result;
 			}
 		}
@@ -105,9 +105,9 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	public List<ItemIdentifierStack> getRecipeForTagetAsItemIdentifierStackList() {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
 		ItemStack[] array = getRecipeForTaget();
-		if(array != null) {
-			for(ItemStack stack:array) {
-				if(stack != null) {
+		if (array != null) {
+			for (ItemStack stack : array) {
+				if (stack != null) {
 					list.addLast(ItemIdentifier.get(stack).makeStack(1));
 				} else {
 					list.addLast(null);
@@ -116,33 +116,33 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 		}
 		return list;
 	}
-	
+
 	private boolean itemEquals(ItemStack var1, ItemStack var2) {
 		return var1.itemID == var2.itemID && var1.getItemDamage() == var2.getItemDamage();
 	}
-	
+
 	public ItemStack getTagetForRecipe(boolean remove) {
-		for(SolderingStationRecipe recipe:SolderingStationRecipes.getRecipes()) {
+		for (SolderingStationRecipe recipe : SolderingStationRecipes.getRecipes()) {
 			boolean match = true;
 			boolean removeThis = false;
-			for(int i=0;i<9;i++) {
+			for (int i = 0; i < 9; i++) {
 				ItemStack recipestack = recipe.source[i];
 				ItemStack inputStack = inv.getStackInSlot(i);
-				if(recipestack == null) {
-					if(inputStack != null) {
+				if (recipestack == null) {
+					if (inputStack != null) {
 						match = false;
 					}
 					continue;
-				} else if(inputStack == null) {
+				} else if (inputStack == null) {
 					match = false;
 					continue;
 				} else {
-					if(!itemEquals(recipestack,inputStack)) {
+					if (!itemEquals(recipestack, inputStack)) {
 						match = false;
 					} else {
-						if(remove && ((getTagetForRecipe(false) != null && itemEquals(getTagetForRecipe(false),recipe.result)) || removeThis)) {
+						if (remove && ((getTagetForRecipe(false) != null && itemEquals(getTagetForRecipe(false), recipe.result)) || removeThis)) {
 							inputStack.stackSize -= 1;
-							if(inputStack.stackSize <= 0) {
+							if (inputStack.stackSize <= 0) {
 								inputStack = null;
 							}
 							inv.setInventorySlotContents(i, inputStack);
@@ -151,38 +151,40 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 					}
 				}
 			}
-			if(match) {
+			if (match) {
 				return recipe.result.copy();
 			}
 		}
 		return null;
 	}
+
 	public ICraftingResultHandler getHandlerForRecipe() {
-		for(SolderingStationRecipe recipe:SolderingStationRecipes.getRecipes()) {
+		for (SolderingStationRecipe recipe : SolderingStationRecipes.getRecipes()) {
 			boolean match = true;
-			for(int i=0;i<9;i++) {
+			for (int i = 0; i < 9; i++) {
 				ItemStack recipestack = recipe.source[i];
 				ItemStack inputStack = inv.getStackInSlot(i);
-				if(recipestack == null) {
-					if(inputStack != null) {
+				if (recipestack == null) {
+					if (inputStack != null) {
 						match = false;
 					}
 					continue;
-				} else if(inputStack == null) {
+				} else if (inputStack == null) {
 					match = false;
 					continue;
 				} else {
-					if(!itemEquals(recipestack,inputStack)) {
+					if (!itemEquals(recipestack, inputStack)) {
 						match = false;
 					}
 				}
 			}
-			if(match) {
+			if (match) {
 				return recipe.handler;
 			}
 		}
 		return null;
 	}
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
@@ -200,61 +202,61 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	private boolean hasWork() {
 		return getTagetForRecipe(false) != null && inv.getStackInSlot(9) != null;
 	}
-	
+
 	private void updateHeat() {
 		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
-		}
+	}
 
 	private void updateProgress() {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationProgress.class).setInteger(this.progress).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
-		}
-	
+	}
+
 	private void updateInventory() {
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationInventory.class).setInventory(this).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
-		}
-	
+	}
+
 	@Override
 	public void updateEntity() {
-		if(MainProxy.isClient(getWorld())) {
-			if(!init) {
+		if (MainProxy.isClient(getWorld())) {
+			if (!init) {
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 				init = true;
 			}
 			return;
 		}
 		hasWork = hasWork();
-		if(hasWork && heat < 100) {
-			if(provider.useEnergy(1, 100, false) >= 1) {
+		if (hasWork && heat < 100) {
+			if (provider.useEnergy(1, 100, false) >= 1) {
 				heat += provider.useEnergy(1, 100, true);
-				if(heat > 100) {
+				if (heat > 100) {
 					heat = 100;
 				}
 				updateHeat();
 			} else {
-				if(getWorld().getTotalWorldTime() % 5 == 0) {
+				if (getWorld().getTotalWorldTime() % 5 == 0) {
 					heat--;
-					if(heat < 0) {
+					if (heat < 0) {
 						heat = 0;
 					}
 					updateHeat();
 				}
 			}
-		} else if(!hasWork && heat > 0) {
+		} else if (!hasWork && heat > 0) {
 			heat--;
 			updateHeat();
 		}
-		if(hasWork && heat >= 100) {
+		if (hasWork && heat >= 100) {
 			progress += provider.useEnergy(1, 3, true);
-			if(progress >= 100) {
-				if(tryCraft()) {
+			if (progress >= 100) {
+				if (tryCraft()) {
 					progress = 0;
 				} else {
 					progress -= 50;
 				}
 			}
 			updateProgress();
-		} else if(!hasWork && progress != 0) {
+		} else if (!hasWork && progress != 0) {
 			progress = 0;
 			updateProgress();
 		}
@@ -264,14 +266,14 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 		ItemIdentifierStack content = inv.getIDStackInSlot(10);
 		ICraftingResultHandler handler = getHandlerForRecipe();
 		ItemStack toAdd = getTagetForRecipe(false);
-		if(handler != null) {
+		if (handler != null) {
 			handler.handleCrafting(toAdd);
 		}
-		if(content != null) {
-			if(!content.getItem().equals(toAdd)) {
+		if (content != null) {
+			if (!content.getItem().equals(toAdd)) {
 				return false;
 			}
-			if(content.getStackSize() + toAdd.stackSize > content.getItem().getMaxStackSize()) {
+			if (content.getStackSize() + toAdd.stackSize > content.getItem().getMaxStackSize()) {
 				return false;
 			}
 			toAdd.stackSize += content.getStackSize();
@@ -283,7 +285,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 		inv.setInventorySlotContents(10, toAdd);
 
 		inv.getStackInSlot(9).stackSize -= 1;
-		if(inv.getStackInSlot(9).stackSize <= 0) {
+		if (inv.getStackInSlot(9).stackSize <= 0) {
 			inv.clearInventorySlotContents(9);
 		}
 
@@ -294,10 +296,9 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 		return true;
 	}
 
-
 	@Override
 	public void doWork(PowerHandler workProvider) {
-		
+
 	}
 
 	@Override
@@ -309,7 +310,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	public World getWorld() {
 		return this.getWorldObj();
 	}
-	
+
 	@Override
 	public int getSizeInventory() {
 		return inv.getSizeInventory();
@@ -362,8 +363,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 
 	@Override
 	public int addItem(ItemStack stack, boolean doAdd, ForgeDirection from) {
-		if(stack == null) return 0;
-		if(stack.getItem() == null) return 0;
+		if (stack == null) return 0;
+		if (stack.getItem() == null) return 0;
 		if (stack.getItem() == Item.ingotIron) {
 			ItemStack iron = inv.getStackInSlot(9);
 			if (iron == null) {
@@ -383,51 +384,51 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 			return toAdd;
 		}
 		ItemStack[] recipe = getRecipeForTaget();
-		if(recipe == null) return 0;
-		
+		if (recipe == null) return 0;
+
 		int availableslots = 0;
 		int itemsinslots = 0;
-		int i=0;
-		for(ItemStack itemstack:recipe) {
-			if(itemstack == null) {
+		int i = 0;
+		for (ItemStack itemstack : recipe) {
+			if (itemstack == null) {
 				i++;
 				continue;
 			}
-			if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
+			if (stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
 				availableslots++;
 				ItemStack slot = inv.getStackInSlot(i);
-				if(slot != null) {
+				if (slot != null) {
 					itemsinslots += slot.stackSize;
 				}
 			}
 			i++;
 		}
 		int toadd = Math.min(availableslots * 64 - itemsinslots, stack.stackSize);
-		if(!doAdd) {
+		if (!doAdd) {
 			return toadd;
 		}
-		if(toadd <= 0) {
+		if (toadd <= 0) {
 			return 0;
 		}
 		itemsinslots += toadd;
 		int itemsperslot = itemsinslots / availableslots;
 		int itemsextra = itemsinslots - (itemsperslot * availableslots);
 		i = 0;
-		for(ItemStack itemstack:recipe) {
-			if(itemstack == null) {
+		for (ItemStack itemstack : recipe) {
+			if (itemstack == null) {
 				i++;
 				continue;
 			}
-			if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
-				if(itemsperslot == 0 && itemsextra == 0) {
+			if (stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
+				if (itemsperslot == 0 && itemsextra == 0) {
 					inv.clearInventorySlotContents(i);
 				} else {
 					ItemStack slot = inv.getStackInSlot(i);
-					if(slot == null) {
+					if (slot == null) {
 						slot = stack.copy();
 					}
 					slot.stackSize = itemsperslot;
-					if(itemsextra > 0) {
+					if (itemsextra > 0) {
 						slot.stackSize++;
 						itemsextra--;
 					}
@@ -461,11 +462,11 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 	public void guiClosedByPlayer(EntityPlayer player) {
 		listener.remove(player);
 	}
-	
+
 	public void onBlockBreak() {
 		inv.dropContents(getWorld(), xCoord, yCoord, zCoord);
 	}
-	
+
 	@Override
 	public int getRotation() {
 		return rotation;
@@ -473,7 +474,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IGuiTile
 
 	@Override
 	public int getFrontTexture() {
-		if(heat > 0) {
+		if (heat > 0) {
 			return 3;
 		} else {
 			return 8;

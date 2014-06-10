@@ -25,7 +25,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraftforge.common.ForgeDirection;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SlotFinderNumberPacket extends CoordinatesPacket {
 
 	@Getter
@@ -42,42 +42,43 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 	@Getter
 	@Setter
 	private int slot;
-	
+
 	public SlotFinderNumberPacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new SlotFinderNumberPacket(getId());
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void processPacket(EntityPlayer player) {
 		IInventory inv = this.getTile(player.worldObj, IInventory.class);
 		if (inv instanceof ISidedInventory) inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN, false);
-		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);Slot result = null;
-		if(((List<Slot>)player.openContainer.inventorySlots).get(inventorySlot).slotNumber == inventorySlot) {
-			result = ((List<Slot>)player.openContainer.inventorySlots).get(inventorySlot);
+		IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+		Slot result = null;
+		if (((List<Slot>) player.openContainer.inventorySlots).get(inventorySlot).slotNumber == inventorySlot) {
+			result = ((List<Slot>) player.openContainer.inventorySlots).get(inventorySlot);
 		}
-		if(result == null) {
-			for(Slot slotObject:(List<Slot>)player.openContainer.inventorySlots) {
-				if(slotObject.slotNumber == inventorySlot) {
+		if (result == null) {
+			for (Slot slotObject : (List<Slot>) player.openContainer.inventorySlots) {
+				if (slotObject.slotNumber == inventorySlot) {
 					result = slotObject;
 					break;
 				}
 			}
 		}
-		if(result == null) {
+		if (result == null) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Couldn't find that slot internaly. Sorry. Please try again."));
 		}
 		int resultIndex = -1;
-		if(resultIndex == -1) {
+		if (resultIndex == -1) {
 			ItemStack content = result.getStack();
-			if(content != null) {
-				for(int i=0;i<util.getSizeInventory();i++) {
-					if(content == util.getStackInSlot(i)) {
+			if (content != null) {
+				for (int i = 0; i < util.getSizeInventory(); i++) {
+					if (content == util.getStackInSlot(i)) {
 						resultIndex = i;
 						break;
 					}
@@ -88,17 +89,17 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 				nbt.setBoolean("LPStackFinderBoolean", true); //Make it unique
 				dummyStack.setTagCompound(nbt);
 				result.putStack(dummyStack);
-				for(int i=0;i < util.getSizeInventory();i++) {
-					if(dummyStack == util.getStackInSlot(i)) {
+				for (int i = 0; i < util.getSizeInventory(); i++) {
+					if (dummyStack == util.getStackInSlot(i)) {
 						resultIndex = i;
 						break;
 					}
 				}
-				if(resultIndex == -1) {
-					for(int i=0;i < util.getSizeInventory();i++) {
+				if (resultIndex == -1) {
+					for (int i = 0; i < util.getSizeInventory(); i++) {
 						ItemStack stack = util.getStackInSlot(i);
-						if(stack == null) continue;
-						if(ItemIdentifier.get(stack) == ItemIdentifier.get(dummyStack) && stack.stackSize == dummyStack.stackSize) {
+						if (stack == null) continue;
+						if (ItemIdentifier.get(stack) == ItemIdentifier.get(dummyStack) && stack.stackSize == dummyStack.stackSize) {
 							resultIndex = i;
 							break;
 						}
@@ -107,7 +108,7 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 				result.putStack(null);
 			}
 		}
-		if(resultIndex == -1) {
+		if (resultIndex == -1) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Couldn't find that slot externaly. Sorry. Please try again."));
 		} else {
 			//Copy pipe to coordinates to use the getPipe method
@@ -115,8 +116,8 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 			setPosY(getPipePosY());
 			setPosZ(getPipePosZ());
 			LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe != null && pipe.pipe instanceof PipeItemsSupplierLogistics) {
-				((PipeItemsSupplierLogistics)pipe.pipe).slotArray[slot] = resultIndex;
+			if (pipe != null && pipe.pipe instanceof PipeItemsSupplierLogistics) {
+				((PipeItemsSupplierLogistics) pipe.pipe).slotArray[slot] = resultIndex;
 			}
 		}
 	}

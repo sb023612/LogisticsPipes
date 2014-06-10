@@ -20,12 +20,13 @@ import appeng.api.me.tiles.ITileInterfaceApi;
  */
 
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
+
 	public boolean init = false;
 	private final ITileInterfaceApi _tile;
 	private final boolean _hideOnePerStack;
 
 	private AEInterfaceInventoryHandler(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		_tile = (ITileInterfaceApi)tile;
+		_tile = (ITileInterfaceApi) tile;
 		_hideOnePerStack = hideOnePerStack || hideOne;
 	}
 
@@ -36,7 +37,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean init() {
-		init=true;
+		init = true;
 		return true;
 	}
 
@@ -54,21 +55,21 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
 		return getItemsAndCount(false);
 	}
-	
+
 	private Map<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
 		Map<ItemIdentifier, Integer> result;
-		if(linked) {
+		if (linked) {
 			result = new LinkedHashMap<ItemIdentifier, Integer>();
 		} else {
 			result = new HashMap<ItemIdentifier, Integer>();
 		}
-		for(ItemStack items: _tile.apiGetNetworkContents()) {
+		for (ItemStack items : _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.get(items);
 			Integer count = result.get(ident);
-			if(count != null) {
-				result.put(ident, count + items.stackSize - (_hideOnePerStack ? 1:0));
+			if (count != null) {
+				result.put(ident, count + items.stackSize - (_hideOnePerStack ? 1 : 0));
 			} else {
-				result.put(ident, items.stackSize - (_hideOnePerStack ? 1:0));
+				result.put(ident, items.stackSize - (_hideOnePerStack ? 1 : 0));
 			}
 		}
 		return result;
@@ -77,7 +78,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
-		for(ItemStack items: _tile.apiGetNetworkContents()) {
+		for (ItemStack items : _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.get(items);
 			result.add(ident);
 		}
@@ -102,9 +103,9 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
-		for(ItemStack items: _tile.apiGetNetworkContents()) {
+		for (ItemStack items : _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.getUndamaged(items);
-			if(ident == item) {
+			if (ident == item) {
 				return true;
 			}
 		}
@@ -125,12 +126,12 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
 		ItemStack st = stack.copy();
 		ItemStack tst = stack.copy();
-		if(tst.stackTagCompound != null && tst.stackTagCompound.getName().equals("")) {
+		if (tst.stackTagCompound != null && tst.stackTagCompound.getName().equals("")) {
 			tst.stackTagCompound.setName("tag");
 		}
-		
+
 		ItemStack overflow = _tile.apiAddNetworkItem(tst, doAdd);
-		if(overflow != null) {
+		if (overflow != null) {
 			st.stackSize -= overflow.stackSize;
 		}
 		return st;
@@ -145,29 +146,29 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int getSizeInventory() {
-		if(cached == null) initCache();
+		if (cached == null) initCache();
 		return cached.size();
 	}
-	
+
 	public void initCache() {
 		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
-		cached = new LinkedList<Map.Entry<ItemIdentifier,Integer>>();
-		for(Entry<ItemIdentifier, Integer> e:map.entrySet()) {
+		cached = new LinkedList<Map.Entry<ItemIdentifier, Integer>>();
+		for (Entry<ItemIdentifier, Integer> e : map.entrySet()) {
 			cached.add(e);
 		}
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		if(cached == null) initCache();
+		if (cached == null) initCache();
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
-		if(entry.getValue() == 0) return null;
+		if (entry.getValue() == 0) return null;
 		return entry.getKey().makeNormalStack(entry.getValue());
 	}
 
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
-		if(cached == null) initCache();
+		if (cached == null) initCache();
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
 		ItemStack stack = entry.getKey().makeNormalStack(j);
 		ItemStack extracted = _tile.apiExtractNetworkItem(stack, true);

@@ -14,13 +14,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ModuleInventory extends InventoryCoordinatesPacket {
 
 	@Getter
 	@Setter
 	private int slot;
-	
+
 	public ModuleInventory(int id) {
 		super(id);
 	}
@@ -33,11 +33,11 @@ public class ModuleInventory extends InventoryCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof IModuleInventoryReceive) {
-			IModuleInventoryReceive module = (IModuleInventoryReceive) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot());
+		if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot()) instanceof IModuleInventoryReceive) {
+			IModuleInventoryReceive module = (IModuleInventoryReceive) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot());
 			module.handleInvContent(getIdentList());
 		}
 	}
@@ -54,4 +54,3 @@ public class ModuleInventory extends InventoryCoordinatesPacket {
 		setSlot(data.readInt());
 	}
 }
-

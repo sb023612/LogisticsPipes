@@ -7,29 +7,28 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class CPipePrevSatellite extends CoordinatesPacket {
-	
+
 	public CPipePrevSatellite(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new CPipePrevSatellite(getId());
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		
-		if( !(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
+
+		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
-		
+
 		((PipeItemsCraftingLogistics) pipe.pipe).setPrevSatellite(player);
 	}
-	
-}
 
+}

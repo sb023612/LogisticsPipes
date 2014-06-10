@@ -20,13 +20,12 @@ public class CraftingAdvancedSatelliteId extends Integer2CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if( !(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
+		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
 		((PipeItemsCraftingLogistics) pipe.pipe).setSatelliteId(getInteger(), getInteger2());
 	}
 }
-

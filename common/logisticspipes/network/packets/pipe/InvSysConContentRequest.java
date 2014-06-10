@@ -23,12 +23,11 @@ public class InvSysConContentRequest extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConContent.class).setIdentSet(((PipeItemsInvSysConnector)pipe.pipe).getExpectedItems()), (Player)player);
+		if (pipe.pipe instanceof PipeItemsInvSysConnector) {
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConContent.class).setIdentSet(((PipeItemsInvSysConnector) pipe.pipe).getExpectedItems()), (Player) player);
 		}
 	}
 }
-

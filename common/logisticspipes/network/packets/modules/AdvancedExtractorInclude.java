@@ -23,7 +23,7 @@ public class AdvancedExtractorInclude extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(getInteger2() < 0) {
+		if (getInteger2() < 0) {
 			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiAdvancedExtractor) {
 				((GuiAdvancedExtractor) FMLClientHandler.instance().getClient().currentScreen).setInclude(getInteger() == 1);
 			}
@@ -33,16 +33,15 @@ public class AdvancedExtractorInclude extends Integer2CoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if(getInteger2() == -1) {
-			if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleAdvancedExtractor) {
-				((ModuleAdvancedExtractor)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setItemsIncluded(getInteger() == 1);
+		if (getInteger2() == -1) {
+			if (pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleAdvancedExtractor) {
+				((ModuleAdvancedExtractor) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule()).setItemsIncluded(getInteger() == 1);
 			}
 			return;
 		}
-		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleAdvancedExtractor) {
-			ModuleAdvancedExtractor recieiver = (ModuleAdvancedExtractor) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
+		if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleAdvancedExtractor) {
+			ModuleAdvancedExtractor recieiver = (ModuleAdvancedExtractor) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2());
 			recieiver.setItemsIncluded(getInteger() == 1);
 		}
 	}
 }
-

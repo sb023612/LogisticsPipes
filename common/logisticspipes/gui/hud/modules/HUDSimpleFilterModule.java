@@ -16,11 +16,11 @@ import cpw.mods.fml.client.FMLClientHandler;
 public class HUDSimpleFilterModule implements IHUDModuleRenderer {
 
 	private final IModuleSimpleFilter module;
-	
+
 	public HUDSimpleFilterModule(IModuleSimpleFilter module) {
 		this.module = module;
 	}
-	
+
 	@Override
 	public void renderContent() {
 		Minecraft mc = FMLClientHandler.instance().getClient();

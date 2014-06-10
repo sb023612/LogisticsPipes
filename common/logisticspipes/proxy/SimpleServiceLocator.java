@@ -42,157 +42,187 @@ import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
 
 public final class SimpleServiceLocator {
-	
-	private SimpleServiceLocator(){};
-	
+
+	private SimpleServiceLocator() {};
+
 	public static BuildCraftProxy buildCraftProxy = null;
-	public static void setBuildCraftProxy(final BuildCraftProxy bcProxy){
+
+	public static void setBuildCraftProxy(final BuildCraftProxy bcProxy) {
 		buildCraftProxy = bcProxy;
 	}
-	
+
 	public static IIC2Proxy IC2Proxy;
-	public static void setElectricItemProxy(final IIC2Proxy ic2Proxy){
+
+	public static void setElectricItemProxy(final IIC2Proxy ic2Proxy) {
 		IC2Proxy = ic2Proxy;
 	}
 
 	public static IForestryProxy forestryProxy;
-	public static  void setForestryProxy(final IForestryProxy fProxy){
+
+	public static void setForestryProxy(final IForestryProxy fProxy) {
 		forestryProxy = fProxy;
 	}
-	
+
 	public static ICCProxy ccProxy;
-	public static  void setCCProxy(final ICCProxy cProxy){
+
+	public static void setCCProxy(final ICCProxy cProxy) {
 		ccProxy = cProxy;
 	}
-	
+
 	public static IDirectConnectionManager connectionManager;
-	public static void setDirectConnectionManager(final IDirectConnectionManager conMngr){
+
+	public static void setDirectConnectionManager(final IDirectConnectionManager conMngr) {
 		connectionManager = conMngr;
 	}
-	
+
 	public static ISecurityStationManager securityStationManager;
-	public static void setSecurityStationManager(final ISecurityStationManager secStationMngr){
+
+	public static void setSecurityStationManager(final ISecurityStationManager secStationMngr) {
 		securityStationManager = secStationMngr;
 	}
-	
+
 	public static IRouterManager routerManager;
-	public static void setRouterManager(final IRouterManager routerMngr){
+
+	public static void setRouterManager(final IRouterManager routerMngr) {
 		routerManager = routerMngr;
 	}
-	
+
 	public static ILogisticsManager logisticsManager;
-	public static void setLogisticsManager(final ILogisticsManager logisticsMngr){
+
+	public static void setLogisticsManager(final ILogisticsManager logisticsMngr) {
 		logisticsManager = logisticsMngr;
 	}
-	
+
 	public static ILogisticsFluidManager logisticsFluidManager;
-	public static void setLogisticsFluidManager(final ILogisticsFluidManager logisticsMngr){
+
+	public static void setLogisticsFluidManager(final ILogisticsFluidManager logisticsMngr) {
 		logisticsFluidManager = logisticsMngr;
 	}
-	
+
 	public static InventoryUtilFactory inventoryUtilFactory;
-	public static void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory){
+
+	public static void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory) {
 		inventoryUtilFactory = invUtilFactory;
 	}
-	
+
 	public static LinkedList<ICraftingRecipeProvider> craftingRecipeProviders = new LinkedList<ICraftingRecipeProvider>();
+
 	public static void addCraftingRecipeProvider(ICraftingRecipeProvider provider) {
 		craftingRecipeProviders.add(provider);
 	}
 
 	public static SpecialPipeConnection specialpipeconnection;
-	public static void setSpecialConnectionHandler(final SpecialPipeConnection special){
+
+	public static void setSpecialConnectionHandler(final SpecialPipeConnection special) {
 		specialpipeconnection = special;
 	}
-	
+
 	public static SpecialTileConnection specialtileconnection;
-	public static void setSpecialConnectionHandler(final SpecialTileConnection special){
+
+	public static void setSpecialConnectionHandler(final SpecialTileConnection special) {
 		specialtileconnection = special;
 	}
-	
+
 	public static IThaumCraftProxy thaumCraftProxy;
+
 	public static void setThaumCraftProxy(IThaumCraftProxy proxy) {
 		thaumCraftProxy = proxy;
 	}
-	
+
 	public static IThermalExpansionProxy thermalExpansionProxy;
+
 	public static void setThermalExpansionProxy(IThermalExpansionProxy proxy) {
 		thermalExpansionProxy = proxy;
 	}
-	
+
 	public static IBetterStorageProxy betterStorageProxy;
+
 	public static void setBetterStorageProxy(IBetterStorageProxy proxy) {
 		betterStorageProxy = proxy;
 	}
-	
+
 	public static SpecialTankHandler specialTankHandler;
+
 	public static void setSpecialTankHandler(SpecialTankHandler proxy) {
 		specialTankHandler = proxy;
 	}
 
 	public static ClientPacketBufferHandlerThread clientBufferHandler;
+
 	public static void setClientPacketBufferHandlerThread(ClientPacketBufferHandlerThread proxy) {
 		clientBufferHandler = proxy;
 	}
-	
+
 	public static ServerPacketBufferHandlerThread serverBufferHandler;
+
 	public static void setServerPacketBufferHandlerThread(ServerPacketBufferHandlerThread proxy) {
 		serverBufferHandler = proxy;
 	}
-	
+
 	public static INEIProxy neiProxy;
+
 	public static void setNEIProxy(INEIProxy proxy) {
 		neiProxy = proxy;
 	}
-	
+
 	public static IModularPowersuitsProxy mpsProxy;
+
 	public static void setMPSProxy(IModularPowersuitsProxy proxy) {
 		mpsProxy = proxy;
 	}
-	
+
 	public static CraftingPermissionManager craftingPermissionManager;
+
 	public static void setCraftingPermissionManager(CraftingPermissionManager manager) {
 		craftingPermissionManager = manager;
 	}
-	
+
 	public static IFactorizationProxy factorizationProxy;
+
 	public static void setFactorizationProxy(IFactorizationProxy proxy) {
 		factorizationProxy = proxy;
 	}
-	
+
 	public static IBetterSignProxy betterSignProxy;
+
 	public static void setBetterSignProxy(IBetterSignProxy proxy) {
 		betterSignProxy = proxy;
 	}
-	
+
 	public static PipeInformaitonManager pipeInformaitonManager;
+
 	public static void setPipeInformationManager(PipeInformaitonManager manager) {
 		pipeInformaitonManager = manager;
 	}
-	
+
 	public static IEnderIOProxy enderIOProxy;
+
 	public static void setEnderIOProxy(IEnderIOProxy proxy) {
 		enderIOProxy = proxy;
 	}
-	
+
 	public static IIronChestProxy ironChestProxy;
+
 	public static void setIronChestProxy(IIronChestProxy proxy) {
 		ironChestProxy = proxy;
 	}
-	
+
 	public static IEnderStorageProxy enderStorageProxy;
+
 	public static void setEnderStorageProxy(IEnderStorageProxy proxy) {
 		enderStorageProxy = proxy;
 	}
-	
+
 	public static MachineProgressProvider machineProgressProvider;
+
 	public static void setMachineProgressProvider(MachineProgressProvider provider) {
 		machineProgressProvider = provider;
 	}
-	
+
 	public static RoutedItemHelper routedItemHelper;
+
 	public static void setRoutedItemHelper(RoutedItemHelper helper) {
 		routedItemHelper = helper;
 	}
-	
+
 }

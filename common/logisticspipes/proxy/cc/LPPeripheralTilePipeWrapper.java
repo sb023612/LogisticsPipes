@@ -34,11 +34,10 @@ public class LPPeripheralTilePipeWrapper extends LPTilePipeWrapper implements IP
 		pipe.connections.remove(computer);
 	}
 
-
 	@Override
 	public boolean equals(IPeripheral other) {
-		if(other instanceof LPPeripheralTilePipeWrapper) {
-			return ((LPPeripheralTilePipeWrapper)other).pipe.equals(pipe);
+		if (other instanceof LPPeripheralTilePipeWrapper) {
+			return ((LPPeripheralTilePipeWrapper) other).pipe.equals(pipe);
 		}
 		return false;
 	}

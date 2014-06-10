@@ -9,7 +9,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.item.ItemStack;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class ItemPacket extends CoordinatesPacket {
 
 	@Getter
@@ -23,7 +23,7 @@ public abstract class ItemPacket extends CoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
-		if(getStack() != null) {
+		if (getStack() != null) {
 			data.writeInt(getStack().itemID);
 			data.writeInt(getStack().stackSize);
 			data.writeInt(getStack().getItemDamage());
@@ -36,9 +36,9 @@ public abstract class ItemPacket extends CoordinatesPacket {
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
-		
+
 		final int itemID = data.readInt();
-		if(itemID != 0) {
+		if (itemID != 0) {
 			int stackSize = data.readInt();
 			int damage = data.readInt();
 			setStack(new ItemStack(itemID, stackSize, damage));

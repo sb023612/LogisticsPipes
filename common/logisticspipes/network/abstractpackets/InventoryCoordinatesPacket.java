@@ -16,9 +16,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
-	
 
 	@Setter
 	private IInventory inventory;
@@ -26,14 +25,14 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 	@Getter
 	@Setter
 	private List<ItemStack> stackList;
-	
+
 	@Getter
 	@Setter
 	private List<ItemIdentifierStack> identList;
 
 	@Setter
 	private Set<ItemIdentifierStack> identSet;
-	
+
 	public InventoryCoordinatesPacket(int id) {
 		super(id);
 	}
@@ -41,30 +40,30 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);
-		if(inventory != null) {
+		if (inventory != null) {
 			data.writeByte(0);
 			for (int i = 0; i < inventory.getSizeInventory(); i++) {
 				data.writeByte(i);
 				sendItemStack(inventory.getStackInSlot(i), data);
 			}
 			data.writeByte(-1); // mark packet end
-		} else if(stackList != null) {
+		} else if (stackList != null) {
 			data.writeByte(0);
 			for (int i = 0; i < stackList.size(); i++) {
 				data.writeByte(i);
 				sendItemStack(stackList.get(i), data);
 			}
 			data.writeByte(-1); // mark packet end
-		} else if(identList != null) {
+		} else if (identList != null) {
 			data.writeByte(1);
-			for(ItemIdentifierStack stack:identList) {
+			for (ItemIdentifierStack stack : identList) {
 				data.writeByte(1);
 				sendItemIdentifierStack(stack, data);
 			}
 			data.writeByte(-1);
-		} else if(identSet != null) {
+		} else if (identSet != null) {
 			data.writeByte(1);
-			for(ItemIdentifierStack stack:identSet) {
+			for (ItemIdentifierStack stack : identSet) {
 				data.writeByte(1);
 				sendItemIdentifierStack(stack, data);
 			}
@@ -78,25 +77,25 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 	public void readData(LPDataInputStream data) throws IOException {
 		super.readData(data);
 		byte mode = data.readByte();
-		if(mode == 0) {
+		if (mode == 0) {
 			stackList = new LinkedList<ItemStack>();
 			byte index = data.readByte();
 			while (index != -1) { // read until the end
-				((LinkedList<ItemStack>)stackList).addLast(readItemStack(data));
+				((LinkedList<ItemStack>) stackList).addLast(readItemStack(data));
 				index = data.readByte(); // read the next slot
 			}
-		} else if(mode == 1) {
+		} else if (mode == 1) {
 			identList = new LinkedList<ItemIdentifierStack>();
 			byte index = data.readByte();
 			while (index != -1) { // read until the end
-				((LinkedList<ItemIdentifierStack>)identList).addLast(readItemIdentifierStack(data));
+				((LinkedList<ItemIdentifierStack>) identList).addLast(readItemIdentifierStack(data));
 				index = data.readByte(); // read the next slot
 			}
 		} else {
 			throw new UnsupportedOperationException("Unknown receive mode: " + mode);
 		}
 	}
-	
+
 	private void sendItemStack(ItemStack itemstack, LPDataOutputStream data) throws IOException {
 		if (itemstack != null) {
 			data.writeInt(itemstack.itemID);
@@ -107,7 +106,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 			data.writeInt(0);
 		}
 	}
-	
+
 	private void sendItemIdentifierStack(ItemIdentifierStack item, LPDataOutputStream data) throws IOException {
 		if (item != null) {
 			data.writeItemIdentifierStack(item);
@@ -115,7 +114,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 			data.writeInt(0);
 		}
 	}
-	
+
 	private ItemStack readItemStack(LPDataInputStream data) throws IOException {
 		final int itemID = data.readInt();
 		if (itemID == 0) {
@@ -128,7 +127,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 			return stack;
 		}
 	}
-	
+
 	private ItemIdentifierStack readItemIdentifierStack(LPDataInputStream data) throws IOException {
 		final int itemID = data.readInt();
 		if (itemID == 0) {

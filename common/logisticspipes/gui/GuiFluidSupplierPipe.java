@@ -22,70 +22,70 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class GuiFluidSupplierPipe extends GuiContainer implements IGuiIDHandlerProvider {
+
 	private static final String PREFIX = "gui.fluidsupplier.";
-	
-	private PipeItemsFluidSupplier logic; 
-	
+
+	private PipeItemsFluidSupplier logic;
+
 	public GuiFluidSupplierPipe(IInventory playerInventory, IInventory dummyInventory, PipeItemsFluidSupplier logic) {
 		super(null);
-		
-		
+
 		DummyContainer dummy = new DummyContainer(playerInventory, dummyInventory);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
-		
+
 		int xOffset = 72;
 		int yOffset = 18;
-		
-		for (int row = 0; row < 3; row++){
-			for (int column = 0; column < 3; column++){
-				dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);					
+
+		for (int row = 0; row < 3; row++) {
+			for (int column = 0; column < 3; column++) {
+				dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);
 			}
 		}
-		this.inventorySlots = dummy; 
+		this.inventorySlots = dummy;
 
 		this.logic = logic;
 		xSize = 194;
 		ySize = 186;
 	}
-	
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-		fontRenderer.drawString(StringUtil.translate(PREFIX + "TargetInv"), xSize / 2 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "TargetInv"))/2, 6, 0x404040);
+		fontRenderer.drawString(StringUtil.translate(PREFIX + "TargetInv"), xSize / 2 - fontRenderer.getStringWidth(StringUtil.translate(PREFIX + "TargetInv")) / 2, 6, 0x404040);
 		fontRenderer.drawString(StringUtil.translate(PREFIX + "Inventory"), 18, ySize - 102, 0x404040);
 		fontRenderer.drawString(StringUtil.translate(PREFIX + "Partialrequests") + ":", xSize - 140, ySize - 112, 0x404040);
 	}
-	
+
 	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {	
+	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(SUPPLIER);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
-       buttonList.clear();
-       buttonList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No")));
+		buttonList.clear();
+		buttonList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No")));
 
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		if (guibutton.id == 0){
+		if (guibutton.id == 0) {
 			logic.setRequestingPartials(!logic.isRequestingPartials());
-			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No");
+			((GuiButton) buttonList.get(0)).displayString = logic.isRequestingPartials() ? StringUtil.translate(PREFIX + "Yes") : StringUtil.translate(PREFIX + "No");
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		}
 		super.actionPerformed(guibutton);
-		
+
 	}
-	
+
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();

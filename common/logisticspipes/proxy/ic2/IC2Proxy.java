@@ -22,7 +22,6 @@ import net.minecraftforge.common.MinecraftForge;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 
-
 public class IC2Proxy implements IIC2Proxy {
 
 	/**
@@ -80,7 +79,7 @@ public class IC2Proxy implements IIC2Proxy {
 		int maxCharge = getMaxCharge(stack);
 		return charge == maxCharge;
 	}
-	
+
 	/**
 	 * @return Boolean, true if electric item is fully discharged.
 	 * @param stack The stack to check if its fully discharged.
@@ -92,7 +91,7 @@ public class IC2Proxy implements IIC2Proxy {
 		int charge = getCharge(stack);
 		return charge == 0;
 	}
-	
+
 	/**
 	 * @return Boolean, true if electric item contains charge but is not full.
 	 * @param stack The stack to check if its partially charged.
@@ -105,164 +104,65 @@ public class IC2Proxy implements IIC2Proxy {
 		int maxCharge = getMaxCharge(stack);
 		return charge != maxCharge;
 	}
-	
+
 	/**
 	 * Adds crafting recipes to "IC2 Crafting"
 	 */
 	@Override
 	public void addCraftingRecipes() {
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), Items.getItem("advancedCircuit"),
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('r'), Item.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
-			" G ", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), Items.getItem("advancedCircuit"),
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-			Character.valueOf('r'), Item.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { "CGC", "rBr", "CrC", Character.valueOf('C'), Items.getItem("advancedCircuit"), Character.valueOf('G'), BuildCraftCore.goldGearItem, Character.valueOf('r'), Item.redstone, Character.valueOf('B'),
+				new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
 
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { " G ", "rBr", "CrC", Character.valueOf('C'), Items.getItem("advancedCircuit"), Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), Character.valueOf('r'),
+				Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
 
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			"CGD", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), Items.getItem("reBattery"),
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('r'), Item.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			"CGD", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), Items.getItem("chargedReBattery"),
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('r'), Item.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			"CGc", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('c'), Items.getItem("reBattery"),
-			Character.valueOf('D'), Items.getItem("chargedReBattery"),
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('r'), Item.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			"CGc", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('c'), Items.getItem("chargedReBattery"),
-			Character.valueOf('D'), Items.getItem("reBattery"),
-			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('r'), Item.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { "CGD", "rBr", "DrC", Character.valueOf('C'), Items.getItem("electronicCircuit"), Character.valueOf('D'), Items.getItem("reBattery"), Character.valueOf('G'), BuildCraftCore.goldGearItem,
+				Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
 
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			" G ", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), Items.getItem("reBattery"),
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-			Character.valueOf('r'), Item.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
-			" G ", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), Items.getItem("electronicCircuit"),
-			Character.valueOf('D'), Items.getItem("chargedReBattery"),
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-			Character.valueOf('r'), Item.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER), new Object[] { 
-			"PSP", 
-			"OBO", 
-			"PTP", 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
-			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Item.paper
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER), new Object[] { 
-			"PSP", 
-			"OBO", 
-			"PTP", 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER),
-			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Item.paper
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER), new Object[] { 
-			"PSP", 
-			"OBO", 
-			"PTP", 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER),
-			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Item.paper
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_EV_SUPPLIER), new Object[] { 
-			"PSP", 
-			"OBO", 
-			"PTP", 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER),
-			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Item.paper
-		});
-		
-		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER), new Object[] { 
-			"PSP", 
-			"OBO", 
-			"PTP", 
-			Character.valueOf('B'), Block.blockRedstone,
-			Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), 
-			Character.valueOf('O'), Items.getItem("overclockerUpgrade"), 
-			Character.valueOf('T'), Items.getItem("transformerUpgrade"), 
-			Character.valueOf('P'), Item.paper
-		});
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { "CGD", "rBr", "DrC", Character.valueOf('C'), Items.getItem("electronicCircuit"), Character.valueOf('D'), Items.getItem("chargedReBattery"), Character.valueOf('G'), BuildCraftCore.goldGearItem,
+				Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
+
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { "CGc", "rBr", "DrC", Character.valueOf('C'), Items.getItem("electronicCircuit"), Character.valueOf('c'), Items.getItem("reBattery"), Character.valueOf('D'), Items.getItem("chargedReBattery"),
+				Character.valueOf('G'), BuildCraftCore.goldGearItem, Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
+
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { "CGc", "rBr", "DrC", Character.valueOf('C'), Items.getItem("electronicCircuit"), Character.valueOf('c'), Items.getItem("chargedReBattery"), Character.valueOf('D'), Items.getItem("reBattery"),
+				Character.valueOf('G'), BuildCraftCore.goldGearItem, Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
+
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { " G ", "rBr", "DrC", Character.valueOf('C'), Items.getItem("electronicCircuit"), Character.valueOf('D'), Items.getItem("reBattery"), Character.valueOf('G'),
+				new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
+
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { " G ", "rBr", "DrC", Character.valueOf('C'), Items.getItem("electronicCircuit"), Character.valueOf('D'), Items.getItem("chargedReBattery"), Character.valueOf('G'),
+				new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
+
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER), new Object[] { "PSP", "OBO", "PTP", Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION), Character.valueOf('S'),
+				Items.getItem("energyStorageUpgrade"), Character.valueOf('O'), Items.getItem("overclockerUpgrade"), Character.valueOf('T'), Items.getItem("transformerUpgrade"), Character.valueOf('P'), Item.paper });
+
+		Recipes.advRecipes.addRecipe(
+				new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER),
+				new Object[] { "PSP", "OBO", "PTP", Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_LV_SUPPLIER), Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), Character.valueOf('O'), Items.getItem("overclockerUpgrade"), Character.valueOf('T'),
+						Items.getItem("transformerUpgrade"), Character.valueOf('P'), Item.paper });
+
+		Recipes.advRecipes.addRecipe(
+				new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER),
+				new Object[] { "PSP", "OBO", "PTP", Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_MV_SUPPLIER), Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), Character.valueOf('O'), Items.getItem("overclockerUpgrade"), Character.valueOf('T'),
+						Items.getItem("transformerUpgrade"), Character.valueOf('P'), Item.paper });
+
+		Recipes.advRecipes.addRecipe(
+				new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_EV_SUPPLIER),
+				new Object[] { "PSP", "OBO", "PTP", Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_IC2_HV_SUPPLIER), Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), Character.valueOf('O'), Items.getItem("overclockerUpgrade"), Character.valueOf('T'),
+						Items.getItem("transformerUpgrade"), Character.valueOf('P'), Item.paper });
+
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER),
+				new Object[] { "PSP", "OBO", "PTP", Character.valueOf('B'), Block.blockRedstone, Character.valueOf('S'), Items.getItem("energyStorageUpgrade"), Character.valueOf('O'), Items.getItem("overclockerUpgrade"), Character.valueOf('T'), Items.getItem("transformerUpgrade"), Character.valueOf('P'), Item.paper });
 	}
-	
+
 	/**
 	 * Registers an TileEntity to the IC2 EnergyNet
 	 * @param has to be an instance of IEnergyTile
 	*/
 	@Override
 	public void registerToEneryNet(TileEntity tile) {
-		if(MainProxy.isServer(tile.worldObj)) {
+		if (MainProxy.isServer(tile.worldObj)) {
 			MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent((IEnergyTile) tile));
 		}
 	}
@@ -273,7 +173,7 @@ public class IC2Proxy implements IIC2Proxy {
 	*/
 	@Override
 	public void unregisterToEneryNet(TileEntity tile) {
-		if(MainProxy.isServer(tile.worldObj)) {
+		if (MainProxy.isServer(tile.worldObj)) {
 			MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent((IEnergyTile) tile));
 		}
 	}
@@ -287,8 +187,8 @@ public class IC2Proxy implements IIC2Proxy {
 	}
 
 	@Override
-	public boolean acceptsEnergyFrom(TileEntity energy, TileEntity tile , ForgeDirection opposite) {
-		return ((IEnergySink)energy).acceptsEnergyFrom(tile, opposite);
+	public boolean acceptsEnergyFrom(TileEntity energy, TileEntity tile, ForgeDirection opposite) {
+		return ((IEnergySink) energy).acceptsEnergyFrom(tile, opposite);
 	}
 
 	@Override
@@ -298,10 +198,11 @@ public class IC2Proxy implements IIC2Proxy {
 
 	@Override
 	public double demandedEnergyUnits(TileEntity tile) {
-		return ((IEnergySink)tile).demandedEnergyUnits();
+		return ((IEnergySink) tile).demandedEnergyUnits();
 	}
 
 	@Override
 	public double injectEnergyUnits(TileEntity tile, ForgeDirection opposite, double d) {
-		return ((IEnergySink)tile).injectEnergyUnits(opposite, d);
-	}}
+		return ((IEnergySink) tile).injectEnergyUnits(opposite, d);
+	}
+}

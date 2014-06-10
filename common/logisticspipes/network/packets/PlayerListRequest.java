@@ -15,7 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.DimensionManager;
 import cpw.mods.fml.common.network.Player;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class PlayerListRequest extends ModernPacket {
 
 	public PlayerListRequest(int id) {
@@ -31,12 +31,12 @@ public class PlayerListRequest extends ModernPacket {
 	public void processPacket(EntityPlayer player) {
 		List<String> list = new LinkedList<String>();
 		File root = DimensionManager.getCurrentSaveRootDirectory();
-		if(root == null) return;
-		if(!root.exists()) return;
+		if (root == null) return;
+		if (!root.exists()) return;
 		File players = new File(root, "players");
-		if(!players.exists()) return;
-		for(String names:players.list()) {
-			if(names.endsWith(".dat") && new File(players, names).isFile()) {
+		if (!players.exists()) return;
+		for (String names : players.list()) {
+			if (names.endsWith(".dat") && new File(players, names).isFile()) {
 				list.add(names.substring(0, names.length() - 4));
 			}
 		}
@@ -49,4 +49,3 @@ public class PlayerListRequest extends ModernPacket {
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {}
 }
-

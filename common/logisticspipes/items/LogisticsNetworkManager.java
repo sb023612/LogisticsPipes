@@ -15,8 +15,8 @@ public class LogisticsNetworkManager extends LogisticsItem {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
-		if(par3EntityPlayer.isSneaking()) {
-			if(MainProxy.isServer(par2World)) {
+		if (par3EntityPlayer.isSneaking()) {
+			if (MainProxy.isServer(par2World)) {
 				NewGuiHandler.getGui(ItemMangerGui.class).open(par3EntityPlayer);
 			}
 			return par1ItemStack.copy();

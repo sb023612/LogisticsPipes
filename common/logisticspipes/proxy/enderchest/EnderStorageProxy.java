@@ -8,6 +8,7 @@ import codechicken.enderstorage.common.BlockEnderStorage;
 import codechicken.enderstorage.common.TileFrequencyOwner;
 
 public class EnderStorageProxy implements IEnderStorageProxy {
+
 	@Override
 	public boolean isEnderChestBlock(Block block) {
 		return block instanceof BlockEnderStorage;

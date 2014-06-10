@@ -25,7 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
 public class PipeItemsBasicLogistics extends CoreRoutedPipe {
-	
+
 	private ModuleItemSink itemSinkModule;
 
 	public PipeItemsBasicLogistics(int itemID) {
@@ -33,10 +33,10 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 			@Override
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
-				if(super.canPipeConnect(tile, dir)) return true;
-				if(tile instanceof LogisticsSecurityTileEntity) {
+				if (super.canPipeConnect(tile, dir)) return true;
+				if (tile instanceof LogisticsSecurityTileEntity) {
 					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
-					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
+					if (ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
 						return false;
 					}
 					return true;
@@ -50,7 +50,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 	@Override
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
-		if(isSecurityProvider(connection)) {
+		if (isSecurityProvider(connection)) {
 			return Textures.LOGISTICSPIPE_SECURITY_TEXTURE;
 		}
 		return super.getNonRoutedTexture(connection);
@@ -58,35 +58,35 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 	@Override
 	public boolean isLockedExit(ForgeDirection orientation) {
-		if(isPowerJunction(orientation) || isSecurityProvider(orientation)) {
+		if (isPowerJunction(orientation) || isSecurityProvider(orientation)) {
 			return true;
 		}
 		return super.isLockedExit(orientation);
 	}
-	
+
 	private boolean isPowerJunction(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
-		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
+		if (tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
 			return false;
 		}
 
-		if(tilePipe instanceof LogisticsPowerJunctionTileEntity) {
+		if (tilePipe instanceof LogisticsPowerJunctionTileEntity) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	private boolean isSecurityProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
-		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
+		if (tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
 			return false;
 		}
-		if(tilePipe instanceof LogisticsSecurityTileEntity) {
+		if (tilePipe instanceof LogisticsSecurityTileEntity) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_TEXTURE;
@@ -101,36 +101,35 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
-/*
-	@Override
-	public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == Configs.ItemHUDId + 256 && MainProxy.isServer()) {
-			if(getRoutedPowerProviders() != null && getRoutedPowerProviders().size() > 0) {
-//TODO Must be handled manualy
-				MainProxy.sendToAllPlayers(new Packet3Chat("Connected Power: " + getRoutedPowerProviders().get(0).getPowerLevel() + " LP"));
+
+	/*
+		@Override
+		public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer) {
+			if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == Configs.ItemHUDId + 256 && MainProxy.isServer()) {
+				if(getRoutedPowerProviders() != null && getRoutedPowerProviders().size() > 0) {
+	//TODO Must be handled manualy
+					MainProxy.sendToAllPlayers(new Packet3Chat("Connected Power: " + getRoutedPowerProviders().get(0).getPowerLevel() + " LP"));
+				}
+				return true;
+			} else {
+				return super.blockActivated(world, i, j, k, entityplayer);
 			}
-			return true;
-		} else {
-			return super.blockActivated(world, i, j, k, entityplayer);
 		}
-	}
-*/
+	*/
 
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
 		itemSinkModule.registerSlot(0);
 	}
-	
+
 	@Override
 	public Set<ItemIdentifier> getSpecificInterests() {
-		if(this.itemSinkModule.isDefaultRoute())
-			return null;
+		if (this.itemSinkModule.isDefaultRoute()) return null;
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
-		for(int i=0; i<9;i++){
+		for (int i = 0; i < 9; i++) {
 			ItemIdentifierStack item = this.itemSinkModule.getFilterInventory().getIDStackInSlot(i);
-			if(item != null)
-				l1.add(item.getItem());
+			if (item != null) l1.add(item.getItem());
 		}
 		return l1;
 	}

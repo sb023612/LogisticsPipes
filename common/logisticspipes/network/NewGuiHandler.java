@@ -27,9 +27,12 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class NewGuiHandler {
+public final class NewGuiHandler {
+
 	public static List<GuiProvider> guilist;
 	public static Map<Class<? extends GuiProvider>, GuiProvider> guimap;
+
+	private NewGuiHandler() {}
 
 	@SuppressWarnings("unchecked")
 	// Suppressed because this cast should never fail.
@@ -43,6 +46,7 @@ public class NewGuiHandler {
 	public static final void intialize() {
 		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath.from(NewGuiHandler.class.getClassLoader()).getTopLevelClassesRecursive("logisticspipes.network.guis"));
 		Collections.sort(classes, new Comparator<ClassInfo>() {
+
 			@Override
 			public int compare(ClassInfo o1, ClassInfo o2) {
 				return o1.getSimpleName().compareTo(o2.getSimpleName());
@@ -65,14 +69,14 @@ public class NewGuiHandler {
 
 	@SneakyThrows(IOException.class)
 	public static void openGui(GuiProvider guiProvider, EntityPlayer oPlayer) {
-		if(!(oPlayer instanceof EntityPlayerMP)) throw new UnsupportedOperationException("Gui can only be opened on the server side");
+		if (!(oPlayer instanceof EntityPlayerMP)) throw new UnsupportedOperationException("Gui can only be opened on the server side");
 		EntityPlayerMP player = (EntityPlayerMP) oPlayer;
 		Container container = guiProvider.getContainer(player);
 		player.incrementWindowID();
-        player.closeContainer();
-        int windowId = player.currentWindowId;
+		player.closeContainer();
+		int windowId = player.currentWindowId;
 
-        GUIPacket packet = PacketHandler.getPacket(GUIPacket.class);
+		GUIPacket packet = PacketHandler.getPacket(GUIPacket.class);
 		LPDataOutputStream data = new LPDataOutputStream();
 		guiProvider.writeData(data);
 		packet.setGuiID(guiProvider.getId());
@@ -81,10 +85,10 @@ public class NewGuiHandler {
 		MainProxy.sendPacketToPlayer(packet, (Player) player);
 
 		player.openContainer = container;
-        player.openContainer.windowId = windowId;
-        player.openContainer.addCraftingToCrafters(player);
+		player.openContainer.windowId = windowId;
+		player.openContainer.addCraftingToCrafters(player);
 	}
-	
+
 	@SneakyThrows(IOException.class)
 	@SideOnly(Side.CLIENT)
 	public static void openGui(GUIPacket packet, EntityPlayer player) {
@@ -94,7 +98,7 @@ public class NewGuiHandler {
 		LogisticsBaseGuiScreen screen;
 		try {
 			screen = (LogisticsBaseGuiScreen) provider.getClientGui(player);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			LogisticsPipes.log.severe(packet.getClass().getName());
 			LogisticsPipes.log.severe(packet.toString());
 			throw new RuntimeException(e);

@@ -14,7 +14,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class StatUpdate extends CoordinatesPacket {
 
 	@Setter
@@ -26,7 +26,7 @@ public class StatUpdate extends CoordinatesPacket {
 	private long stat_lifetime_recieved;
 	private long stat_lifetime_relayed;
 	private int server_routing_table_size;
-	
+
 	public StatUpdate(int id) {
 		super(id);
 	}
@@ -66,13 +66,12 @@ public class StatUpdate extends CoordinatesPacket {
 		stat_lifetime_recieved = pipe.stat_lifetime_recieved;
 		stat_lifetime_relayed = pipe.stat_lifetime_relayed;
 		int numentries = 0;
-		for(List<ExitRoute> route : pipe.getRouter().getRouteTable()) {
-			if(route != null && !route.isEmpty())
-				++numentries;
+		for (List<ExitRoute> route : pipe.getRouter().getRouteTable()) {
+			if (route != null && !route.isEmpty()) ++numentries;
 		}
 		server_routing_table_size = numentries;
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		initData();
@@ -98,4 +97,3 @@ public class StatUpdate extends CoordinatesPacket {
 		server_routing_table_size = data.readInt();
 	}
 }
-

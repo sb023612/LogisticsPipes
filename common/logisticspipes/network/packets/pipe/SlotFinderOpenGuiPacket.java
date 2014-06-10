@@ -24,13 +24,13 @@ import net.minecraft.item.ItemStack;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SlotFinderOpenGuiPacket extends CoordinatesPacket {
-	
+
 	@Getter
 	@Setter
 	private int slot;
-	
+
 	public SlotFinderOpenGuiPacket(int id) {
 		super(id);
 	}
@@ -41,18 +41,18 @@ public class SlotFinderOpenGuiPacket extends CoordinatesPacket {
 		int savedEquipped = player.inventory.currentItem;
 		boolean foundSlot = false;
 		//try to find a empty slot
-		for(int i = 0; i < 9; i++) {
-			if(player.inventory.getStackInSlot(i) == null) {
+		for (int i = 0; i < 9; i++) {
+			if (player.inventory.getStackInSlot(i) == null) {
 				foundSlot = true;
 				player.inventory.currentItem = i;
 				break;
 			}
 		}
 		//okay, anything that's a block?
-		if(!foundSlot) {
-			for(int i = 0; i < 9; i++) {
+		if (!foundSlot) {
+			for (int i = 0; i < 9; i++) {
 				ItemStack is = player.inventory.getStackInSlot(i);
-				if(is.getItem() instanceof ItemBlock) {
+				if (is.getItem() instanceof ItemBlock) {
 					foundSlot = true;
 					player.inventory.currentItem = i;
 					break;
@@ -60,14 +60,14 @@ public class SlotFinderOpenGuiPacket extends CoordinatesPacket {
 			}
 		}
 		//give up and select whatever is right of the current slot
-		if(!foundSlot) {
+		if (!foundSlot) {
 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
 		}
 
 		final WorldUtil worldUtil = new WorldUtil(player.worldObj, getPosX(), getPosY(), getPosZ());
 		boolean found = false;
 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			if(tile instanceof IInventory && !(SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory)tile) instanceof ISpecialInsertion)) continue;
+			if (tile instanceof IInventory && !(SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) tile) instanceof ISpecialInsertion)) continue;
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 				if (provider.canOpenGui(tile.tile)) {
 					found = true;
@@ -75,18 +75,17 @@ public class SlotFinderOpenGuiPacket extends CoordinatesPacket {
 				}
 			}
 
-			if (!found)
-				found = (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe));
+			if (!found) found = (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe));
 
 			if (found) {
 				Block block = player.worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[player.worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
-				if(SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
+				if (SimpleServiceLocator.enderStorageProxy.isEnderChestBlock(block)) {
 					SimpleServiceLocator.enderStorageProxy.openEnderChest(player.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				}
-				if(block != null) {
-					if(block.onBlockActivated(player.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)) {
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
+				if (block != null) {
+					if (block.onBlockActivated(player.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)) {
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SlotFinderActivatePacket.class).setTagetPosX(tile.tile.xCoord).setTagetPosY(tile.tile.yCoord).setTagetPosZ(tile.tile.zCoord).setSlot(getSlot()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 						break;
 					}
 				}
@@ -95,7 +94,7 @@ public class SlotFinderOpenGuiPacket extends CoordinatesPacket {
 
 		player.inventory.currentItem = savedEquipped;
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new SlotFinderOpenGuiPacket(getId());

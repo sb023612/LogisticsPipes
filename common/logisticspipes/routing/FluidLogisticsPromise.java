@@ -12,10 +12,11 @@ import logisticspipes.interfaces.routing.IFluidProvider;
 import logisticspipes.utils.FluidIdentifier;
 
 public class FluidLogisticsPromise {
+
 	public FluidIdentifier liquid;
 	public int amount;
 	public IFluidProvider sender;
-	
+
 	public FluidLogisticsPromise copy() {
 		FluidLogisticsPromise result = new FluidLogisticsPromise();
 		result.liquid = liquid;

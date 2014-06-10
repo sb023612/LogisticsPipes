@@ -16,12 +16,12 @@ public class FuzzyInventoryUtil extends InventoryUtil {
 	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> items = new TreeSet<ItemIdentifier>();
-		for (int i =0; i < _inventory.getSizeInventory(); i++){
+		for (int i = 0; i < _inventory.getSizeInventory(); i++) {
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null) continue;
-				items.add(ItemIdentifier.getIgnoringNBT(stack));
+			items.add(ItemIdentifier.getIgnoringNBT(stack));
 		}
 		return items;
 	}
-	
+
 }

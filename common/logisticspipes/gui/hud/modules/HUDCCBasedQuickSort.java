@@ -9,13 +9,13 @@ import net.minecraft.client.Minecraft;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class HUDCCBasedQuickSort implements IHUDModuleRenderer {
-	
+
 	private final ModuleCCBasedQuickSort module;
-	
+
 	public HUDCCBasedQuickSort(ModuleCCBasedQuickSort module) {
 		this.module = module;
 	}
-	
+
 	@Override
 	public void renderContent() {
 		Minecraft mc = FMLClientHandler.instance().getClient();

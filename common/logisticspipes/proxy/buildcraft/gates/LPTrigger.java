@@ -11,6 +11,7 @@ import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.api.gates.TriggerParameter;
 
 public abstract class LPTrigger implements ITrigger {
+
 	protected final int legacyId;
 	protected final String uniqueTag;
 
@@ -19,7 +20,6 @@ public abstract class LPTrigger implements ITrigger {
 		this.uniqueTag = uniqueTag;
 		ActionManager.registerTrigger(this);
 	}
-
 
 	@Override
 	public int getLegacyId() {
@@ -30,8 +30,8 @@ public abstract class LPTrigger implements ITrigger {
 	public String getUniqueTag() {
 		return uniqueTag;
 	}
-	
-    public abstract int getIconIndex();
+
+	public abstract int getIconIndex();
 
 	@Override
 	public boolean hasParameter() {
@@ -53,16 +53,13 @@ public abstract class LPTrigger implements ITrigger {
 		return new TriggerParameter();
 	}
 
-
-
 	@Override
 	public Icon getIcon() {
 		return Textures.LPactionIconProvider.getIcon(getIconIndex());
 	}
 
-
 	@Override
 	public void registerIcons(IconRegister iconRegister) {
-		Textures.LPactionIconProvider.registerIcons(iconRegister);	
+		Textures.LPactionIconProvider.registerIcons(iconRegister);
 	}
 }

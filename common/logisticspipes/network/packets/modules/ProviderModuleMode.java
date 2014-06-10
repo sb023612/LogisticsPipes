@@ -24,4 +24,3 @@ public class ProviderModuleMode extends IntegerCoordinatesPacket {
 		}
 	}
 }
-

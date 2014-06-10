@@ -24,11 +24,17 @@ import logisticspipes.utils.tuples.Triplet;
 public interface ILogisticsManager {
 
 	IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
+
 	Triplet<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude);
+
 	Triplet<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
+
 	LinkedList<ItemIdentifier> getCraftableItems(List<ExitRoute> list);
+
 	Map<ItemIdentifier, Integer> getAvailableItems(List<ExitRoute> list);
+
 	String getBetterRouterName(IRouter r);
+
 	int getAmountFor(ItemIdentifier item, List<ExitRoute> validDestinations);
 	//boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors, boolean realrequest, boolean denyCrafterAdding);
 	//boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors);

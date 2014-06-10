@@ -34,12 +34,12 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 			triggers.add(BuildCraftProxy.LogisticsFailedTrigger);
 			return triggers;
 		}
-		if(pipe instanceof PipeItemsCraftingLogistics) {
+		if (pipe instanceof PipeItemsCraftingLogistics) {
 			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
 			triggers.add(BuildCraftProxy.LogisticsCraftingTrigger);
 			return triggers;
 		}
-		if(pipe instanceof CoreRoutedPipe) {
+		if (pipe instanceof CoreRoutedPipe) {
 			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
 			//Only show this conditional on Gates that can accept parameters
 			if (pipe.hasGate() && pipe instanceof Pipe && ((Pipe<?>) pipe).gate.kind == Gate.GateKind.AND_4 || ((Pipe<?>) pipe).gate.kind == Gate.GateKind.OR_4) {
@@ -49,16 +49,16 @@ public class LogisticsTriggerProvider implements ITriggerProvider {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public LinkedList<ITrigger> getNeighborTriggers(Block block, TileEntity tile) {
-		if(tile instanceof LogisticsPowerJunctionTileEntity){
-			LinkedList<ITrigger> triggers = new  LinkedList<ITrigger>();
+		if (tile instanceof LogisticsPowerJunctionTileEntity) {
+			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
 			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);
 			return triggers;
 		}
-		if(tile instanceof LogisticsSolderingTileEntity){
-			LinkedList<ITrigger> triggers = new  LinkedList<ITrigger>();
+		if (tile instanceof LogisticsSolderingTileEntity) {
+			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
 			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);
 			return triggers;
 		}

@@ -19,13 +19,12 @@ public class RequestPipeDimension extends IntegerPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).dimension = getInteger();
-			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).refreshItems();
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
+			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).dimension = getInteger();
+			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).refreshItems();
 		} else {
 			GuiOrderer.dimensioncache = getInteger();
 			GuiOrderer.cachetime = System.currentTimeMillis();
 		}
 	}
 }
-

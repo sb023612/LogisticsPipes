@@ -45,96 +45,99 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-public class LogisticsWrapperHandler {
+public final class LogisticsWrapperHandler {
+
 	public static List<AbstractWrapper> wrapperController = new ArrayList<AbstractWrapper>();
 	private static Method m_defineClass = null;
-	
+
+	private LogisticsWrapperHandler() {}
+
 	public static IGenericProgressProvider getWrappedProgressProvider(String modId, String name, Class<? extends IGenericProgressProvider> providerClass) {
 		IGenericProgressProvider provider = null;
-		Throwable e = null; 
-		if(ModStatusHelper.isModLoaded(modId)) {
+		Throwable e = null;
+		if (ModStatusHelper.isModLoaded(modId)) {
 			try {
 				provider = providerClass.newInstance();
-			} catch(Exception e1) {
-				if(e1 instanceof VersionNotSupportedException) {
+			} catch (Exception e1) {
+				if (e1 instanceof VersionNotSupportedException) {
 					throw (VersionNotSupportedException) e1;
 				}
 				e1.printStackTrace();
 				e = e1;
-			} catch(NoClassDefFoundError e1) {
+			} catch (NoClassDefFoundError e1) {
 				e1.printStackTrace();
 				e = e1;
 			}
 		}
 		GenericProgressProviderWrapper instance = new GenericProgressProviderWrapper(provider, modId + ": " + name);
-		if(provider != null) {
+		if (provider != null) {
 			LogisticsPipes.log.info("Loaded " + name + " ProgressProvider");
 		} else {
-			if(e != null) {
-				((AbstractWrapper)instance).setState(WrapperState.Exception);
-				((AbstractWrapper)instance).setReason(e);
+			if (e != null) {
+				((AbstractWrapper) instance).setState(WrapperState.Exception);
+				((AbstractWrapper) instance).setReason(e);
 				LogisticsPipes.log.info("Couldn't loaded " + name + " ProgressProvider");
 			} else {
 				LogisticsPipes.log.info("Didn't loaded " + name + " ProgressProvider");
-				((AbstractWrapper)instance).setState(WrapperState.ModMissing);
+				((AbstractWrapper) instance).setState(WrapperState.ModMissing);
 			}
 		}
 		instance.setModId(modId);
 		wrapperController.add(instance);
 		return instance;
 	}
-	
+
 	public static ICraftingRecipeProvider getWrappedRecipeProvider(String modId, String name, Class<? extends ICraftingRecipeProvider> providerClass) {
 		ICraftingRecipeProvider provider = null;
-		Throwable e = null; 
-		if(ModStatusHelper.isModLoaded(modId)) {
+		Throwable e = null;
+		if (ModStatusHelper.isModLoaded(modId)) {
 			try {
 				provider = providerClass.newInstance();
-			} catch(Exception e1) {
-				if(e1 instanceof VersionNotSupportedException) {
+			} catch (Exception e1) {
+				if (e1 instanceof VersionNotSupportedException) {
 					throw (VersionNotSupportedException) e1;
 				}
 				e1.printStackTrace();
 				e = e1;
-			} catch(NoClassDefFoundError e1) {
+			} catch (NoClassDefFoundError e1) {
 				e1.printStackTrace();
 				e = e1;
 			}
 		}
 		CraftingRecipeProviderWrapper instance = new CraftingRecipeProviderWrapper(provider, name);
-		if(provider != null) {
+		if (provider != null) {
 			LogisticsPipes.log.info("Loaded " + name + " RecipeProvider");
 		} else {
-			if(e != null) {
-				((AbstractWrapper)instance).setState(WrapperState.Exception);
-				((AbstractWrapper)instance).setReason(e);
+			if (e != null) {
+				((AbstractWrapper) instance).setState(WrapperState.Exception);
+				((AbstractWrapper) instance).setReason(e);
 				LogisticsPipes.log.info("Couldn't loaded " + name + " RecipeProvider");
 			} else {
 				LogisticsPipes.log.info("Didn't loaded " + name + " RecipeProvider");
-				((AbstractWrapper)instance).setState(WrapperState.ModMissing);
+				((AbstractWrapper) instance).setState(WrapperState.ModMissing);
 			}
 		}
 		instance.setModId(modId);
 		wrapperController.add(instance);
 		return instance;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy) throws NoSuchFieldException, SecurityException, ClassNotFoundException, IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
+	public static <T> T getWrappedProxy(String modId, Class<T> interfaze, Class<? extends T> proxyClazz, T dummyProxy) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
 		String fieldName = interfaze.getName().replace('.', '/');
 		String proxyName = interfaze.getSimpleName().substring(1);
-		if(!proxyName.endsWith("Proxy")) {
+		if (!proxyName.endsWith("Proxy")) {
 			throw new RuntimeException("UnuportedProxyName: " + proxyName);
 		}
 		proxyName = proxyName.substring(0, proxyName.length() - 5);
 		String className = "logisticspipes/asm/wrapper/" + proxyName + "ProxyWrapper";
 		String classFile = interfaze.getSimpleName().substring(1) + "Wrapper.java";
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		
+
 		cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, className, null, "logisticspipes/asm/wrapper/AbstractWrapper", new String[] { fieldName });
-		
+
 		cw.visitSource(classFile, null);
-		
+
 		{
 			FieldVisitor fv = cw.visitField(ACC_PRIVATE, "proxy", "L" + fieldName + ";", null, null);
 			fv.visitEnd();
@@ -176,7 +179,7 @@ public class LogisticsWrapperHandler {
 			mv.visitEnd();
 		}
 		int lineAddition = 100;
-		for(Method method: interfaze.getMethods()) {
+		for (Method method : interfaze.getMethods()) {
 			addProxyMethod(cw, method, fieldName, className, lineAddition);
 			lineAddition += 10;
 		}
@@ -202,52 +205,52 @@ public class LogisticsWrapperHandler {
 		addGetName(cw, className, proxyName);
 		addGetTypeName(cw, className, "Proxy");
 		cw.visitEnd();
-		
+
 		String lookfor = className.replace('/', '.');
-		
+
 		Class<?> clazz = loadClass(cw.toByteArray(), lookfor);
-		
+
 		T proxy = null;
-		Throwable e = null; 
-		if(ModStatusHelper.isModLoaded(modId)) {
+		Throwable e = null;
+		if (ModStatusHelper.isModLoaded(modId)) {
 			try {
 				proxy = proxyClazz.newInstance();
-			} catch(Exception e1) {
-				if(e1 instanceof VersionNotSupportedException) {
+			} catch (Exception e1) {
+				if (e1 instanceof VersionNotSupportedException) {
 					throw (VersionNotSupportedException) e1;
 				}
 				e1.printStackTrace();
 				e = e1;
-			} catch(NoClassDefFoundError e1) {
+			} catch (NoClassDefFoundError e1) {
 				e1.printStackTrace();
 				e = e1;
 			}
 		}
-		T instance = (T) clazz.getConstructor(new Class<?>[]{interfaze, interfaze}).newInstance(dummyProxy, proxy);
-		if(proxy != null) {
+		T instance = (T) clazz.getConstructor(new Class<?>[] { interfaze, interfaze }).newInstance(dummyProxy, proxy);
+		if (proxy != null) {
 			LogisticsPipes.log.info("Loaded " + proxyName + "Proxy");
 		} else {
 			LogisticsPipes.log.info("Loaded " + proxyName + " DummyProxy");
-			if(e != null) {
-				((AbstractWrapper)instance).setState(WrapperState.Exception);
-				((AbstractWrapper)instance).setReason(e);
+			if (e != null) {
+				((AbstractWrapper) instance).setState(WrapperState.Exception);
+				((AbstractWrapper) instance).setReason(e);
 			} else {
-				((AbstractWrapper)instance).setState(WrapperState.ModMissing);
+				((AbstractWrapper) instance).setState(WrapperState.ModMissing);
 			}
 		}
-		((AbstractWrapper)instance).setModId(modId);
+		((AbstractWrapper) instance).setModId(modId);
 		wrapperController.add((AbstractWrapper) instance);
 		return instance;
 	}
-	
-	private static Class<?> loadClass(byte[] data, String lookfor) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		if(m_defineClass == null) {
+
+	private static Class<?> loadClass(byte[] data, String lookfor) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		if (m_defineClass == null) {
 			m_defineClass = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
 			m_defineClass.setAccessible(true);
 		}
 		return (Class<?>) m_defineClass.invoke(Launch.classLoader, data, 0, data.length);
 	}
-	
+
 	private static void addGetTypeName(ClassWriter cw, String className, String type) {
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "getTypeName", "()Ljava/lang/String;", null, null);
 		mv.visitCode();
@@ -282,17 +285,17 @@ public class LogisticsWrapperHandler {
 		Class<?> retclazz = method.getReturnType();
 		int eIndex = 1;
 		StringBuilder desc = new StringBuilder("(");
-		for(Class<?> clazz:method.getParameterTypes()) {
+		for (Class<?> clazz : method.getParameterTypes()) {
 			desc.append(getClassSignature(clazz));
 			eIndex++;
 		}
 		eIndex++;
 		desc.append(")");
 		int returnType = 0;
-		if(retclazz == null || retclazz == void.class) {
+		if (retclazz == null || retclazz == void.class) {
 			desc.append("V");
 			returnType = RETURN;
-		} else if(retclazz.isPrimitive()) {
+		} else if (retclazz.isPrimitive()) {
 			desc.append(getPrimitiveMapping(retclazz));
 			returnType = getPrimitiveReturnMapping(retclazz);
 		} else {
@@ -363,18 +366,18 @@ public class LogisticsWrapperHandler {
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
 	}
-	
+
 	private static void addMethodParameterLoad(MethodVisitor mv, Method method) {
-		int i=1;
-		for(Class<?> clazz:method.getParameterTypes()) {
-			if(clazz.isPrimitive()) {
-			    if(clazz == int.class || clazz == boolean.class || clazz == short.class || clazz == byte.class) {
+		int i = 1;
+		for (Class<?> clazz : method.getParameterTypes()) {
+			if (clazz.isPrimitive()) {
+				if (clazz == int.class || clazz == boolean.class || clazz == short.class || clazz == byte.class) {
 					mv.visitVarInsn(ILOAD, i);
-				} else if(clazz == long.class) {
+				} else if (clazz == long.class) {
 					mv.visitVarInsn(LLOAD, i);
-				} else if(clazz == float.class) {
+				} else if (clazz == float.class) {
 					mv.visitVarInsn(FLOAD, i);
-				} else if(clazz == double.class) {
+				} else if (clazz == double.class) {
 					mv.visitVarInsn(DLOAD, i);
 				} else {
 					throw new UnsupportedOperationException("Unmapped clazz: " + clazz.getName());
@@ -385,54 +388,54 @@ public class LogisticsWrapperHandler {
 			i++;
 		}
 	}
-	
+
 	private static void addParameterVars(MethodVisitor mv, Method method, Label l3, Label l8) {
-		int i=1;
-		for(Class<?> clazz:method.getParameterTypes()) {
+		int i = 1;
+		for (Class<?> clazz : method.getParameterTypes()) {
 			mv.visitLocalVariable("par" + i, getClassSignature(clazz), null, l3, l8, i);
 			i++;
 		}
 	}
 
 	private static String getPrimitiveMapping(Class<?> clazz) {
-		if(clazz == int.class) {
+		if (clazz == int.class) {
 			return "I";
-		} else if(clazz == long.class) {
+		} else if (clazz == long.class) {
 			return "J";
-		} else if(clazz == float.class) {
+		} else if (clazz == float.class) {
 			return "F";
-		} else if(clazz == double.class) {
+		} else if (clazz == double.class) {
 			return "D";
-		} else if(clazz == boolean.class) {
+		} else if (clazz == boolean.class) {
 			return "Z";
-		} else if(clazz == short.class) {
+		} else if (clazz == short.class) {
 			return "S";
-		} else if(clazz == byte.class) {
+		} else if (clazz == byte.class) {
 			return "B";
 		} else {
 			throw new UnsupportedOperationException("Unmapped clazz: " + clazz.getName());
 		}
 	}
-	
+
 	private static int getPrimitiveReturnMapping(Class<?> clazz) {
-		if(clazz == int.class || clazz == boolean.class || clazz == short.class || clazz == byte.class) {
+		if (clazz == int.class || clazz == boolean.class || clazz == short.class || clazz == byte.class) {
 			return IRETURN;
-		} else if(clazz == long.class) {
+		} else if (clazz == long.class) {
 			return LRETURN;
-		} else if(clazz == float.class) {
+		} else if (clazz == float.class) {
 			return FRETURN;
-		} else if(clazz == double.class) {
+		} else if (clazz == double.class) {
 			return DRETURN;
 		} else {
 			throw new UnsupportedOperationException("Unmapped clazz: " + clazz.getName());
 		}
 	}
-	
+
 	private static String getClassSignature(Class<?> clazz) {
-		if(clazz.isPrimitive()) {
+		if (clazz.isPrimitive()) {
 			return getPrimitiveMapping(clazz);
 		} else {
-			if(clazz.isArray()) {
+			if (clazz.isArray()) {
 				return clazz.getName().replace('.', '/');
 			} else {
 				return "L" + clazz.getName().replace('.', '/') + ";";

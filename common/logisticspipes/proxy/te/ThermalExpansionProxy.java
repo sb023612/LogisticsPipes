@@ -40,17 +40,17 @@ import cpw.mods.fml.common.Mod;
 public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	public ThermalExpansionProxy() {
-		if(Configs.TE_PIPE_SUPPORT) {
+		if (Configs.TE_PIPE_SUPPORT) {
 			//Check TE Version
 			String TEVersion = null;
 			try {
 				TEVersion = Class.forName("thermalexpansion.ThermalExpansion").getAnnotation(Mod.class).version();
-			} catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			String expectedTEVersion = "3.0.0.5";
-			if(TEVersion != null) {
-				if(!TEVersion.contains(expectedTEVersion)) {
+			if (TEVersion != null) {
+				if (!TEVersion.contains(expectedTEVersion)) {
 					throw new VersionNotSupportedException("TE", TEVersion, expectedTEVersion, " when you have TE Conduit support enabled");
 				}
 			} else {
@@ -59,7 +59,7 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 			SimpleServiceLocator.pipeInformaitonManager.registerProvider(IConduit.class, TEPipeInformationProvider.class);
 		}
 	}
-	
+
 	@Override
 	public boolean isTesseract(TileEntity tile) {
 		return tile instanceof TileTesseract;
@@ -67,20 +67,20 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public List<TileEntity> getConnectedTesseracts(TileEntity tile) {
-		List<IEnderAttuned> interfaces = ((TileTesseract)tile).getValidItemOutputs();
-	    List<TileEntity> validOutputs = new LinkedList<TileEntity>();
-	    for (IEnderAttuned object: interfaces) {
-	    	if(object instanceof TileEntity) {
-	    		validOutputs.add((TileEntity) object);
-	    	}
-	    }
-	    return validOutputs;
+		List<IEnderAttuned> interfaces = ((TileTesseract) tile).getValidItemOutputs();
+		List<TileEntity> validOutputs = new LinkedList<TileEntity>();
+		for (IEnderAttuned object : interfaces) {
+			if (object instanceof TileEntity) {
+				validOutputs.add((TileEntity) object);
+			}
+		}
+		return validOutputs;
 	}
 
 	@Override
 	public boolean isItemConduit(TileEntity tile) {
-		if(tile instanceof IConduit) {
-			return ((IConduit)tile).isItemConduit();
+		if (tile instanceof IConduit) {
+			return ((IConduit) tile).isItemConduit();
 		}
 		return false;
 	}
@@ -92,11 +92,11 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public void handleLPInternalConduitChunkUnload(LogisticsTileGenericPipe pipe) {
-		if(!Configs.TE_PIPE_SUPPORT) return;
-		if(MainProxy.isClient(pipe.worldObj)) return;
-		for(int i=0;i<6;i++) {
+		if (!Configs.TE_PIPE_SUPPORT) return;
+		if (MainProxy.isClient(pipe.worldObj)) return;
+		for (int i = 0; i < 6; i++) {
 			LPConduitItem conduit = pipe.getTEConduit(i);
-			if(conduit.gridBase != null) {
+			if (conduit.gridBase != null) {
 				conduit.tileUnloading();
 				conduit.gridBase.removeConduit(conduit);
 				conduit.setGrid(null);
@@ -106,8 +106,8 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public void handleLPInternalConduitRemove(LogisticsTileGenericPipe pipe) {
-		if(!Configs.TE_PIPE_SUPPORT) return;
-		for(int i=0;i<6;i++) {
+		if (!Configs.TE_PIPE_SUPPORT) return;
+		for (int i = 0; i < 6; i++) {
 			LPConduitItem conduit = pipe.getTEConduit(i);
 			conduit.onRemoved();
 		}
@@ -115,8 +115,8 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public void handleLPInternalConduitNeighborChange(LogisticsTileGenericPipe pipe) {
-		if(!Configs.TE_PIPE_SUPPORT) return;
-		for(int i=0;i<6;i++) {
+		if (!Configs.TE_PIPE_SUPPORT) return;
+		for (int i = 0; i < 6; i++) {
 			LPConduitItem conduit = pipe.getTEConduit(i);
 			conduit.onNeighborChanged();
 		}
@@ -124,8 +124,8 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public void handleLPInternalConduitUpdate(LogisticsTileGenericPipe pipe) {
-		if(!Configs.TE_PIPE_SUPPORT) return;
-		for(int i=0;i<6;i++) {
+		if (!Configs.TE_PIPE_SUPPORT) return;
+		for (int i = 0; i < 6; i++) {
 			LPConduitItem conduit = pipe.getTEConduit(i);
 			conduit.updateLPStatus();
 		}
@@ -133,38 +133,38 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public boolean insertIntoConduit(LPTravelingItemServer arrivingItem, TileEntity tile, CoreRoutedPipe pipe) {
-		if(!Configs.TE_PIPE_SUPPORT) return false;
-		if(MainProxy.isClient(pipe.getWorld())) return true;
-		ConduitItem conduitItem = ((IConduit)tile).getConduitItem();
+		if (!Configs.TE_PIPE_SUPPORT) return false;
+		if (MainProxy.isClient(pipe.getWorld())) return true;
+		ConduitItem conduitItem = ((IConduit) tile).getConduitItem();
 		return routeItem(conduitItem, arrivingItem.getItemIdentifierStack().makeNormalStack(), arrivingItem.getInfo(), arrivingItem.output);
 	}
-	
+
 	private boolean routeItem(ConduitItem conduit, ItemStack stack, ItemRoutingInformation itemRoutingInformation, ForgeDirection dir) {
-		if(!Configs.TE_PIPE_SUPPORT) return false;
+		if (!Configs.TE_PIPE_SUPPORT) return false;
 		conduit.cacheRoutes();
 		routeInfo curInfo = null;
-		for(Iterator<ItemRoute> i = conduit.validOutputs.iterator(); i.hasNext();) {
-			ItemRoute aRoute = (ItemRoute)i.next();
-			if(itemRoutingInformation != null) {
+		for (Iterator<ItemRoute> i = conduit.validOutputs.iterator(); i.hasNext();) {
+			ItemRoute aRoute = (ItemRoute) i.next();
+			if (itemRoutingInformation != null) {
 				int result = doRouteRoutedLPItem(aRoute, curInfo, stack, conduit, dir, itemRoutingInformation);
-				if(result != -1) return true;
+				if (result != -1) return true;
 			} else {
 				int result = conduit.doRouteItem(aRoute, curInfo, stack, dir.ordinal());
-				if(result != -1) return true;
+				if (result != -1) return true;
 			}
 		}
 		LPConduitItem.dontCheckRoutes = true;
-		for(Iterator<ItemRoute> i = conduit.validOutputs.iterator(); i.hasNext();) {
-			ItemRoute aRoute = (ItemRoute)i.next();
-			if(itemRoutingInformation != null) {
+		for (Iterator<ItemRoute> i = conduit.validOutputs.iterator(); i.hasNext();) {
+			ItemRoute aRoute = (ItemRoute) i.next();
+			if (itemRoutingInformation != null) {
 				int result = doRouteRoutedLPItem(aRoute, curInfo, stack, conduit, dir, itemRoutingInformation);
-				if(result != -1) {
+				if (result != -1) {
 					LPConduitItem.dontCheckRoutes = false;
 					return true;
 				}
 			} else {
 				int result = conduit.doRouteItem(aRoute, curInfo, stack, dir.ordinal());
-				if(result != -1) {
+				if (result != -1) {
 					LPConduitItem.dontCheckRoutes = false;
 					return true;
 				}
@@ -173,15 +173,15 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 		LPConduitItem.dontCheckRoutes = false;
 		return false;
 	}
-	
+
 	private int doRouteRoutedLPItem(ItemRoute aRoute, routeInfo curInfo, ItemStack theItem, ConduitItem conduit, ForgeDirection dir, ItemRoutingInformation itemRoutingInformation) {
-		if(!Configs.TE_PIPE_SUPPORT) return -1;
-		if(((ConduitBase)(aRoute.endPoint)).isNode) {
+		if (!Configs.TE_PIPE_SUPPORT) return -1;
+		if (((ConduitBase) (aRoute.endPoint)).isNode) {
 			ItemStack stack = theItem.copy();
-			if(aRoute.endPoint instanceof LPConduitItem) {
-				curInfo = ((LPConduitItem)aRoute.endPoint).canRouteLPItem(stack, itemRoutingInformation, aRoute);
+			if (aRoute.endPoint instanceof LPConduitItem) {
+				curInfo = ((LPConduitItem) aRoute.endPoint).canRouteLPItem(stack, itemRoutingInformation, aRoute);
 			}
-			if(curInfo != null && curInfo.canRoute) {
+			if (curInfo != null && curInfo.canRoute) {
 				theItem = theItem.copy();
 				theItem.stackSize -= curInfo.stackSize;
 				ItemRoute itemRoute = aRoute.copy();
@@ -197,13 +197,13 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public boolean isSideFree(TileEntity tile, int side) {
-		if(!Configs.TE_PIPE_SUPPORT) return false;
-		return ((IConduit)tile).getConduit().tile().occlusionTest(((IConduit)tile).getConduit().tile().partList(), PropsConduit.CONDUIT_OCCLUSION[side]);
+		if (!Configs.TE_PIPE_SUPPORT) return false;
+		return ((IConduit) tile).getConduit().tile().occlusionTest(((IConduit) tile).getConduit().tile().partList(), PropsConduit.CONDUIT_OCCLUSION[side]);
 	}
 
 	@Override
 	public int getMaxEnergyStored(TileEntity tile, ForgeDirection opposite) {
-		return ((IEnergyHandler)tile).getMaxEnergyStored(opposite);
+		return ((IEnergyHandler) tile).getMaxEnergyStored(opposite);
 	}
 
 	@Override
@@ -213,43 +213,25 @@ public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public int getEnergyStored(TileEntity tile, ForgeDirection opposite) {
-		return ((IEnergyHandler)tile).getEnergyStored(opposite);
+		return ((IEnergyHandler) tile).getEnergyStored(opposite);
 	}
 
 	@Override
 	public boolean canInterface(TileEntity tile, ForgeDirection opposite) {
-		return ((IEnergyHandler)tile).canInterface(opposite);
+		return ((IEnergyHandler) tile).canInterface(opposite);
 	}
 
 	@Override
 	public int receiveEnergy(TileEntity tile, ForgeDirection opposite, int i, boolean b) {
-		return ((IEnergyHandler)tile).receiveEnergy(opposite, i, b);
+		return ((IEnergyHandler) tile).receiveEnergy(opposite, i, b);
 	}
 
 	@Override
 	public void addCraftingRecipes() {
 		LocalCraftingManager craftingManager = RecipeManager.craftingManager;
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_RF_SUPPLIER), CraftingDependency.Power_Distribution, new Object[] { 
-			false, 
-			"PEP", 
-			"RBR", 
-			"PTP", 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
-			Character.valueOf('P'), Item.paper, 
-			Character.valueOf('E'), new ItemStack(TEBlocks.blockDynamo, 1, 0), 
-			Character.valueOf('T'), TEItems.powerCoilSilver, 
-			Character.valueOf('R'), TEItems.powerCoilGold
-		});
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER), CraftingDependency.Power_Distribution, new Object[] { 
-			false, 
-			"PEP", 
-			"RBR", 
-			"PTP", 
-			Character.valueOf('B'), Block.blockRedstone,
-			Character.valueOf('P'), Item.paper, 
-			Character.valueOf('E'), new ItemStack(TEBlocks.blockDynamo, 1, 0), 
-			Character.valueOf('T'), TEItems.powerCoilSilver, 
-			Character.valueOf('R'), TEItems.powerCoilGold
-		});
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_RF_SUPPLIER), CraftingDependency.Power_Distribution, new Object[] { false, "PEP", "RBR", "PTP", Character.valueOf('B'), new ItemStack(LogisticsPipes.UpgradeItem, 1, ItemUpgrade.POWER_TRANSPORTATION),
+				Character.valueOf('P'), Item.paper, Character.valueOf('E'), new ItemStack(TEBlocks.blockDynamo, 1, 0), Character.valueOf('T'), TEItems.powerCoilSilver, Character.valueOf('R'), TEItems.powerCoilGold });
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER), CraftingDependency.Power_Distribution,
+				new Object[] { false, "PEP", "RBR", "PTP", Character.valueOf('B'), Block.blockRedstone, Character.valueOf('P'), Item.paper, Character.valueOf('E'), new ItemStack(TEBlocks.blockDynamo, 1, 0), Character.valueOf('T'), TEItems.powerCoilSilver, Character.valueOf('R'), TEItems.powerCoilGold });
 	}
 }

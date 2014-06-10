@@ -4,7 +4,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.util.ResourceLocation;
 
-public class PipeLogisticsChassiMk5 extends PipeLogisticsChassi{
+public class PipeLogisticsChassiMk5 extends PipeLogisticsChassi {
 
 	public PipeLogisticsChassiMk5(int itemID) {
 		super(itemID);
@@ -19,6 +19,7 @@ public class PipeLogisticsChassiMk5 extends PipeLogisticsChassi{
 	public int getChassiSize() {
 		return 8;
 	}
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/chassipipe_size8.png");
 
 	@Override

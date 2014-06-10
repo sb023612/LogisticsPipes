@@ -21,13 +21,12 @@ public class HUDStopModuleWatchingPacket extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger()) instanceof IModuleWatchReciver) {
+		if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger()) instanceof IModuleWatchReciver) {
 			IModuleWatchReciver handler = (IModuleWatchReciver) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger());
 			handler.stopWatching(player);
 		}
 	}
 }
-

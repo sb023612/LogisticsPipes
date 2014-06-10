@@ -27,39 +27,39 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 public class RequestRoutingLasersPacket extends CoordinatesPacket {
-	
+
 	private boolean firstPipe = false;
-	
+
 	public RequestRoutingLasersPacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
-		if(tile == null) return;
-		if(tile.pipe instanceof CoreRoutedPipe) {
-			IRouter router = ((CoreRoutedPipe)tile.pipe).getRouter();
+		if (tile == null) return;
+		if (tile.pipe instanceof CoreRoutedPipe) {
+			IRouter router = ((CoreRoutedPipe) tile.pipe).getRouter();
 
 			//this is here to allow players to manually trigger a network-wide LSA update
 			router.forceLsaUpdate();
 
 			List<List<ExitRoute>> exits = router.getRouteTable();
 			HashMap<ForgeDirection, ArrayList<IRouter>> routers = new HashMap<ForgeDirection, ArrayList<IRouter>>();
-			for(List<ExitRoute> exit:exits) {
-				if(exit == null) continue;
-				for(ExitRoute e:exit) {
-					if(!routers.containsKey(e.exitOrientation)) {
+			for (List<ExitRoute> exit : exits) {
+				if (exit == null) continue;
+				for (ExitRoute e : exit) {
+					if (!routers.containsKey(e.exitOrientation)) {
 						routers.put(e.exitOrientation, new ArrayList<IRouter>());
 					}
-					if(!routers.get(e.exitOrientation).contains(e.destination)) {
+					if (!routers.get(e.exitOrientation).contains(e.destination)) {
 						routers.get(e.exitOrientation).add(e.destination);
 					}
 				}
 			}
 			ArrayList<LaserData> lasers = new ArrayList<LaserData>();
 			firstPipe = true;
-			for(ForgeDirection dir: routers.keySet()) {
+			for (ForgeDirection dir : routers.keySet()) {
 				handleRouteInDirection(tile, dir, routers.get(dir), lasers, EnumSet.allOf(PipeRoutingConnectionType.class));
 			}
 			lasers = compressLasers(lasers);
@@ -72,35 +72,36 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		lasers.add(new LaserData(pipe.xCoord, pipe.yCoord, pipe.zCoord, dir, connectionType).setStartPipe(firstPipe));
 		firstPipe = false;
 		HashMap<CoreRoutedPipe, ExitRoute> map = PathFinder.paintAndgetConnectedRoutingPipes(pipe, dir, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, new IPaintPath() {
+
 			@Override
 			public void addLaser(World worldObj, LaserData laser) {
-				if(pipe.getWorld() == worldObj) {
+				if (pipe.getWorld() == worldObj) {
 					lasers.add(laser);
 				}
 			}
 		}, connectionType);
-		for(CoreRoutedPipe connectedPipe: map.keySet()) {
+		for (CoreRoutedPipe connectedPipe : map.keySet()) {
 			IRouter newRouter = connectedPipe.getRouter();
-			if(!connectedRouters.contains(newRouter)) continue;
+			if (!connectedRouters.contains(newRouter)) continue;
 			connectedRouters.remove(newRouter);
 			HashMap<ForgeDirection, ArrayList<IRouter>> routers = new HashMap<ForgeDirection, ArrayList<IRouter>>();
 			Iterator<IRouter> iRouter = connectedRouters.iterator();
-			while(iRouter.hasNext()) {
+			while (iRouter.hasNext()) {
 				IRouter router = iRouter.next();
 				List<ExitRoute> exit = newRouter.getDistanceTo(router);
-				if(exit == null) continue;
+				if (exit == null) continue;
 				iRouter.remove();
-				for(ExitRoute e:exit) {
-					if(e.exitOrientation.equals(map.get(connectedPipe).insertOrientation)) continue;
-					if(!routers.containsKey(e.exitOrientation)) {
+				for (ExitRoute e : exit) {
+					if (e.exitOrientation.equals(map.get(connectedPipe).insertOrientation)) continue;
+					if (!routers.containsKey(e.exitOrientation)) {
 						routers.put(e.exitOrientation, new ArrayList<IRouter>());
 					}
-					if(!routers.get(e.exitOrientation).contains(e.destination)) {
+					if (!routers.get(e.exitOrientation).contains(e.destination)) {
 						routers.get(e.exitOrientation).add(e.destination);
 					}
 				}
 			}
-			for(ForgeDirection exitDir: routers.keySet()) {
+			for (ForgeDirection exitDir : routers.keySet()) {
 				handleRouteInDirection(connectedPipe.container, exitDir, routers.get(exitDir), lasers, map.get(connectedPipe).connectionDetails);
 			}
 		}
@@ -110,7 +111,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		ArrayList<LaserData> options = new ArrayList<LaserData>();
 		options.addAll(lasers);
 		Iterator<LaserData> iLasers = lasers.iterator();
-		while(iLasers.hasNext()) {
+		while (iLasers.hasNext()) {
 			boolean compressed = false;
 			LaserData data = iLasers.next();
 			Position next = new Position(data.getPosX(), data.getPosY(), data.getPosZ(), data.getDir());
@@ -119,23 +120,23 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			do {
 				found = false;
 				Iterator<LaserData> iOptions = options.iterator();
-				while(iOptions.hasNext()) {
+				while (iOptions.hasNext()) {
 					LaserData d = iOptions.next();
-					if(d.getPosX() == (int)next.x && d.getPosY() == (int)next.y && d.getPosZ() == (int)next.z) {
-						if(data.getDir().equals(d.getDir()) && data.getConnectionType().equals(d.getConnectionType())) {
+					if (d.getPosX() == (int) next.x && d.getPosY() == (int) next.y && d.getPosZ() == (int) next.z) {
+						if (data.getDir().equals(d.getDir()) && data.getConnectionType().equals(d.getConnectionType())) {
 							data.setLength(data.getLength() + d.getLength());
 							next.moveForwards(d.getLength());
 							found = true;
 							iOptions.remove();
 							lasers.remove(d);
 							compressed = true;
-						} else if(data.getDir().equals(d.getDir())) {
+						} else if (data.getDir().equals(d.getDir())) {
 							data.setFinalPipe(false);
 						}
 					}
 				}
 			} while (found);
-			if(compressed) {
+			if (compressed) {
 				iLasers = lasers.iterator();
 			}
 		}

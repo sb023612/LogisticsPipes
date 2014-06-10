@@ -15,7 +15,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 	private Class<?> tileRollingMachineClass;
 	private Method getCraftMatrixMethod;
 
-	public RollingMachine() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+	public RollingMachine() throws ClassNotFoundException, NoSuchMethodException {
 		tileRollingMachineClass = Class.forName("mods.railcraft.common.blocks.machine.alpha.TileRollingMachine");
 		getCraftMatrixMethod = tileRollingMachineClass.getMethod("getCraftMatrix");
 	}
@@ -26,17 +26,16 @@ public class RollingMachine implements ICraftingRecipeProvider {
 	}
 
 	private ItemStack getResult(InventoryCrafting inventorycrafting, World world) {
-		if (inventorycrafting == null)
-			return null;
+		if (inventorycrafting == null) return null;
 		try {
 			Class<?> c = Class.forName("mods.railcraft.common.util.crafting.RollingMachineCraftingManager");
 			Method inst = c.getMethod("getInstance");
 			Object instance = inst.invoke(null);
 			Method findMatchingRecipe = c.getMethod("findMatchingRecipe", InventoryCrafting.class, World.class);
-			return (ItemStack)findMatchingRecipe.invoke(instance, inventorycrafting, world);
+			return (ItemStack) findMatchingRecipe.invoke(instance, inventorycrafting, world);
 		} catch (Exception ex) {
 			LogisticsPipes.log.fine("getResult fail");
-		}		
+		}
 		return null;
 	}
 
@@ -45,24 +44,20 @@ public class RollingMachine implements ICraftingRecipeProvider {
 			return (InventoryCrafting) getCraftMatrixMethod.invoke(tile);
 		} catch (Exception ex) {
 			LogisticsPipes.log.fine("getCraftMatrix fail");
-		}		
+		}
 		return null;
 	}
 
-
 	@Override
 	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
-		if (!tileRollingMachineClass.isInstance(tile))
-			return false;
+		if (!tileRollingMachineClass.isInstance(tile)) return false;
 
 		InventoryCrafting craftMatrix = getCraftMatrix(tile);
-		if (craftMatrix == null)
-			return false;
+		if (craftMatrix == null) return false;
 
 		ItemStack result = getResult(craftMatrix, tile.getWorldObj());
 
-		if (result == null)
-			return false;
+		if (result == null) return false;
 
 		inventory.setInventorySlotContents(9, result);
 
@@ -76,7 +71,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 		}
 
 		inventory.compact_first_9();
-		
+
 		return true;
 	}
 }

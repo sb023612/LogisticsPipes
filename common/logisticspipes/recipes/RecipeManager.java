@@ -18,23 +18,31 @@ import buildcraft.BuildCraftEnergy;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 
-public class RecipeManager {
+public final class RecipeManager {
+
+	private RecipeManager() {}
+
 	public static class LocalCraftingManager {
+
 		private CraftingManager craftingManager = CraftingManager.getInstance();
+
 		public LocalCraftingManager() {}
+
 		@SuppressWarnings("unchecked")
 		public void addRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
 			craftingManager.getRecipeList().add(new LPShapedOreRecipe(stack, dependent, objects));
 		}
+
 		@SuppressWarnings("unchecked")
 		public void addOrdererRecipe(ItemStack stack, String dye, ItemStack orderer) {
-			craftingManager.getRecipeList().add(new ShapelessOreRecipe(stack, new Object[] {dye, orderer}) {
+			craftingManager.getRecipeList().add(new ShapelessOreRecipe(stack, new Object[] { dye, orderer }) {
+
 				@Override
 				public ItemStack getCraftingResult(InventoryCrafting var1) {
 					ItemStack result = super.getCraftingResult(var1);
-					for(int i=0;i<var1.getInventoryStackLimit();i++) {
+					for (int i = 0; i < var1.getInventoryStackLimit(); i++) {
 						ItemStack stack = var1.getStackInSlot(i);
-						if(stack != null && stack.getItem() instanceof RemoteOrderer) {
+						if (stack != null && stack.getItem() instanceof RemoteOrderer) {
 							result.setTagCompound(stack.getTagCompound());
 							break;
 						}
@@ -43,17 +51,23 @@ public class RecipeManager {
 				}
 			});
 		}
+
 		@SuppressWarnings("unchecked")
 		public void addShapelessRecipe(ItemStack stack, CraftingDependency dependent, Object... objects) {
 			craftingManager.getRecipeList().add(new LPShapelessOreRecipe(stack, dependent, objects));
 		}
+
 		@SuppressWarnings("unchecked")
 		public void addShapelessResetRecipe(int itemID, int meta) {
 			craftingManager.getRecipeList().add(new ShapelessResetRecipe(itemID, meta));
 		}
 	};
+
 	public static LocalCraftingManager craftingManager = new LocalCraftingManager();
-	
+
+	//@formatter:off
+	//CHECKSTYLE:OFF
+
 	public static void loadRecipes() {
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidSupplierPipeMk1, 1), CraftingDependency.DistanceRequest, new Object[] {
 			"lPl",

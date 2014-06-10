@@ -29,4 +29,3 @@ public class CraftingPriority extends IntegerCoordinatesPacket {
 		((PipeItemsCraftingLogistics) pipe.pipe).setPriority(getInteger());
 	}
 }
-

@@ -3,8 +3,8 @@ package logisticspipes.pipes.upgrades;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 
-public class FuzzyCraftingUpgrade implements IPipeUpgrade
-{
+public class FuzzyCraftingUpgrade implements IPipeUpgrade {
+
 	@Override
 	public boolean needsUpdate() {
 		return false;

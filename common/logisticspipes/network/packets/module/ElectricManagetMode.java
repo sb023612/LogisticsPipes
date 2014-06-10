@@ -10,7 +10,7 @@ import logisticspipes.utils.gui.DummyModuleContainer;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ElectricManagetMode extends Integer2CoordinatesPacket {
 
 	public ElectricManagetMode(int id) {
@@ -24,20 +24,20 @@ public class ElectricManagetMode extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.worldObj)) {
 			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
+			if (pipe == null) {
 				return;
 			}
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleElectricManager) {
-				ModuleElectricManager module = (ModuleElectricManager) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
+			if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleElectricManager) {
+				ModuleElectricManager module = (ModuleElectricManager) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2());
 				module.setDischargeMode(getInteger() == 1);
 			}
 		} else {
-			if(getInteger2() < 0) {
-				if(player.openContainer instanceof DummyModuleContainer) {
+			if (getInteger2() < 0) {
+				if (player.openContainer instanceof DummyModuleContainer) {
 					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-					if(dummy.getModule() instanceof ModuleElectricManager) {
+					if (dummy.getModule() instanceof ModuleElectricManager) {
 						ModuleElectricManager module = (ModuleElectricManager) dummy.getModule();
 						module.setDischargeMode(getInteger() == 1);
 					}
@@ -45,14 +45,13 @@ public class ElectricManagetMode extends Integer2CoordinatesPacket {
 				return;
 			}
 			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
+			if (pipe == null) {
 				return;
 			}
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleElectricManager) {
-				ModuleElectricManager module = (ModuleElectricManager) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
+			if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleElectricManager) {
+				ModuleElectricManager module = (ModuleElectricManager) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2());
 				module.setDischargeMode(getInteger() == 1);
 			}
 		}
 	}
 }
-

@@ -6,7 +6,7 @@ import logisticspipes.network.abstractpackets.StringCoordinatesPacket;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SecurityStationOpenPlayerRequest extends StringCoordinatesPacket {
 
 	public SecurityStationOpenPlayerRequest(int id) {
@@ -21,11 +21,10 @@ public class SecurityStationOpenPlayerRequest extends StringCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
-		if(tile != null) {
-			if(getString() != null && !getString().isEmpty()) {
+		if (tile != null) {
+			if (getString() != null && !getString().isEmpty()) {
 				tile.handleOpenSecurityPlayer(player, getString());
 			}
 		}
 	}
 }
-

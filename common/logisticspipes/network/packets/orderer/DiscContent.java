@@ -21,15 +21,14 @@ public class DiscContent extends ItemPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
-		if(tile == null) {
+		if (tile == null) {
 			return;
 		}
-		if(tile.pipe instanceof PipeItemsRequestLogisticsMk2) {
-			((PipeItemsRequestLogisticsMk2)tile.pipe).setDisk(getStack());
+		if (tile.pipe instanceof PipeItemsRequestLogisticsMk2) {
+			((PipeItemsRequestLogisticsMk2) tile.pipe).setDisk(getStack());
 		}
-		if(tile.pipe instanceof PipeBlockRequestTable) {
-			((PipeBlockRequestTable)tile.pipe).diskInv.setInventorySlotContents(0, getStack());
+		if (tile.pipe instanceof PipeBlockRequestTable) {
+			((PipeBlockRequestTable) tile.pipe).diskInv.setInventorySlotContents(0, getStack());
 		}
 	}
 }
-

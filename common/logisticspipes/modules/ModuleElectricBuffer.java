@@ -24,11 +24,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleElectricBuffer extends LogisticsModule {
+
 	private IInventoryProvider _invProvider;
 	private IRoutedPowerProvider _power;
 	private ISendRoutedItem _itemSender;
-
-
 
 	private IWorldProvider _world;
 
@@ -44,33 +43,33 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {		
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_invProvider = invProvider;
 		_power = powerProvider;
 		_world = world;
 		_itemSender = itemSender;
 	}
 
+	@Override
+	public void registerSlot(int slot) {}
 
-	@Override 
-	public void registerSlot(int slot) {
-	}
-	
-	@Override 
+	@Override
 	public final int getX() {
 		return this._power.getX();
 	}
-	@Override 
+
+	@Override
 	public final int getY() {
 		return this._power.getY();
 	}
-	
-	@Override 
+
+	@Override
 	public final int getZ() {
 		return this._power.getZ();
 	}
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricBuffer, 0, true, false, 1, 0);
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if (bestPriority >= FixedPriority.ElectricBuffer.ordinal()) return null;
@@ -99,7 +98,7 @@ public class ModuleElectricBuffer extends LogisticsModule {
 			if (stack == null) continue;
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
 				Triplet<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricManager);
-				if(reply == null) continue;
+				if (reply == null) continue;
 				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
 				_itemSender.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 				return;
@@ -107,6 +106,7 @@ public class ModuleElectricBuffer extends LogisticsModule {
 			continue;
 		}
 	}
+
 	@Override
 	public boolean hasGenericInterests() {
 		return true;
@@ -118,7 +118,7 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
+	public boolean interestedInAttachedInventory() {
 		return false;
 	}
 

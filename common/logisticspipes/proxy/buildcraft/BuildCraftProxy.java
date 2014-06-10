@@ -61,7 +61,6 @@ import logisticspipes.proxy.buildcraft.gates.TriggerNeedsPower;
 import logisticspipes.proxy.buildcraft.gates.TriggerSupplierFailed;
 import logisticspipes.renderer.LogisticsPipeBlockRenderer;
 import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
@@ -95,7 +94,7 @@ import buildcraft.transport.render.PipeRendererTESR;
 import cpw.mods.fml.relauncher.Side;
 
 public class BuildCraftProxy {
-	
+
 	public static List<Item> pipelist = new ArrayList<Item>();
 
 	public static ITrigger LogisticsFailedTrigger;
@@ -103,48 +102,48 @@ public class BuildCraftProxy {
 	public static ITrigger LogisticsNeedPowerTrigger;
 	public static ITrigger LogisticsHasDestinationTrigger;
 	public static IAction LogisticsDisableAction;
-	
+
 	private Method canPipeConnect;
-	
+
 	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
 		return checkPipesConnections(from, to, way, false);
 	}
-	
+
 	//TODO generalise more for TE support
 	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way, boolean ignoreSystemDisconnection) {
-		if(from instanceof TileGenericPipe && to instanceof TileGenericPipe && (((TileGenericPipe)from).pipe instanceof CoreRoutedPipe || ((TileGenericPipe)to).pipe instanceof CoreRoutedPipe)) {
-			if(((TileGenericPipe)from).pipe instanceof CoreRoutedPipe) {
-				if (!((CoreRoutedPipe)((TileGenericPipe)from).pipe).canPipeConnect(to, way, ignoreSystemDisconnection)) {
+		if (from instanceof TileGenericPipe && to instanceof TileGenericPipe && (((TileGenericPipe) from).pipe instanceof CoreRoutedPipe || ((TileGenericPipe) to).pipe instanceof CoreRoutedPipe)) {
+			if (((TileGenericPipe) from).pipe instanceof CoreRoutedPipe) {
+				if (!((CoreRoutedPipe) ((TileGenericPipe) from).pipe).canPipeConnect(to, way, ignoreSystemDisconnection)) {
 					return false;
 				}
 			} else {
-				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = true;
+				((CoreRoutedPipe) ((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = true;
 				if (!canPipeConnect((TileGenericPipe) from, to, way)) {
-					((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
+					((CoreRoutedPipe) ((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}
-				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
+				((CoreRoutedPipe) ((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
 			}
-			if(((TileGenericPipe)to).pipe instanceof CoreRoutedPipe) {
-				if (!((CoreRoutedPipe)((TileGenericPipe) to).pipe).canPipeConnect(from, way.getOpposite(), ignoreSystemDisconnection)) {
+			if (((TileGenericPipe) to).pipe instanceof CoreRoutedPipe) {
+				if (!((CoreRoutedPipe) ((TileGenericPipe) to).pipe).canPipeConnect(from, way.getOpposite(), ignoreSystemDisconnection)) {
 					return false;
 				}
 			} else {
-				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = true;
+				((CoreRoutedPipe) ((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = true;
 				if (!canPipeConnect((TileGenericPipe) to, from, way.getOpposite())) {
-					((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
+					((CoreRoutedPipe) ((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}
-				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
+				((CoreRoutedPipe) ((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
 			}
 			return true;
-		} else if(from instanceof TileGenericPipe && ((TileGenericPipe)from).pipe instanceof CoreRoutedPipe) {
-			if (!((CoreRoutedPipe)((TileGenericPipe)from).pipe).canPipeConnect(to, way, ignoreSystemDisconnection)) {
+		} else if (from instanceof TileGenericPipe && ((TileGenericPipe) from).pipe instanceof CoreRoutedPipe) {
+			if (!((CoreRoutedPipe) ((TileGenericPipe) from).pipe).canPipeConnect(to, way, ignoreSystemDisconnection)) {
 				return false;
 			}
 			return true;
-		} else if(to instanceof TileGenericPipe && ((TileGenericPipe)to).pipe instanceof CoreRoutedPipe) {
-			if (!((CoreRoutedPipe)((TileGenericPipe) to).pipe).canPipeConnect(from, way.getOpposite(), ignoreSystemDisconnection)) {
+		} else if (to instanceof TileGenericPipe && ((TileGenericPipe) to).pipe instanceof CoreRoutedPipe) {
+			if (!((CoreRoutedPipe) ((TileGenericPipe) to).pipe).canPipeConnect(from, way.getOpposite(), ignoreSystemDisconnection)) {
 				return false;
 			}
 			return true;
@@ -155,10 +154,10 @@ public class BuildCraftProxy {
 
 	public boolean initProxyAndCheckVersion() {
 		try {
-			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", new Class[]{TileEntity.class, ForgeDirection.class});
+			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", new Class[] { TileEntity.class, ForgeDirection.class });
 			canPipeConnect.setAccessible(true);
 			return true;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new UnsupportedOperationException("You seem to have an outdated Buildcraft version. Please update to the newest BuildCraft version to run LogisticsPipes.");
 		}
@@ -187,13 +186,13 @@ public class BuildCraftProxy {
 
 	public void registerTrigger() {
 		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
-		
+
 		/* Triggers */
 		LogisticsFailedTrigger = new TriggerSupplierFailed(700);
 		LogisticsNeedPowerTrigger = new TriggerNeedsPower(701);
 		LogisticsCraftingTrigger = new TriggerCrafting(702);
 		LogisticsHasDestinationTrigger = new TriggerHasDestination(703);
-		
+
 		/* Actions */
 		LogisticsDisableAction = new ActionDisableLogistics(700);
 	}
@@ -221,9 +220,9 @@ public class BuildCraftProxy {
 		LogisticsPipes.LogisticsDestinationPipe = createPipe(Configs.LOGISTICSPIPE_DESTINATION_ID, PipeItemsSystemDestinationLogistics.class, "Logistics System Destination Pipe", side);
 		LogisticsPipes.LogisticsCraftingPipeMk3 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK3_ID, PipeItemsCraftingLogisticsMk3.class, "Crafting Logistics Pipe MK3", side);
 		LogisticsPipes.LogisticsFirewallPipe = createPipe(Configs.LOGISTICSPIPE_FIREWALL_ID, PipeItemsFirewall.class, "Firewall Logistics Pipe", side);
-		
+
 		LogisticsPipes.LogisticsFluidSupplierPipeMk1 = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsFluidSupplier.class, "Fluid Supplier Logistics Pipe", side);
-		
+
 		LogisticsPipes.LogisticsFluidConnectorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_CONNECTOR, LogisticsFluidConnectorPipe.class, "Logistics Fluid Connector Pipe", side);
 		LogisticsPipes.LogisticsFluidBasicPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_BASIC, PipeFluidBasic.class, "Basic Logistics Fluid Pipe", side);
 		LogisticsPipes.LogisticsFluidInsertionPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeFluidInsertion.class, "Logistics Fluid Insertion Pipe", side);
@@ -232,7 +231,7 @@ public class BuildCraftProxy {
 		LogisticsPipes.LogisticsFluidExtractorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeFluidExtractor.class, "Logistics Fluid Extractor Pipe", side);
 		LogisticsPipes.LogisticsFluidSatellitePipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeFluidSatellite.class, "Logistics Fluid Satellite Pipe", side);
 		LogisticsPipes.LogisticsFluidSupplierPipeMk2 = createPipe(Configs.LOGISTICSPIPE_LIQUID_SUPPLIER_MK2, PipeFluidSupplierMk2.class, "Logistics Fluid Supplier Pipe Mk2", side);
-	
+
 		LogisticsPipes.logisticsRequestTable = createPipe(Configs.LOGISTICSPIPE_REQUEST_TABLE_ID, PipeBlockRequestTable.class, "Request Table", side);
 	}
 
@@ -249,17 +248,17 @@ public class BuildCraftProxy {
 		ItemPipe item = new ItemLogisticsPipe(key, clas);
 
 		Map<Integer, Class<? extends Pipe>> pipes = null;
-		
+
 		try {
 			pipes = BlockGenericPipe.pipes;
-		} catch(NoSuchFieldError e) {
+		} catch (NoSuchFieldError e) {
 			try {
 				pipes = (Map<Integer, Class<? extends Pipe>>) BlockGenericPipe.class.getDeclaredField("pipes").get(null);
 			} catch (Exception e2) {
 				return null;
 			}
 		}
-		
+
 		pipes.put(item.itemID, clas);
 
 		Pipe<?> dummyPipe = BlockGenericPipe.createPipe(item.itemID);
@@ -270,34 +269,34 @@ public class BuildCraftProxy {
 
 		return item;
 	}
-	
-	protected Item createPipe(int defaultID, Class <? extends Pipe<?>> clas, String descr, Side side) {
-		ItemPipe res = registerPipe (defaultID, clas);
+
+	protected Item createPipe(int defaultID, Class<? extends Pipe<?>> clas, String descr, Side side) {
+		ItemPipe res = registerPipe(defaultID, clas);
 		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
 		res.setUnlocalizedName(clas.getSimpleName());
 		Pipe<?> pipe = BlockGenericPipe.createPipe(res.itemID);
-		if(pipe instanceof CoreRoutedPipe) {
-			res.setPipeIconIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
+		if (pipe instanceof CoreRoutedPipe) {
+			res.setPipeIconIndex(((CoreRoutedPipe) pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
 		}
-		
-		if(side.isClient()) {
-			if(pipe instanceof PipeBlockRequestTable) {
+
+		if (side.isClient()) {
+			if (pipe instanceof PipeBlockRequestTable) {
 				MinecraftForgeClient.registerItemRenderer(res.itemID, new LogisticsPipeBlockRenderer());
 			} else {
-			MinecraftForgeClient.registerItemRenderer(res.itemID, TransportProxyClient.pipeItemRenderer);
+				MinecraftForgeClient.registerItemRenderer(res.itemID, TransportProxyClient.pipeItemRenderer);
+			}
 		}
-		}
-		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID && defaultID != Configs.LOGISTICSPIPE_LIQUID_CONNECTOR) {
-			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);
+		if (defaultID != Configs.LOGISTICSPIPE_BASIC_ID && defaultID != Configs.LOGISTICSPIPE_LIQUID_CONNECTOR) {
+			registerShapelessResetRecipe(res, 0, LogisticsPipes.LogisticsBasicPipe, 0);
 		}
 		pipelist.add(res);
 		return res;
 	}
-	
+
 	protected void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {
-		for(int j=1;j < 10; j++) {
+		for (int j = 1; j < 10; j++) {
 			Object[] obj = new Object[j];
-			for(int k=0;k<j;k++) {
+			for (int k = 0; k < j; k++) {
 				obj[k] = new ItemStack(fromItem, 1, toData);
 			}
 			CraftingManager.getInstance().addShapelessRecipe(new ItemStack(toItem, j, fromData), obj);
@@ -310,88 +309,86 @@ public class BuildCraftProxy {
 	}
 
 	public boolean canWrench(EntityPlayer entityplayer, int x, int y, int z) {
-		if ((entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench))
-			return ((IToolWrench)entityplayer.getCurrentEquippedItem().getItem()).canWrench(entityplayer, x, y, z);
+		if ((entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench)) return ((IToolWrench) entityplayer.getCurrentEquippedItem().getItem()).canWrench(entityplayer, x, y, z);
 		return false;
 	}
 
 	public void wrenchUsed(EntityPlayer entityplayer, int x, int y, int z) {
-		if ((entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench))
-			((IToolWrench)entityplayer.getCurrentEquippedItem().getItem()).wrenchUsed(entityplayer, x, y, z);
+		if ((entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench)) ((IToolWrench) entityplayer.getCurrentEquippedItem().getItem()).wrenchUsed(entityplayer, x, y, z);
 	}
-
 
 	public boolean isUpgradeManagerEquipped(EntityPlayer entityplayer) {
 		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsUpgradeManager.itemID;
 	}
-	
+
 	public void resetItemRotation(PipeRendererTESR renderer) {
 		try {
 			Field f = PipeRendererTESR.class.getDeclaredField("dummyEntityItem");
 			f.setAccessible(true);
 			EntityItem item = (EntityItem) f.get(renderer);
 			item.hoverStart = 0;
-		} catch(NoSuchFieldException e) {
+		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
-		} catch(SecurityException e) {
+		} catch (SecurityException e) {
 			e.printStackTrace();
-		} catch(IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
-		} catch(IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void replaceBlockGenericPipe() {
-		if(Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] == BuildCraftTransport.genericPipeBlock) {
+		if (Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] == BuildCraftTransport.genericPipeBlock) {
 			LogisticsPipes.log.info("BlockGenericPipe was found with ID: " + BuildCraftTransport.genericPipeBlock.blockID);
 			Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] = null;
-			
+
 			//Force IDfix to ignore this block
 			Block coalBlock = Block.coalBlock;
 			Block.coalBlock = null;
-			
+
 			BuildCraftTransport.genericPipeBlock = new LogisticsBlockGenericPipe(BuildCraftTransport.genericPipeBlock.blockID);
 
 			Block.coalBlock = coalBlock; //Restore the coalBlock
-			
+
 			LogisticsPipes.log.info("LogisticsBlockGenericPipe was added at ID: " + BuildCraftTransport.genericPipeBlock.blockID);
 		} else {
-			throw new UnsupportedOperationException("[LogisticsPipes|Main] Could not find BlockGenericPipe with ID: " + BuildCraftTransport.genericPipeBlock.blockID + ". We found " + Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] != null ? Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID].getClass().getName() : "null");
+			throw new UnsupportedOperationException("[LogisticsPipes|Main] Could not find BlockGenericPipe with ID: " + BuildCraftTransport.genericPipeBlock.blockID + ". We found " + Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] != null ? Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID]
+					.getClass().getName() : "null");
 		}
 	}
 
 	public void registerPipeInformationProvider() {
 		SimpleServiceLocator.pipeInformaitonManager.registerProvider(TileGenericPipe.class, BCPipeInformationProvider.class);
 	}
-	
+
 	public boolean insertIntoBuildcraftPipe(TileEntity tile, LPTravelingItem item) {
-		if(tile instanceof TileGenericPipe) {
-			TileGenericPipe pipe = (TileGenericPipe)tile;
-			if(BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportItems) {
+		if (tile instanceof TileGenericPipe) {
+			TileGenericPipe pipe = (TileGenericPipe) tile;
+			if (BlockGenericPipe.isValid(pipe.pipe) && pipe.pipe.transport instanceof PipeTransportItems) {
 				TravelingItem bcItem = null;
-				if(item instanceof LPTravelingItemServer) {
+				if (item instanceof LPTravelingItemServer) {
 					LPRoutedBCTravelingItem lpBCItem = new LPRoutedBCTravelingItem();
-					lpBCItem.setRoutingInformation(((LPTravelingItemServer)item).getInfo());
+					lpBCItem.setRoutingInformation(((LPTravelingItemServer) item).getInfo());
 					lpBCItem.saveToExtraNBTData();
 					bcItem = lpBCItem;
 				} else {
 					bcItem = new TravelingItem();
 				}
 				LPPosition p = new LPPosition(tile.xCoord + 0.5F, tile.yCoord + CoreConstants.PIPE_MIN_POS, tile.zCoord + 0.5F);
-				if(item.output.getOpposite() == ForgeDirection.DOWN) {
+				if (item.output.getOpposite() == ForgeDirection.DOWN) {
 					p.moveForward(item.output.getOpposite(), 0.24F);
-				} else if(item.output.getOpposite() == ForgeDirection.UP) {
+				} else if (item.output.getOpposite() == ForgeDirection.UP) {
 					p.moveForward(item.output.getOpposite(), 0.74F);
 				} else {
 					p.moveForward(item.output.getOpposite(), 0.49F);
 				}
 				bcItem.setPosition(p.getXD(), p.getYD(), p.getZD());
 				bcItem.setSpeed(item.getSpeed());
-				if(item.getItemIdentifierStack() != null) {
+				if (item.getItemIdentifierStack() != null) {
 					bcItem.setItemStack(item.getItemIdentifierStack().makeNormalStack());
 				}
-				((PipeTransportItems)pipe.pipe.transport).injectItem(bcItem, item.output);
+				((PipeTransportItems) pipe.pipe.transport).injectItem(bcItem, item.output);
 				return true;
 			}
 		}

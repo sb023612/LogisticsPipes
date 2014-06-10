@@ -20,13 +20,12 @@ public class CraftingPipePrevAdvancedSatellitePacket extends IntegerCoordinatesP
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
+		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
 		((PipeItemsCraftingLogistics) pipe.pipe).setPrevSatellite(player, getInteger());
 	}
 }
-

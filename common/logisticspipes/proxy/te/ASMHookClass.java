@@ -12,51 +12,54 @@ import thermalexpansion.part.conduit.ConduitBase;
 import thermalexpansion.part.conduit.item.ConduitItem;
 import thermalexpansion.part.conduit.item.TravelingItem;
 
-public class ASMHookClass {
+public final class ASMHookClass {
+
+	private ASMHookClass() {}
+
 	private static void handleTileCheck(ConduitBase conduit, int side, TileEntity tile) {
-		if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).canTEConduitConnect(conduit, side)) {
-			conduit.conduitCache[side] = ((LogisticsTileGenericPipe)tile).getTEConduit(ForgeDirection.VALID_DIRECTIONS[side].getOpposite().ordinal());
+		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).canTEConduitConnect(conduit, side)) {
+			conduit.conduitCache[side] = ((LogisticsTileGenericPipe) tile).getTEConduit(ForgeDirection.VALID_DIRECTIONS[side].getOpposite().ordinal());
 			conduit.sideType[side] = 1;
 		}
 	}
-	
+
 	public static void handleOnNeighborChanged(ConduitBase conduit, int side, TileEntity tile) {
-		if(conduit.isItemConduit()) {
+		if (conduit.isItemConduit()) {
 			handleTileCheck(conduit, side, tile);
 		}
 	}
-	
+
 	public static void handleOnNeighborTileChanged(ConduitBase conduit, int side, TileEntity tile) {
-		if(conduit.isItemConduit()) {
+		if (conduit.isItemConduit()) {
 			handleTileCheck(conduit, side, tile);
 		}
 	}
-	
+
 	public static void handleOnAdded(ConduitBase conduit, int side, TileEntity tile) {
-		if(conduit.isItemConduit()) {
+		if (conduit.isItemConduit()) {
 			handleTileCheck(conduit, side, tile);
 		}
 	}
-	
+
 	public static void handleOnPartChanged(ConduitBase conduit, TileEntity tile, int side) {
-		if(conduit.isItemConduit()) {
-			if(conduit.passOcclusionTest(side)) {
+		if (conduit.isItemConduit()) {
+			if (conduit.passOcclusionTest(side)) {
 				handleTileCheck(conduit, side, tile);
 			}
 		}
 	}
-	
+
 	public static void handleGetConduit(ConduitBase conduit, int side, TileEntity tile) {
-		if(conduit.isItemConduit()) {
-			if(tile instanceof LogisticsTileGenericPipe) {
-				conduit.conduitCache[side] = ((LogisticsTileGenericPipe)tile).getTEConduit(side);
+		if (conduit.isItemConduit()) {
+			if (tile instanceof LogisticsTileGenericPipe) {
+				conduit.conduitCache[side] = ((LogisticsTileGenericPipe) tile).getTEConduit(side);
 			}
 		}
 	}
 
 	public static int getTEPipeRenderMode(ConduitItem conduit, int side) {
-		if(conduit.sideType[side] == 1) {
-			if(conduit.conduitCache[side] instanceof LPConduitItem || conduit.getConduit(side) instanceof LPConduitItem) {
+		if (conduit.sideType[side] == 1) {
+			if (conduit.conduitCache[side] instanceof LPConduitItem || conduit.getConduit(side) instanceof LPConduitItem) {
 				return BlockConduit.ConnectionTypes.FLUID_NORMAL.ordinal();
 			}
 		}
@@ -64,11 +67,11 @@ public class ASMHookClass {
 	}
 
 	public static void handleOnRemoved(ConduitBase conduit) {
-		if(MainProxy.isClient()) return;
-		if(conduit.isItemConduit()) {
+		if (MainProxy.isClient()) return;
+		if (conduit.isItemConduit()) {
 			ConduitItem itemC = conduit.getConduitItem();
-			for(TravelingItem item:itemC.myItems) {
-				if(item.routedLPInfo != null) {
+			for (TravelingItem item : itemC.myItems) {
+				if (item.routedLPInfo != null) {
 					LPTravelingItemServer lpItem = new LPTravelingItemServer(item.routedLPInfo);
 					lpItem.itemWasLost();
 				}
@@ -77,15 +80,15 @@ public class ASMHookClass {
 	}
 
 	public static void handleTETravelingItemSave(TravelingItem item, NBTTagCompound tag) {
-		if(item.routedLPInfo != null) {
+		if (item.routedLPInfo != null) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			item.routedLPInfo.writeToNBT(nbt);
 			tag.setTag("LPRoutingInformation", nbt);
 		}
 	}
-	
+
 	public static void handleTETravelingItemLoad(TravelingItem item, NBTTagCompound tag) {
-		if(tag.hasKey("LPRoutingInformation")) {
+		if (tag.hasKey("LPRoutingInformation")) {
 			item.routedLPInfo = new ItemRoutingInformation();
 			item.routedLPInfo.readFromNBT(tag.getCompoundTag("LPRoutingInformation"));
 		}

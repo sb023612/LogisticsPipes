@@ -15,30 +15,30 @@ import net.minecraft.util.MovingObjectPosition;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class RoutingUpdateAskForTarget extends ModernPacket {
-	
+
 	public RoutingUpdateAskForTarget(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void readData(LPDataInputStream data) throws IOException {}
-	
+
 	@Override
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
 		MovingObjectPosition box = FMLClientHandler.instance().getClient().objectMouseOver;
-		if(box == null) {
+		if (box == null) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.None));
-		} else if(box.typeOfHit == EnumMovingObjectType.TILE) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.Block).setAdditions(new Object[]{box.blockX,box.blockY,box.blockZ}));	
-		} else if(box.typeOfHit == EnumMovingObjectType.ENTITY) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.Entity).setAdditions(new Object[]{box.entityHit.entityId}));	
+		} else if (box.typeOfHit == EnumMovingObjectType.TILE) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.Block).setAdditions(new Object[] { box.blockX, box.blockY, box.blockZ }));
+		} else if (box.typeOfHit == EnumMovingObjectType.ENTITY) {
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RoutingUpdateTargetResponse.class).setMode(TargetMode.Entity).setAdditions(new Object[] { box.entityHit.entityId }));
 		}
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new RoutingUpdateAskForTarget(getId());
@@ -49,4 +49,3 @@ public class RoutingUpdateAskForTarget extends ModernPacket {
 		return true;
 	}
 }
-

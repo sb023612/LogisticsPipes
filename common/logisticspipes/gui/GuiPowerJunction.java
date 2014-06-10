@@ -16,10 +16,11 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 public class GuiPowerJunction extends LogisticsBaseGuiScreen {
+
 	private static final String PREFIX = "gui.powerjunction.";
 
 	private final LogisticsPowerJunctionTileEntity junction;
-	
+
 	public GuiPowerJunction(EntityPlayer player, LogisticsPowerJunctionTileEntity junction) {
 		super(176, 166, 0, 0);
 		DummyContainer dummy = new DummyContainer(player, null, junction);
@@ -27,13 +28,13 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 		this.inventorySlots = dummy;
 		this.junction = junction;
 	}
-	
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		
+
 	}
-	
+
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/power_junction.png");
 
 	@Override
@@ -53,7 +54,7 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 		mc.fontRenderer.drawString("1 EU = 2 LP", guiLeft + 100, guiTop + 58, 0x404040);
 		mc.fontRenderer.drawString("10 RF = 5 LP", guiLeft + 24, guiTop + 68, 0x404040);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
@@ -63,16 +64,15 @@ public class GuiPowerJunction extends LogisticsBaseGuiScreen {
 			this.buttonList.add(new GuiButton(0, guiLeft + 140, guiTop + 20, 20, 20, "+"));
 		}
 	}
-	
+
 	@Override
 	protected void actionPerformed(GuiButton par1GuiButton) {
-		if(par1GuiButton.id == 0) {
+		if (par1GuiButton.id == 0) {
 			junction.addEnergy(100000);
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(PowerJunctionCheatPacket.class).setPosX(junction.getX()).setPosY(junction.getY()).setPosZ(junction.getZ()));
 		} else {
-			super.actionPerformed(par1GuiButton);		
+			super.actionPerformed(par1GuiButton);
 		}
 	}
-
 
 }

@@ -11,7 +11,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SecurityStationCC extends IntegerCoordinatesPacket {
 
 	public SecurityStationCC(int id) {
@@ -26,8 +26,8 @@ public class SecurityStationCC extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
-		if(tile instanceof LogisticsSecurityTileEntity) {
-			if(MainProxy.isClient(player.worldObj)) {
+		if (tile instanceof LogisticsSecurityTileEntity) {
+			if (MainProxy.isClient(player.worldObj)) {
 				tile.setClientCC(getInteger() == 1);
 				handleClientSide(player);
 			} else {
@@ -35,12 +35,11 @@ public class SecurityStationCC extends IntegerCoordinatesPacket {
 			}
 		}
 	}
-	
+
 	@SideOnly(Side.CLIENT)
 	private void handleClientSide(EntityPlayer player) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiSecurityStation) {
-			((GuiSecurityStation)FMLClientHandler.instance().getClient().currentScreen).refreshCheckBoxes();
+			((GuiSecurityStation) FMLClientHandler.instance().getClient().currentScreen).refreshCheckBoxes();
 		}
 	}
 }
-

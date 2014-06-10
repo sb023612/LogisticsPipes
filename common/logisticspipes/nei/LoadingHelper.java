@@ -4,17 +4,18 @@ import logisticspipes.Configs;
 import codechicken.nei.forge.GuiContainerManager;
 import cpw.mods.fml.client.FMLClientHandler;
 
+//CHECKSTYLE:OFF
 public class LoadingHelper {
 
-	public static void LoadNeiNBTDebugHelper() {
-		if(Configs.TOOLTIP_INFO && !NEILogisticsPipesConfig.added) {
+	public static void loadNeiNBTDebugHelper() {
+		if (Configs.TOOLTIP_INFO && !NEILogisticsPipesConfig.added) {
 			GuiContainerManager.addTooltipHandler(new DebugHelper());
 			NEILogisticsPipesConfig.added = true;
-			if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null) {
+			if (FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null) {
 				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Enabled.");
 			}
-		} else if(NEILogisticsPipesConfig.added) {
-			if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null) {
+		} else if (NEILogisticsPipesConfig.added) {
+			if (FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null) {
 				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Already enabled.");
 			}
 		}

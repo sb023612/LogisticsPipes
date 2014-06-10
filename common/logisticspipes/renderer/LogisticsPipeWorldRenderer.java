@@ -22,7 +22,7 @@ import buildcraft.transport.render.PipeRendererWorld;
 public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 
 	public void renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, BlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
-		if(pipe.pipe instanceof PipeBlockRequestTable) {
+		if (pipe.pipe instanceof PipeBlockRequestTable) {
 			PipeRenderState state = pipe.getRenderState();
 			IIconProvider icons = pipe.getPipeIcons();
 			if (icons == null) return;
@@ -34,75 +34,73 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 		}
 		PipeRenderState state = pipe.getRenderState();
 		IIconProvider icons = pipe.getPipeIcons();
-		
-		if (icons == null)
-			return;
+
+		if (icons == null) return;
 
 		int connectivity = state.pipeConnectionMatrix.getMask();
 		float[] dim = new float[6];
 
-		
-		if(!pipe.isOpaque()) {
+		if (!pipe.isOpaque()) {
 			// render the unconnected pipe faces of the center block (if any)
 			if (connectivity != 0x3f) { // note: 0x3f = 0x111111 = all sides
 				resetToCenterDimensions(dim);
 				state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
 				renderTwoWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
 			}
-			
+
 			// render the connecting pipe faces
 			for (int dir = 0; dir < 6; dir++) {
 				int mask = 1 << dir;
 				if ((connectivity & mask) == 0) continue; // no connection towards dir
-				
+
 				// center piece offsets
 				resetToCenterDimensions(dim);
-				
+
 				// extend block towards dir as it's connected to there
 				dim[dir / 2] = dir % 2 == 0 ? 0 : CoreConstants.PIPE_MAX_POS;
 				dim[dir / 2 + 3] = dir % 2 == 0 ? CoreConstants.PIPE_MIN_POS : 1;
-	
+
 				// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
 				int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
-	
+
 				// render sub block
 				state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.VALID_DIRECTIONS[dir]));
-	
+
 				renderTwoWayBlock(renderblocks, block, x, y, z, dim, renderMask);
 			}
 		} else {
 			// render the unconnected pipe faces of the center block (if any)
 			if (connectivity != 0x3f) { // note: 0x3f = 0x111111 = all sides
 				resetToCenterDimensions(dim);
-				
+
 				//Render opaque Layer
 				state.currentTexture = icons.getIcon(Textures.LOGISTICSPIPE_OPAQUE_TEXTURE.normal);
 				renderOneWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
-				
+
 				//Render Pipe Texture
 				state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.UNKNOWN));
 				renderOneWayBlock(renderblocks, block, x, y, z, dim, connectivity ^ 0x3f);
 			}
-			
+
 			// render the connecting pipe faces
 			for (int dir = 0; dir < 6; dir++) {
 				int mask = 1 << dir;
 				if ((connectivity & mask) == 0) continue; // no connection towards dir
-				
+
 				// center piece offsets
 				resetToCenterDimensions(dim);
-				
+
 				// extend block towards dir as it's connected to there
 				dim[dir / 2] = dir % 2 == 0 ? 0 : CoreConstants.PIPE_MAX_POS;
 				dim[dir / 2 + 3] = dir % 2 == 0 ? CoreConstants.PIPE_MIN_POS : 1;
-	
+
 				// the mask points to all faces perpendicular to dir, i.e. dirs 0+1 -> mask 111100, 1+2 -> 110011, 3+5 -> 001111
 				int renderMask = (3 << (dir / 2 * 2)) ^ 0x3f;
-				
+
 				//Render opaque Layer
 				state.currentTexture = icons.getIcon(Textures.LOGISTICSPIPE_OPAQUE_TEXTURE.normal);
 				renderOneWayBlock(renderblocks, block, x, y, z, dim, 0x3f);
-				
+
 				// render sub block
 				state.currentTexture = icons.getIcon(state.textureMatrix.getTextureIndex(ForgeDirection.VALID_DIRECTIONS[dir]));
 				renderOneWayBlock(renderblocks, block, x, y, z, dim, renderMask);
@@ -116,8 +114,10 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 	}
 
 	private void resetToCenterDimensions(float[] dim) {
-		for (int i = 0; i < 3; i++) dim[i] = CoreConstants.PIPE_MIN_POS;
-		for (int i = 3; i < 6; i++) dim[i] = CoreConstants.PIPE_MAX_POS;
+		for (int i = 0; i < 3; i++)
+			dim[i] = CoreConstants.PIPE_MIN_POS;
+		for (int i = 3; i < 6; i++)
+			dim[i] = CoreConstants.PIPE_MAX_POS;
 	}
 
 	/**
@@ -225,6 +225,5 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 	public int getRenderId() {
 		return TransportProxy.pipeModel;
 	}
-	
-	
+
 }

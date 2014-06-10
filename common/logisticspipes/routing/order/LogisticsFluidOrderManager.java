@@ -10,11 +10,11 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.tuples.Triplet;
 
 public class LogisticsFluidOrderManager {
-	
+
 	private LinkedList<Triplet<FluidIdentifier, Integer, IRequestFluid>> queue = new LinkedList<Triplet<FluidIdentifier, Integer, IRequestFluid>>();
-	
+
 	public void add(FluidLogisticsPromise promise, IRequestFluid destination) {
-		if(promise.amount < 0) throw new RuntimeException("The amount can't be less than zero");
+		if (promise.amount < 0) throw new RuntimeException("The amount can't be less than zero");
 		queue.addLast(new Triplet<FluidIdentifier, Integer, IRequestFluid>(promise.liquid, promise.amount, destination));
 	}
 
@@ -27,17 +27,17 @@ public class LogisticsFluidOrderManager {
 	}
 
 	public void sendAmount(int amount) {
-		if(!hasOrders()) return;
+		if (!hasOrders()) return;
 		int result = queue.getFirst().getValue2() - amount;
-		if(result <= 0) {
+		if (result <= 0) {
 			queue.removeFirst();
 		} else {
 			queue.getFirst().setValue2(queue.getFirst().getValue2() - amount);
 		}
 	}
-	
+
 	public void sendFailed() {
-		if(!hasOrders()) return;
+		if (!hasOrders()) return;
 		queue.getFirst().getValue3().sendFailed(queue.getFirst().getValue1(), queue.getFirst().getValue2());
 		queue.removeFirst();
 	}

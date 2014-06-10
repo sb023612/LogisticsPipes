@@ -8,16 +8,17 @@ import lombok.Getter;
 import lombok.Setter;
 
 public abstract class AbstractWrapper {
+
 	@Getter
 	@Setter(value = AccessLevel.PACKAGE)
-	protected WrapperState	state	= WrapperState.Enabled;
+	protected WrapperState state = WrapperState.Enabled;
 	@Getter
 	@Setter(value = AccessLevel.PACKAGE)
-	private Throwable		reason;
+	private Throwable reason;
 	@Getter
 	@Setter(value = AccessLevel.PACKAGE)
-	private String			modId;
-	
+	private String modId;
+
 	public void handleException(Throwable e) {
 		e.printStackTrace();
 		this.state = WrapperState.Exception;
@@ -26,10 +27,10 @@ public abstract class AbstractWrapper {
 		LogisticsPipes.log.severe(message);
 		MainProxy.proxy.sendBroadCast(ChatColor.RED + message);
 	}
-	
+
 	public abstract void onDisable();
-	
+
 	public abstract String getName();
-	
+
 	public abstract String getTypeName();
 }

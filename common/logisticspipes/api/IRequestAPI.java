@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
  * Public interface implemented by Request pipes
  */
 public interface IRequestAPI {
+
 	/**
 	 * do NOT modify the tagcompounds of the returned itemstacks
 	 * @return list of items and amounts provided by providers in the network
@@ -21,9 +22,11 @@ public interface IRequestAPI {
 	List<ItemStack> getCraftedItems();
 
 	class SimulationResult {
+
 		public List<ItemStack> used;
 		public List<ItemStack> missing;
 	}
+
 	/**
 	 * do NOT modify the tagcompounds of the returned itemstacks
 	 * @param wanted result

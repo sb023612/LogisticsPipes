@@ -29,4 +29,3 @@ public class ProviderPipeMode extends IntegerCoordinatesPacket {
 		((PipeItemsProviderLogistics) pipe.pipe).setExtractionMode(getInteger());
 	}
 }
-

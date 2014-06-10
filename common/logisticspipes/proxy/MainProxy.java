@@ -29,50 +29,50 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 
-public class MainProxy {
-	
-	@SidedProxy(clientSide="logisticspipes.proxy.side.ClientProxy", serverSide="logisticspipes.proxy.side.ServerProxy")
+public final class MainProxy {
+
+	@SidedProxy(clientSide = "logisticspipes.proxy.side.ClientProxy", serverSide = "logisticspipes.proxy.side.ServerProxy")
 	public static IProxy proxy;
 	@Getter
-	private static int	globalTick;
-	
+	private static int globalTick;
+
 	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<Thread, Side>();
-	
+
+	private MainProxy() {}
+
 	private static Side getEffectiveSide() {
 		Thread thr = Thread.currentThread();
-		if(threadSideMap.containsKey(thr)) {
+		if (threadSideMap.containsKey(thr)) {
 			return threadSideMap.get(thr);
 		}
 		Side side = getEffectiveSide(thr);
-		if(threadSideMap.size() > 50) {
+		if (threadSideMap.size() > 50) {
 			threadSideMap.clear();
 		}
 		threadSideMap.put(thr, side);
 		return side;
 	}
-	
+
 	private static Side getEffectiveSide(Thread thr) {
-        if(SimpleServiceLocator.ccProxy != null && SimpleServiceLocator.ccProxy.isLuaThread(thr)) {
-        	return Side.SERVER;
-        }
-        if ((thr instanceof ThreadMinecraftServer) || (thr instanceof ServerListenThread) || (thr instanceof RoutingTableUpdateThread) || (thr instanceof RoutingTableDebugUpdateThread))
-        {
-            return Side.SERVER;
-        }
-        return Side.CLIENT;
-    }
-	
+		if (SimpleServiceLocator.ccProxy != null && SimpleServiceLocator.ccProxy.isLuaThread(thr)) {
+			return Side.SERVER;
+		}
+		if ((thr instanceof ThreadMinecraftServer) || (thr instanceof ServerListenThread) || (thr instanceof RoutingTableUpdateThread) || (thr instanceof RoutingTableDebugUpdateThread)) {
+			return Side.SERVER;
+		}
+		return Side.CLIENT;
+	}
+
 	public static boolean isClient(World world) {
-		try{
+		try {
 			return world.isRemote;
-		} catch(NullPointerException n) {
+		} catch (NullPointerException n) {
 			LogisticsPipes.log.severe("isClient called with a null world - using slow thread based fallback");
 			n.printStackTrace();
 		}
 		return isClient();
 	}
-	
-	@Deprecated 
+
 	/**
 	 * isClient is slow, find a world and check isServer(world)
 	 * @return
@@ -80,19 +80,17 @@ public class MainProxy {
 	public static boolean isClient() {
 		return getEffectiveSide() == Side.CLIENT;
 	}
-	
+
 	public static boolean isServer(World world) {
-		try{
+		try {
 			return !world.isRemote;
-		} catch(NullPointerException n) {
+		} catch (NullPointerException n) {
 			LogisticsPipes.log.severe("isServer called with a null world - using slow thread based fallback");
 			n.printStackTrace();
 		}
 		return isServer();
 	}
 
-	
-	@Deprecated 
 	/**
 	 * isServer is slow, find a world and check isServer(world)
 	 * @return
@@ -104,14 +102,14 @@ public class MainProxy {
 	public static World getClientMainWorld() {
 		return proxy.getWorld();
 	}
-	
+
 	public static int getDimensionForWorld(World world) {
 		return proxy.getDimensionForWorld(world);
 	}
 
 	public static void sendPacketToServer(ModernPacket packet) {
 		packet.create();
-		if(packet.isCompressable() || needsToBeCompressed(packet)) {
+		if (packet.isCompressable() || needsToBeCompressed(packet)) {
 			SimpleServiceLocator.clientBufferHandler.addPacketToCompressor(packet.getPacket());
 		} else {
 			PacketDispatcher.sendPacketToServer(packet.getPacket());
@@ -120,7 +118,7 @@ public class MainProxy {
 
 	public static void sendPacketToPlayer(ModernPacket packet, Player player) {
 		packet.create();
-		if(packet.isCompressable() || needsToBeCompressed(packet)) {
+		if (packet.isCompressable() || needsToBeCompressed(packet)) {
 			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), player);
 		} else {
 			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), player);
@@ -131,25 +129,25 @@ public class MainProxy {
 		packet.create();
 		ChunkCoordIntPair chunk = new ChunkCoordIntPair(X >> 4, Z >> 4);
 		PlayerCollectionList players = LogisticsEventListener.watcherList.get(chunk);
-		if(players != null) {
-			for(EntityPlayer player:players.players()) {
-				if(MainProxy.getDimensionForWorld(player.worldObj) == dimensionId) {
-					sendPacketToPlayer(packet, (Player)player);
+		if (players != null) {
+			for (EntityPlayer player : players.players()) {
+				if (MainProxy.getDimensionForWorld(player.worldObj) == dimensionId) {
+					sendPacketToPlayer(packet, (Player) player);
 				}
 			}
 			return;
 		}
 	}
-	
+
 	public static void sendToPlayerList(ModernPacket packet, PlayerCollectionList players) {
-		if(players.isEmpty()) return;
+		if (players.isEmpty()) return;
 		packet.create();
-		if(packet.isCompressable() || needsToBeCompressed(packet)) {
-			for(EntityPlayer player:players.players()) {
+		if (packet.isCompressable() || needsToBeCompressed(packet)) {
+			for (EntityPlayer player : players.players()) {
 				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), (Player) player);
 			}
 		} else {
-			for(EntityPlayer player:players.players()) {
+			for (EntityPlayer player : players.players()) {
 				PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player) player);
 			}
 		}
@@ -157,9 +155,9 @@ public class MainProxy {
 
 	public static void sendToAllPlayers(ModernPacket packet) {
 		packet.create();
-		if(packet.isCompressable() || needsToBeCompressed(packet)) {
-			for(World world: DimensionManager.getWorlds()) {
-				for(Object playerObject:world.playerEntities) {
+		if (packet.isCompressable() || needsToBeCompressed(packet)) {
+			for (World world : DimensionManager.getWorlds()) {
+				for (Object playerObject : world.playerEntities) {
 					Player player = (Player) playerObject;
 					SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), player);
 				}
@@ -170,8 +168,8 @@ public class MainProxy {
 	}
 
 	private static boolean needsToBeCompressed(ModernPacket packet) {
-		if(packet.getData() != null) {
-			if(packet.getData().length > 32767) {
+		if (packet.getData() != null) {
+			if (packet.getData().length > 32767) {
 				return true; // Packet is to big
 			}
 		}
@@ -179,19 +177,19 @@ public class MainProxy {
 	}
 
 	public static void sendSpawnParticlePacket(int particle, int xCoord, int yCoord, int zCoord, World dimension, int amount) {
-		if(!Configs.ENABLE_PARTICLE_FX) return;
-		if(MainProxy.isServer(dimension)) {
+		if (!Configs.ENABLE_PARTICLE_FX) return;
+		if (MainProxy.isServer(dimension)) {
 			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(dimension), PacketHandler.getPacket(ParticleFX.class).setInteger2(amount).setInteger(particle).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		} else {
 			LogisticsPipes.log.severe("Server only method on Client (Particle Spawning)");
 		}
 	}
-	
+
 	public static void spawnParticle(int particle, int xCoord, int yCoord, int zCoord, int amount) {
-		if(!Configs.ENABLE_PARTICLE_FX || !Minecraft.isFancyGraphicsEnabled()) return;
+		if (!Configs.ENABLE_PARTICLE_FX || !Minecraft.isFancyGraphicsEnabled()) return;
 		PipeFXRenderHandler.spawnGenericParticle(particle, xCoord, yCoord, zCoord, amount);
 	}
-	
+
 	public static EntityPlayer getFakePlayer(TileEntity tile) {
 		return new FakePlayer(tile);
 	}
@@ -204,4 +202,3 @@ public class MainProxy {
 		globalTick++;
 	}
 }
-

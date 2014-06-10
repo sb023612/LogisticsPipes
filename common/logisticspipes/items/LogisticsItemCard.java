@@ -17,7 +17,7 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 
 	public static final int FREQ_CARD = 0;
 	public static final int SEC_CARD = 1;
-	
+
 	public LogisticsItemCard(int i) {
 		super(i);
 		this.hasSubtypes = true;
@@ -28,20 +28,20 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
 		super.addInformation(itemStack, player, list, flag);
-		if(!itemStack.hasTagCompound()) {
+		if (!itemStack.hasTagCompound()) {
 			list.add("This is no valid Card");
 		} else {
-			if(itemStack.getTagCompound().hasKey("UUID")) {
-				if(itemStack.getItemDamage() == FREQ_CARD) {
+			if (itemStack.getTagCompound().hasKey("UUID")) {
+				if (itemStack.getItemDamage() == FREQ_CARD) {
 					list.add("Freq. Card");
-				} else if(itemStack.getItemDamage() == SEC_CARD) {
+				} else if (itemStack.getItemDamage() == SEC_CARD) {
 					list.add("Sec. Card");
 				}
-				if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 					list.add("Id: " + itemStack.getTagCompound().getString("UUID"));
 					if (itemStack.getItemDamage() == SEC_CARD) {
 						UUID id = UUID.fromString(itemStack.getTagCompound().getString("UUID"));
-						list.add("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id)? "Authorized" : "Deauthorized"));
+						list.add("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? "Authorized" : "Deauthorized"));
 					}
 				}
 			}
@@ -65,7 +65,7 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 
 	@Override
 	public boolean canExistInWorld(ItemStack stack) {
-		if(stack.getItemDamage() == SEC_CARD) {
+		if (stack.getItemDamage() == SEC_CARD) {
 			return false;
 		}
 		return true;

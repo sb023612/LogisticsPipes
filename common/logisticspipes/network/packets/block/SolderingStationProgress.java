@@ -19,9 +19,8 @@ public class SolderingStationProgress extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsSolderingTileEntity tile = this.getTile(player.worldObj, LogisticsSolderingTileEntity.class);
-		if(tile != null) {
+		if (tile != null) {
 			tile.progress = getInteger();
 		}
 	}
 }
-

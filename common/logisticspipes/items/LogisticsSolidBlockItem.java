@@ -37,7 +37,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 				return "tile.logisticstepowerprovider";
 			case LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER:
 				return "tile.logisticsic2powerprovider";
-			}
+		}
 		return super.getUnlocalizedName(stack);
 	}
 
@@ -53,23 +53,23 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 
 	@Override
 	public int getMetadata(int par1) {
-        return par1;
-    }
-	
+		return par1;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
-		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.SOLDERING_STATION));
-		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION));
-		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_SECURITY_STATION));
-		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE));
-		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE));
-		par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER));
-		if(SimpleServiceLocator.thermalExpansionProxy.isTE()) {
-			par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.SOLDERING_STATION));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_SECURITY_STATION));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_FUZZYCRAFTING_TABLE));
+		par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_BC_POWERPROVIDER));
+		if (SimpleServiceLocator.thermalExpansionProxy.isTE()) {
+			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_RF_POWERPROVIDER));
 		}
-		if(SimpleServiceLocator.IC2Proxy.hasIC2()) {
-			par3List.add(new ItemStack(this,1,LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER));
+		if (SimpleServiceLocator.IC2Proxy.hasIC2()) {
+			par3List.add(new ItemStack(this, 1, LogisticsSolidBlock.LOGISTICS_IC2_POWERPROVIDER));
 		}
 	}
 

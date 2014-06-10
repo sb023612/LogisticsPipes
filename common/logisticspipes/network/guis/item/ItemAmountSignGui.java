@@ -17,29 +17,29 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeDirection;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ItemAmountSignGui extends CoordinatesGuiProvider {
-	
+
 	@Getter
 	@Setter
 	private ForgeDirection dir;
-	
+
 	public ItemAmountSignGui(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public Object getClientGui(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
-		if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
+		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
 		return new ItemAmountSignCreationGui(player, (CoreRoutedPipe) pipe.pipe, dir);
 	}
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.getEntityWorld());
-		if(pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
-		ItemAmountPipeSign sign = ((ItemAmountPipeSign)((CoreRoutedPipe)pipe.pipe).getPipeSign(dir));
+		if (pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
+		ItemAmountPipeSign sign = ((ItemAmountPipeSign) ((CoreRoutedPipe) pipe.pipe).getPipeSign(dir));
 		DummyContainer dummy = new DummyContainer(player.inventory, sign.itemTypeInv);
 		dummy.addDummySlot(0, 0, 0);
 		dummy.addNormalSlotsForPlayerInventory(0, 0);

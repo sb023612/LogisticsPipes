@@ -36,14 +36,14 @@ public class PipePositionPacket extends CoordinatesPacket {
 	public PipePositionPacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe tile = this.getPipe(player.getEntityWorld());
-		if(tile == null) return;
-		((PipeTransportLogistics)tile.pipe.transport).handleItemPositionPacket(travelId, input, output, speed, position);
+		if (tile == null) return;
+		((PipeTransportLogistics) tile.pipe.transport).handleItemPositionPacket(travelId, input, output, speed, position);
 	}
-	
+
 	@Override
 	public void writeData(LPDataOutputStream data) throws IOException {
 		super.writeData(data);

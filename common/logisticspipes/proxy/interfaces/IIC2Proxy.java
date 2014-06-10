@@ -11,9 +11,9 @@ public interface IIC2Proxy {
 	public abstract boolean isSimilarElectricItem(ItemStack stack, ItemStack template);
 
 	public abstract boolean isFullyCharged(ItemStack stack);
-	
+
 	public abstract boolean isFullyDischarged(ItemStack stack);
-	
+
 	public abstract boolean isPartiallyCharged(ItemStack stack);
 
 	public abstract void addCraftingRecipes();

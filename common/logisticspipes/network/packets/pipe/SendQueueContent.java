@@ -20,10 +20,10 @@ public class SendQueueContent extends InventoryCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof ISendQueueContentRecieiver) {
+		if (pipe.pipe instanceof ISendQueueContentRecieiver) {
 			ISendQueueContentRecieiver receiver = (ISendQueueContentRecieiver) pipe.pipe;
 			receiver.handleSendQueueItemIdentifierList(getIdentList());
 		}
@@ -34,4 +34,3 @@ public class SendQueueContent extends InventoryCoordinatesPacket {
 		return true;
 	}
 }
-

@@ -6,11 +6,11 @@ import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 import cpw.mods.fml.common.Loader;
 
-public class Configs {
+public final class Configs {
 
-	private static final String	NEW_LINE = System.getProperty("line.separator");
+	private static final String NEW_LINE = System.getProperty("line.separator");
 	public static final String CATEGORY_MULTITHREAD = "multithread";
-	public static final String CATEGORY_DEBUG 		= "debug";
+	public static final String CATEGORY_DEBUG = "debug";
 
 	// Ids
 	public static int ITEM_BROKEN_ID = 6863;
@@ -91,31 +91,37 @@ public class Configs {
 	public static int MULTI_THREAD_NUMBER = 4;
 	public static int MULTI_THREAD_PRIORITY = Thread.NORM_PRIORITY;
 
-	public static boolean WATCHDOG_CLIENT 	= false;
-	public static boolean WATCHDOG_SERVER 	= false;
-	public static int WATCHDOG_TIMEOUT		= 60000;
+	public static boolean WATCHDOG_CLIENT = false;
+	public static boolean WATCHDOG_SERVER = false;
+	public static int WATCHDOG_TIMEOUT = 60000;
 
 	public static double POWER_USAGE_MULTIPLIER = 1;
 	public static int LOGISTICS_CRAFTING_TABLE_POWER_USAGE = 250;
 
 	public static boolean CHECK_FOR_UPDATES = true;
-	
+
 	public static boolean EASTER_EGGS = true;
-	
+
 	public static boolean TE_PIPE_SUPPORT = false;
-	
+
 	public static boolean OPAQUE = false;
-	
+
 	private static boolean loaded = false;
+
+	private Configs() {}
+
+	/*
+	 * @formatter:off
+	 */
+
 	public static void load() {
-		if(loaded) return;
-		if(Loader.instance().getConfigDir() == null) return;
+		if (loaded) return;
+		if (Loader.instance().getConfigDir() == null) return;
 		CONFIGURATION = new Configuration(new File(Loader.instance().getConfigDir(), "LogisticsPipes.cfg"));
 		CONFIGURATION.load();
 		loaded = true;
 
-		if (CONFIGURATION.hasCategory("logisticspipe.id")
-				|| CONFIGURATION.hasCategory("logisticsPipe.id")) {
+		if (CONFIGURATION.hasCategory("logisticspipe.id") || CONFIGURATION.hasCategory("logisticsPipe.id")) {
 			throw new RuntimeException(
 					"Old config, please remove it and manually reconfigure LogisticPipes");
 		}
@@ -146,11 +152,11 @@ public class Configs {
 		ITEM_BROKEN_ID = CONFIGURATION.getItem("LogisticsBrokenItem.id",
 				ITEM_BROKEN_ID, "The item id for the logistics broken item")
 				.getInt();
-	
+
 		ITEM_LIQUID_CONTAINER_ID = CONFIGURATION.getItem(
 				"LogisticsLiquidContainer.id", ITEM_LIQUID_CONTAINER_ID,
 				"The item id for the logistics liquid container").getInt();
-		
+
 		LOGISTICSPIPE_BASIC_ID = CONFIGURATION.getItem("logisticsPipe.id",
 				LOGISTICSPIPE_BASIC_ID,
 				"The item id for the basic logistics pipe").getInt();
@@ -256,7 +262,7 @@ public class Configs {
 				"logisticPipeLiquidSupplierMk2.id",
 				LOGISTICSPIPE_LIQUID_SUPPLIER_MK2,
 				"The item id for the liquid supplier pipe mk2.").getInt();
-		
+
 		LOGISTICS_DETECTION_LENGTH = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL,
 						"detectionLength",
@@ -326,7 +332,7 @@ public class Configs {
 				"Whether or not special particles will spawn.").getBoolean(
 				false);
 
-		if(CONFIGURATION.hasKey(CATEGORY_MULTITHREAD, "enabled")) {
+		if (CONFIGURATION.hasKey(CATEGORY_MULTITHREAD, "enabled")) {
 			//ConfigCategory.remove is deprecated, but there's no other way to remove a key-value pair without completely recreating the config...
 			CONFIGURATION.getCategory(CATEGORY_MULTITHREAD).remove(new String("enabled"));
 		}
@@ -348,7 +354,7 @@ public class Configs {
 					.get(CATEGORY_MULTITHREAD, "priority",
 							MULTI_THREAD_PRIORITY,
 							"Priority of the multiThread Threads. 10 is highest, 5 normal, 1 lowest").set(Integer
-					.toString(Thread.NORM_PRIORITY));
+							.toString(Thread.NORM_PRIORITY));
 		}
 
 		WATCHDOG_CLIENT = CONFIGURATION
@@ -361,7 +367,6 @@ public class Configs {
 				.get(CATEGORY_DEBUG, "watchdog_timeout", WATCHDOG_TIMEOUT,
 						"The LP thread watchdog timeout time in ms.").getInt();
 
-		
 		POWER_USAGE_MULTIPLIER = CONFIGURATION.get(
 				Configuration.CATEGORY_GENERAL, "powerUsageMultiplyer",
 				POWER_USAGE_MULTIPLIER, "A Multiplyer for the power usage.")
@@ -392,28 +397,30 @@ public class Configs {
 						CHECK_FOR_UPDATES,
 						"Should LogisticsPipes check for updates?")
 				.getBoolean(false);
-		
+
 		TE_PIPE_SUPPORT = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL,
 						"TEPipeSupport",
 						TE_PIPE_SUPPORT,
-						"Enable Support for TE conduits to allow them to connect LP pipes." + NEW_LINE + "This feature MODIFIES TE. That means that bugs inside TE could be caused by LP." + NEW_LINE + "DON'T REPORT BUGS TO TE WITH THIS FEATURE ENABLED.")
+						"Enable Support for TE conduits to allow them to connect LP pipes." + NEW_LINE
+								+ "This feature MODIFIES TE. That means that bugs inside TE could be caused by LP." + NEW_LINE
+								+ "DON'T REPORT BUGS TO TE WITH THIS FEATURE ENABLED.")
 				.getBoolean(false);
-		
+
 		OPAQUE = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL,
 						"OpaquePipes",
 						OPAQUE,
 						"Render every LP pipe opaque.")
 				.getBoolean(false);
-		
+
 		EASTER_EGGS = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL,
 						"easterEggs",
 						EASTER_EGGS,
 						"Do you fancy easter eggs?")
 				.getBoolean(false);
-		
+
 		CONFIGURATION.save();
 	}
 

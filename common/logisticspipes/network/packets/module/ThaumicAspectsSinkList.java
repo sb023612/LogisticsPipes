@@ -15,13 +15,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ThaumicAspectsSinkList extends NBTCoordinatesPacket {
 
 	@Getter
 	@Setter
 	private int slot;
-	
+
 	public ThaumicAspectsSinkList(int id) {
 		super(id);
 	}
@@ -33,10 +33,10 @@ public class ThaumicAspectsSinkList extends NBTCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(slot < 0) {
-			if(player.openContainer instanceof DummyModuleContainer) {
+		if (slot < 0) {
+			if (player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-				if(dummy.getModule() instanceof ModuleThaumicAspectSink) {
+				if (dummy.getModule() instanceof ModuleThaumicAspectSink) {
 					ModuleThaumicAspectSink module = (ModuleThaumicAspectSink) dummy.getModule();
 					module.readFromNBT(getTag());
 				}
@@ -45,9 +45,9 @@ public class ThaumicAspectsSinkList extends NBTCoordinatesPacket {
 		}
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if (pipe == null) return;
-		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleThaumicAspectSink) {
-			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
-			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).aspectListChanged();
+		if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleThaumicAspectSink) {
+			((ModuleThaumicAspectSink) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
+			((ModuleThaumicAspectSink) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot())).aspectListChanged();
 		}
 	}
 
@@ -63,4 +63,3 @@ public class ThaumicAspectsSinkList extends NBTCoordinatesPacket {
 		slot = data.readInt();
 	}
 }
-

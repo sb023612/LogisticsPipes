@@ -5,10 +5,10 @@ import logisticspipes.commands.commands.wrapper.ListCommand;
 import net.minecraft.command.ICommandSender;
 
 public class WrapperCommand extends SubCommandHandler {
-	
+
 	@Override
 	public String[] getNames() {
-		return new String[]{"wrapper"};
+		return new String[] { "wrapper" };
 	}
 
 	@Override
@@ -18,7 +18,7 @@ public class WrapperCommand extends SubCommandHandler {
 
 	@Override
 	public String[] getDescription() {
-		return new String[]{"wrapper controll commands"};
+		return new String[] { "wrapper controll commands" };
 	}
 
 	@Override

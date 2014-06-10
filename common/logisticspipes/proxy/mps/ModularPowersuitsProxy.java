@@ -17,13 +17,13 @@ public class ModularPowersuitsProxy implements IModularPowersuitsProxy {
 
 	@Override
 	public boolean isMPSHelm(ItemStack stack) {
-		if(stack == null) return false;
+		if (stack == null) return false;
 		return stack.getItem() instanceof ItemPowerArmorHelmet;
 	}
 
 	@Override
 	public boolean isMPSHand(ItemStack stack) {
-		if(stack == null) return false;
+		if (stack == null) return false;
 		return stack.getItem() instanceof ItemPowerFist;
 	}
 
@@ -38,24 +38,60 @@ public class ModularPowersuitsProxy implements IModularPowersuitsProxy {
 	}
 
 	IHUDConfig dummy = new IHUDConfig() {
-		@Override public boolean isHUDSatellite() {return false;}
-		@Override public boolean isHUDProvider() {return false;}
-		@Override public boolean isHUDPowerLevel() {return false;}
-		@Override public boolean isHUDInvSysCon() {return false;}
-		@Override public boolean isHUDCrafting() {return false;}
-		@Override public boolean isHUDChassie() {return false;}
-		@Override public void setHUDChassie(boolean state) {}
-		@Override public void setHUDCrafting(boolean state) {}
-		@Override public void setHUDInvSysCon(boolean state) {}
-		@Override public void setHUDPowerJunction(boolean state) {}
-		@Override public void setHUDProvider(boolean state) {}
-		@Override public void setHUDSatellite(boolean state) {}
+
+		@Override
+		public boolean isHUDSatellite() {
+			return false;
+		}
+
+		@Override
+		public boolean isHUDProvider() {
+			return false;
+		}
+
+		@Override
+		public boolean isHUDPowerLevel() {
+			return false;
+		}
+
+		@Override
+		public boolean isHUDInvSysCon() {
+			return false;
+		}
+
+		@Override
+		public boolean isHUDCrafting() {
+			return false;
+		}
+
+		@Override
+		public boolean isHUDChassie() {
+			return false;
+		}
+
+		@Override
+		public void setHUDChassie(boolean state) {}
+
+		@Override
+		public void setHUDCrafting(boolean state) {}
+
+		@Override
+		public void setHUDInvSysCon(boolean state) {}
+
+		@Override
+		public void setHUDPowerJunction(boolean state) {}
+
+		@Override
+		public void setHUDProvider(boolean state) {}
+
+		@Override
+		public void setHUDSatellite(boolean state) {}
 	};
-	
+
 	@Override
 	public IHUDConfig getConfigFor(ItemStack stack) {
-		if(stack == null) return dummy;
-		if(stack.getTagCompound() == null) return dummy;
+		if (stack == null) return dummy;
+		if (stack.getTagCompound() == null) return dummy;
 		return new MPSHUDConfig(stack.getTagCompound());
 	}
 }

@@ -20,14 +20,13 @@ public class CraftingPipeOpenConnectedGuiPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
-			if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
+		if (pipe.pipe instanceof PipeItemsCraftingLogistics) {
+			if (pipe.pipe instanceof PipeItemsCraftingLogistics) {
 				((PipeItemsCraftingLogistics) pipe.pipe).openAttachedGui(player);
 			}
 		}
 	}
 }
-

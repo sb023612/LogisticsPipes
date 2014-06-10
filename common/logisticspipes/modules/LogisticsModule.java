@@ -21,8 +21,9 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@CCType(name="LogisticsModule")
+@CCType(name = "LogisticsModule")
 public abstract class LogisticsModule implements ISaveState {
+
 	/**
 	 * Registers the Inventory and ItemSender to the module
 	 * @param invProvider The connected inventory
@@ -30,26 +31,28 @@ public abstract class LogisticsModule implements ISaveState {
 	 * @param world that the module is in.
 	 */
 	public abstract void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider);
-	
+
 	/**
 	 * Registers the slot the module is in
 	 * Negative numbers indicate an in-hand inventory, not in a gui or chassi 
 	 */
 	public abstract void registerSlot(int slot);
-	
+
 	/**
 	 * typically returns the coord of the pipe that holds it.
 	 */
 	public abstract int getX();
+
 	/**
 	 * typically returns the coord of the pipe that holds it.
 	 */
 	public abstract int getY();
+
 	/**
 	 * typically returns the coord of the pipe that holds it.
 	 */
 	public abstract int getZ();
-	
+
 	/**
 	 * Gives an sink answer on the given itemstack 
 	 * @param stack to sink
@@ -60,7 +63,7 @@ public abstract class LogisticsModule implements ISaveState {
 	 * @return SinkReply whether the module sinks the item or not
 	 */
 	public abstract SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit);
-	
+
 	/**
 	 * Returns submodules. Normal modules don't have submodules 
 	 * @param slotnumber of the requested module
@@ -98,14 +101,14 @@ public abstract class LogisticsModule implements ISaveState {
 	 * is this module a valid destination for bounced items.
 	 */
 	public abstract boolean recievePassive();
-	
+
 	/**
 	 * get The Icon for this Module Class
 	 * @return
 	 */
 	@SideOnly(Side.CLIENT)
 	public abstract Icon getIconTexture(IconRegister register);
-	
+
 	/**
 	 * Returns whether the module should be displayed the effect when as an item.
 	 * @return True to show effect
@@ -118,10 +121,10 @@ public abstract class LogisticsModule implements ISaveState {
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
 		return new ArrayList<CCSinkResponder>(0);
 	}
-	
+
 	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {}
-	
-	@CCCommand(description="Returns if the Pipe has a gui")
+
+	@CCCommand(description = "Returns if the Pipe has a gui")
 	public boolean hasGui() {
 		return false;
 	}

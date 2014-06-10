@@ -12,7 +12,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SlotFinderActivatePacket extends CoordinatesPacket {
 
 	@Getter
@@ -27,11 +27,11 @@ public class SlotFinderActivatePacket extends CoordinatesPacket {
 	@Getter
 	@Setter
 	private int slot;
-	
+
 	public SlotFinderActivatePacket(int id) {
 		super(id);
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new SlotFinderActivatePacket(getId());

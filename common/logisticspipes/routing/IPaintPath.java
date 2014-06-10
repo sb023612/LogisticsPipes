@@ -11,5 +11,6 @@ package logisticspipes.routing;
 import net.minecraft.world.World;
 
 public interface IPaintPath {
+
 	public void addLaser(World worldObj, LaserData laser);
 }

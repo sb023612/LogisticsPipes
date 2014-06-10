@@ -15,10 +15,10 @@ import net.minecraft.inventory.IInventory;
 import org.lwjgl.input.Keyboard;
 
 public class GuiCCBasedQuickSort extends ModuleBaseGui {
-	
+
 	private ModuleCCBasedQuickSort _sortModule;
-	private int								slot;
-	
+	private int slot;
+
 	public GuiCCBasedQuickSort(IInventory playerInventory, CoreRoutedPipe pipe, ModuleCCBasedQuickSort sortModule, int slot) {
 		super(new DummyContainer(playerInventory, null), pipe);
 		_sortModule = sortModule;
@@ -26,7 +26,7 @@ public class GuiCCBasedQuickSort extends ModuleBaseGui {
 		ySize = 60;
 		this.slot = slot;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
@@ -40,34 +40,34 @@ public class GuiCCBasedQuickSort extends ModuleBaseGui {
 		buttonList.add(new SmallGuiButton(2, left + 87, top + 22, 15, 10, "--"));
 		buttonList.add(new SmallGuiButton(3, left + 87, top + 37, 15, 10, "-"));
 	}
-	
+
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		int change = 0;
-		switch(guibutton.id) {
+		switch (guibutton.id) {
 			case 0:
-				if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 					change = 100;
 				} else {
 					change = 10;
 				}
 				break;
 			case 1:
-				if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 					change = 5;
 				} else {
 					change = 1;
 				}
 				break;
 			case 2:
-				if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 					change = -100;
 				} else {
 					change = -10;
 				}
 				break;
 			case 3:
-				if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 					change = -5;
 				} else {
 					change = -1;
@@ -75,13 +75,13 @@ public class GuiCCBasedQuickSort extends ModuleBaseGui {
 				break;
 		}
 		this._sortModule.setTimeout(Math.max(Math.min(this._sortModule.getTimeout() + change, 1000), 5));
-		if(slot >= 0) {
+		if (slot >= 0) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(slot).setInteger(_sortModule.getTimeout()).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 		} else {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(slot).setInteger(_sortModule.getTimeout()).setPosX(0).setPosY(-1).setPosZ(0));
 		}
 	}
-	
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
@@ -89,12 +89,12 @@ public class GuiCCBasedQuickSort extends ModuleBaseGui {
 		String timeoutString = Integer.toString(_sortModule.getTimeout()) + " ticks";
 		fontRenderer.drawString(timeoutString, xSize / 2 - fontRenderer.getStringWidth(timeoutString) / 2, 30, 0x404040);
 	}
-	
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 	}
-	
+
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_CC_Based_QuickSort_ID;

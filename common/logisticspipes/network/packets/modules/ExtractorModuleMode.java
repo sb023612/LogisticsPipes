@@ -24,7 +24,7 @@ public class ExtractorModuleMode extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(getInteger2() < 0) {
+		if (getInteger2() < 0) {
 			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiExtractor) {
 				((GuiExtractor) FMLClientHandler.instance().getClient().currentScreen).setMode(ForgeDirection.getOrientation(getInteger()));
 			}
@@ -34,16 +34,15 @@ public class ExtractorModuleMode extends Integer2CoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if(getInteger2() == -1) {
-			if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ISneakyDirectionReceiver) {
-				((ISneakyDirectionReceiver)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setSneakyDirection(ForgeDirection.getOrientation(getInteger()));
+		if (getInteger2() == -1) {
+			if (pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ISneakyDirectionReceiver) {
+				((ISneakyDirectionReceiver) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule()).setSneakyDirection(ForgeDirection.getOrientation(getInteger()));
 			}
 			return;
 		}
-		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ISneakyDirectionReceiver) {
-			ISneakyDirectionReceiver recieiver = (ISneakyDirectionReceiver) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2());
+		if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ISneakyDirectionReceiver) {
+			ISneakyDirectionReceiver recieiver = (ISneakyDirectionReceiver) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getInteger2());
 			recieiver.setSneakyDirection(ForgeDirection.getOrientation(getInteger()));
 		}
 	}
 }
-

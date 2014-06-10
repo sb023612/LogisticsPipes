@@ -8,13 +8,13 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public abstract class StringCoordinatesPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
 	private String string;
-	
+
 	public StringCoordinatesPacket(int id) {
 		super(id);
 	}

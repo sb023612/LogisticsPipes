@@ -7,17 +7,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.gates.ITriggerParameter;
 
-public class TriggerNeedsPower extends LPTrigger{
+public class TriggerNeedsPower extends LPTrigger {
 
 	public TriggerNeedsPower(int id) {
-		super(id,"LogisticsPipes.trigger.nodeRequestsRecharge");
+		super(id, "LogisticsPipes.trigger.nodeRequestsRecharge");
 	}
 
 	@Override
 	public int getIconIndex() {
 		return LPActionTriggerIconProvider.triggerPowerNeededIconIndex;
 	}
-	
 
 	@Override
 	public boolean hasParameter() {
@@ -28,14 +27,15 @@ public class TriggerNeedsPower extends LPTrigger{
 	public String getDescription() {
 		return "Needs More Power";
 	}
+
 	@Override
 	public boolean isTriggerActive(ForgeDirection side, TileEntity tile, ITriggerParameter parameter) {
-		if(tile instanceof LogisticsPowerJunctionTileEntity) {
-			LogisticsPowerJunctionTileEntity LPJTE = (LogisticsPowerJunctionTileEntity)tile;
+		if (tile instanceof LogisticsPowerJunctionTileEntity) {
+			LogisticsPowerJunctionTileEntity LPJTE = (LogisticsPowerJunctionTileEntity) tile;
 			return LPJTE.needMorePowerTriggerCheck;
 		}
-		if(tile instanceof LogisticsSolderingTileEntity) {
-			LogisticsSolderingTileEntity LSTE = (LogisticsSolderingTileEntity)tile;
+		if (tile instanceof LogisticsSolderingTileEntity) {
+			LogisticsSolderingTileEntity LSTE = (LogisticsSolderingTileEntity) tile;
 			return LSTE.hasWork;
 		}
 		return false;
@@ -44,5 +44,5 @@ public class TriggerNeedsPower extends LPTrigger{
 	@Override
 	public boolean requiresParameter() {
 		return false;
-	}	
+	}
 }

@@ -9,10 +9,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class LogisticsOrder implements IOrderInfoProvider {
+
 	private static final int MIN_DISTANCE_TO_DISPLAY = 4;
-	
+
 	@Getter
 	private final ItemIdentifierStack item;
 	@Getter
@@ -20,7 +21,7 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	@Getter
 	@Setter
 	private boolean isFinished = false;
-	
+
 	/*
 	 * Display Information
 	 */
@@ -35,7 +36,7 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	@Setter
 	private byte machineProgress = 0;
 	private List<IDistanceTracker> trackers = new ArrayList<IDistanceTracker>();
-	
+
 	public LogisticsOrder(ItemIdentifierStack item, IRequestItems destination, RequestType type) {
 		this.item = item;
 		this.destination = destination;
@@ -59,16 +60,16 @@ public class LogisticsOrder implements IOrderInfoProvider {
 	@Override
 	public List<Float> getProgresses() {
 		List<Float> progresses = new ArrayList<Float>();
-		for(IDistanceTracker tracker:trackers) {
-			if(!tracker.hasReachedDestination() && !tracker.isTimeout()) {
+		for (IDistanceTracker tracker : trackers) {
+			if (!tracker.hasReachedDestination() && !tracker.isTimeout()) {
 				float f;
-				if(tracker.getInitialDistanceToTarget() != 0) {
-					f = ((float)tracker.getCurrentDistanceToTarget()) / ((float)tracker.getInitialDistanceToTarget());
+				if (tracker.getInitialDistanceToTarget() != 0) {
+					f = ((float) tracker.getCurrentDistanceToTarget()) / ((float) tracker.getInitialDistanceToTarget());
 				} else {
 					f = 1.0F;
 				}
-				if(!progresses.contains(f)) {
-					if(tracker.getInitialDistanceToTarget() > MIN_DISTANCE_TO_DISPLAY || tracker.getInitialDistanceToTarget() == 0) {
+				if (!progresses.contains(f)) {
+					if (tracker.getInitialDistanceToTarget() > MIN_DISTANCE_TO_DISPLAY || tracker.getInitialDistanceToTarget() == 0) {
 						progresses.add(f);
 					}
 				}

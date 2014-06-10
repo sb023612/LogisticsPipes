@@ -16,13 +16,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
 
 	@Getter
 	@Setter
 	private int slot;
-	
+
 	public ModuleBasedItemSinkList(int id) {
 		super(id);
 	}
@@ -34,31 +34,31 @@ public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.worldObj)) {
 			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
+			if (pipe == null) {
 				return;
 			}
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleModBasedItemSink) {
-				((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
+			if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleModBasedItemSink) {
+				((ModuleModBasedItemSink) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
 			}
 		} else {
-			if(getSlot() < 0) {
-				if(player.openContainer instanceof DummyModuleContainer) {
+			if (getSlot() < 0) {
+				if (player.openContainer instanceof DummyModuleContainer) {
 					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-					if(dummy.getModule() instanceof ModuleModBasedItemSink) {
-						((ModuleModBasedItemSink)dummy.getModule()).readFromNBT(getTag());
+					if (dummy.getModule() instanceof ModuleModBasedItemSink) {
+						((ModuleModBasedItemSink) dummy.getModule()).readFromNBT(getTag());
 						return;
 					}
 				}
 			}
 			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-			if(pipe == null) {
+			if (pipe == null) {
 				return;
 			}
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleModBasedItemSink) {
-				((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
-				((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).ModListChanged();
+			if (pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi) pipe.pipe).getModules() != null && ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleModBasedItemSink) {
+				((ModuleModBasedItemSink) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
+				((ModuleModBasedItemSink) ((PipeLogisticsChassi) pipe.pipe).getModules().getSubModule(getSlot())).modListChanged();
 			}
 		}
 	}
@@ -75,4 +75,3 @@ public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
 		slot = data.readInt();
 	}
 }
-

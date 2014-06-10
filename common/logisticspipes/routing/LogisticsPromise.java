@@ -12,10 +12,11 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.utils.item.ItemIdentifier;
 
 public class LogisticsPromise {
+
 	public ItemIdentifier item;
 	public int numberOfItems;
 	public IProvideItems sender;
-	
+
 	public LogisticsPromise copy() {
 		LogisticsPromise result = new LogisticsPromise();
 		result.item = item;

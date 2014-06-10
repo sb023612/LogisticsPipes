@@ -20,24 +20,23 @@ import org.lwjgl.opengl.GL11;
 public class GuiSimpleFilter extends ModuleBaseGui {
 
 	private final IModuleSimpleFilter _module;
-	
-	
+
 	public GuiSimpleFilter(IInventory playerInventory, CoreRoutedPipe pipe, IModuleSimpleFilter module) {
-		super(null,pipe);
+		super(null, pipe);
 		_module = module;
 		DummyContainer dummy = new DummyContainer(playerInventory, _module.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots
-	    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-	    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-	    }
-	    
-	    this.inventorySlots = dummy;
+		for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+		}
+
+		this.inventorySlots = dummy;
 		xSize = 175;
 		ySize = 142;
 	}
-	
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		fontRenderer.drawString(_module.getFilterInventory().getInvName(), 8, 6, 0x404040);
@@ -45,9 +44,9 @@ public class GuiSimpleFilter extends ModuleBaseGui {
 	}
 
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
-	
+
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {		
+	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(TEXTURE);
 		int j = guiLeft;

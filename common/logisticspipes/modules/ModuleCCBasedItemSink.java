@@ -21,23 +21,23 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleCCBasedItemSink extends LogisticsModule {
-	
-	private IInventoryProvider	coords;
-	private IQueueCCEvent	eventQueuer;
-	private ISendRoutedItem	itemSender;
+
+	private IInventoryProvider coords;
+	private IQueueCCEvent eventQueuer;
+	private ISendRoutedItem itemSender;
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
-	
+
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
-	
+
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		coords = invProvider;
 		this.itemSender = itemSender;
 	}
-	
+
 	@Override
 	public void registerCCEventQueuer(IQueueCCEvent eventQueuer) {
 		this.eventQueuer = eventQueuer;
@@ -45,64 +45,64 @@ public class ModuleCCBasedItemSink extends LogisticsModule {
 
 	@Override
 	public void registerSlot(int slot) {}
-	
+
 	@Override
 	public int getX() {
 		return coords.getX();
 	}
-	
+
 	@Override
 	public int getY() {
 		return coords.getY();
 	}
-	
+
 	@Override
 	public int getZ() {
 		return coords.getZ();
 	}
-	
+
 	@Override
 	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		return null;
 	}
-	
+
 	@Override
 	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
-	
+
 	@Override
 	public void tick() {}
-	
+
 	@Override
 	public boolean hasGenericInterests() {
 		return true;
 	}
-	
+
 	@Override
 	public Collection<ItemIdentifier> getSpecificInterests() {
 		return null;
 	}
-	
+
 	@Override
 	public boolean interestedInAttachedInventory() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean recievePassive() {
 		return false;
 	}
-	
+
 	@Override
 	public List<CCSinkResponder> queueCCSinkEvent(ItemIdentifierStack item) {
 		CCSinkResponder resonse = new CCSinkResponder(item, itemSender.getSourceID(), eventQueuer);
-		eventQueuer.queueEvent("ItemSink", new Object[]{SimpleServiceLocator.ccProxy.getAnswer(resonse)});
+		eventQueuer.queueEvent("ItemSink", new Object[] { SimpleServiceLocator.ccProxy.getAnswer(resonse) });
 		return new OneList<CCSinkResponder>(resonse);
 	}
 

@@ -12,8 +12,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 
-public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
-	
+public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics {
+
 	public PipeItemsCraftingLogisticsMk2(int itemID) {
 		super(itemID);
 	}
@@ -31,12 +31,12 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	protected int itemsToExtract() {
 		return 64;
 	}
-	
+
 	@Override
 	protected int stacksToExtract() {
 		return 1;
 	}
-	
+
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;

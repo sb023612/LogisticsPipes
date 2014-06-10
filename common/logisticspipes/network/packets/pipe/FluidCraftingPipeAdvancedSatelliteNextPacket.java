@@ -29,4 +29,3 @@ public class FluidCraftingPipeAdvancedSatelliteNextPacket extends IntegerCoordin
 		((PipeItemsCraftingLogistics) pipe.pipe).setNextFluidSatellite(player, getInteger());
 	}
 }
-

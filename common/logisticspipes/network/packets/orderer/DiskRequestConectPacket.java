@@ -25,25 +25,24 @@ public class DiskRequestConectPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) {
+		if (pipe == null) {
 			return;
 		}
-		if(pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
-			if(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk() != null) {
-				if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
-					((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().setTagCompound(new NBTTagCompound("tag"));
+		if (pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
+			if (((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk() != null) {
+				if (!((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().hasTagCompound()) {
+					((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().setTagCompound(new NBTTagCompound("tag"));
 				}
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
 		}
-		if(pipe.pipe instanceof PipeBlockRequestTable) {
-			if(((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0) != null) {
-				if(!((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0).hasTagCompound()) {
-					((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0).setTagCompound(new NBTTagCompound("tag"));
+		if (pipe.pipe instanceof PipeBlockRequestTable) {
+			if (((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0) != null) {
+				if (!((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0).hasTagCompound()) {
+					((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0).setTagCompound(new NBTTagCompound("tag"));
 				}
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeBlockRequestTable)pipe.pipe).diskInv.getStackInSlot(0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
 		}
 	}
 }
-

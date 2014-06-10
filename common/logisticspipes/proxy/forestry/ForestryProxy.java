@@ -34,18 +34,18 @@ import forestry.api.genetics.IAlleleSpecies;
 import forestry.api.recipes.RecipeManagers;
 
 public class ForestryProxy implements IForestryProxy {
-	
-	public ForestryProxy() throws ClassNotFoundException, NoSuchMethodException, SecurityException {
+
+	public ForestryProxy() throws ClassNotFoundException, NoSuchMethodException {
 		analyserClass = Class.forName("forestry.core.gadgets.TileAnalyzer");
 		Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
-		localize = stringUtil.getDeclaredMethod("localize", new Class[]{String.class});
+		localize = stringUtil.getDeclaredMethod("localize", new Class[] { String.class });
 		localize.setAccessible(true);
 		propolis = ItemInterface.getItem("propolis").getItem();
 		pollen = ItemInterface.getItem("pollen").getItem();
 		honey = FluidRegistry.getFluidStack("honey", 1500);
 		root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
 	}
-	
+
 	private Class<?> analyserClass;
 	private Method localize;
 	private Item propolis;
@@ -91,10 +91,10 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isAnalysedBee(ItemStack item) {
-		if(!isBee(item)) return false;
+		if (!isBee(item)) return false;
 		return root.getMember(item).isAnalyzed();
 	}
-	
+
 	/**
 	 * Checks if a passed tile entity is a Forestry Analyzer.
 	 * @param tile The TileEntity to check if is Forestry Analyzer.
@@ -103,7 +103,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isTileAnalyser(TileEntity tile) {
 		try {
-			if(analyserClass.isAssignableFrom(tile.getClass())) {
+			if (analyserClass.isAssignableFrom(tile.getClass())) {
 				return true;
 			}
 		} catch (Exception e) {
@@ -120,9 +120,9 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isKnownAlleleId(String allele, World world) {
-		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele) instanceof IAlleleBeeSpecies)) return false;
-		if(!((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele)).isSecret()) return true;
-		return root.getBreedingTracker(world, MainProxy.proxy.getClientPlayer().username).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
+		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele) instanceof IAlleleBeeSpecies)) return false;
+		if (!((IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele)).isSecret()) return true;
+		return root.getBreedingTracker(world, MainProxy.proxy.getClientPlayer().username).isDiscovered((IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
 	}
 
 	/**
@@ -132,24 +132,24 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public String getAlleleName(String uid) {
-		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) return "";
-		return ((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid)).getName();
+		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) return "";
+		return ((IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid)).getName();
 	}
-	
+
 	/**
 	 * Returns the first valid allele uid as String.
 	 * @param world The world to check in.
 	 * @return The first valid allele as uid.
 	 */
 	private String getFirstValidAllele(World world) {
-		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
-			if(allele instanceof IAlleleBeeSpecies && isKnownAlleleId(allele.getUID(), world)) {
+		for (IAllele allele : AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
+			if (allele instanceof IAlleleBeeSpecies && isKnownAlleleId(allele.getUID(), world)) {
 				return allele.getUID();
 			}
 		}
 		return "";
 	}
-	
+
 	/**
 	 * Returns the last valid allele uid as String.
 	 * @param world The world to check in.
@@ -157,8 +157,8 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	private String getLastValidAllele(World world) {
 		String uid = "";
-		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
-			if(allele instanceof IAlleleBeeSpecies && isKnownAlleleId(allele.getUID(), world)) {
+		for (IAllele allele : AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
+			if (allele instanceof IAlleleBeeSpecies && isKnownAlleleId(allele.getUID(), world)) {
 				uid = allele.getUID();
 			}
 		}
@@ -173,22 +173,22 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public String getNextAlleleId(String uid, World world) {
-		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies)) {
+		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies)) {
 			return getFirstValidAllele(world);
 		}
 		boolean next = false;
-		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
-			if(allele instanceof IAlleleBeeSpecies) {
-				if(next && isKnownAlleleId(allele.getUID(), world)) {
+		for (IAllele allele : AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
+			if (allele instanceof IAlleleBeeSpecies) {
+				if (next && isKnownAlleleId(allele.getUID(), world)) {
 					return allele.getUID();
-				} else if(allele.getUID().equals(uid)) {
+				} else if (allele.getUID().equals(uid)) {
 					next = true;
 				}
 			}
 		}
 		return "";
 	}
-	
+
 	/**
 	 * Returns a String of a uid before the one passed in.
 	 * @param uid The uid used as a reference.
@@ -197,18 +197,18 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public String getPrevAlleleId(String uid, World world) {
-		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies)) {
+		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies)) {
 			return getLastValidAllele(world);
 		}
 		IAllele lastAllele = null;
-		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
-			if(allele instanceof IAlleleBeeSpecies) {
-				if(allele.getUID().equals(uid)) {
-					if(lastAllele == null) {
+		for (IAllele allele : AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
+			if (allele instanceof IAlleleBeeSpecies) {
+				if (allele.getUID().equals(uid)) {
+					if (lastAllele == null) {
 						return "";
 					}
 					return lastAllele.getUID();
-				} else if(isKnownAlleleId(allele.getUID(), world)) {
+				} else if (isKnownAlleleId(allele.getUID(), world)) {
 					lastAllele = allele;
 				}
 			}
@@ -223,10 +223,10 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public String getFirstAlleleId(ItemStack bee) {
-		if(!isBee(bee)) return "";
+		if (!isBee(bee)) return "";
 		return root.getMember(bee).getGenome().getPrimary().getUID();
 	}
-	
+
 	/**
 	 * Checks if passed ItemStack is bee, then returns its second allele.
 	 * @param bee the ItemStack to get the second allele for.
@@ -234,7 +234,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public String getSecondAlleleId(ItemStack bee) {
-		if(!isBee(bee)) return "";
+		if (!isBee(bee)) return "";
 		return root.getMember(bee).getGenome().getSecondary().getUID();
 	}
 
@@ -245,7 +245,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isDrone(ItemStack bee) {
-		if(!isBee(bee)) return false;
+		if (!isBee(bee)) return false;
 		return root.isDrone(bee);
 	}
 
@@ -256,9 +256,9 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isPrincess(ItemStack bee) {
-		if(!isBee(bee)) return false;
-		if(isQueen(bee)) return false;
-		if(isDrone(bee)) return false;
+		if (!isBee(bee)) return false;
+		if (isQueen(bee)) return false;
+		if (isDrone(bee)) return false;
 		return true;
 	}
 
@@ -269,7 +269,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isQueen(ItemStack bee) {
-		if(!isBee(bee)) return false;
+		if (!isBee(bee)) return false;
 		return root.isMated(bee);
 	}
 
@@ -280,7 +280,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isPurebred(ItemStack bee) {
-		if(!isBee(bee)) return false;
+		if (!isBee(bee)) return false;
 		return root.getMember(bee).isPureBred(EnumBeeChromosome.SPECIES.ordinal());
 	}
 
@@ -291,7 +291,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isNocturnal(ItemStack bee) {
-		if(!isBee(bee)) return false;
+		if (!isBee(bee)) return false;
 		return root.getMember(bee).getGenome().getNocturnal();
 	}
 
@@ -302,7 +302,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isPureNocturnal(ItemStack bee) {
-		if(!isBee(bee)) return false;
+		if (!isBee(bee)) return false;
 		return root.getMember(bee).getGenome().getNocturnal() && root.getMember(bee).isPureBred(EnumBeeChromosome.NOCTURNAL.ordinal());
 	}
 
@@ -313,7 +313,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isFlyer(ItemStack bee) {
-		if(!isBee(bee)) return false;
+		if (!isBee(bee)) return false;
 		return root.getMember(bee).getGenome().getTolerantFlyer();
 	}
 
@@ -324,7 +324,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isPureFlyer(ItemStack bee) {
-		if(!isBee(bee)) return false;
+		if (!isBee(bee)) return false;
 		return root.getMember(bee).getGenome().getTolerantFlyer() && root.getMember(bee).isPureBred(EnumBeeChromosome.TOLERANT_FLYER.ordinal());
 	}
 
@@ -335,10 +335,10 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isCave(ItemStack bee) {
-		if(!isBee(bee)) return false;
+		if (!isBee(bee)) return false;
 		return root.getMember(bee).getGenome().getCaveDwelling();
 	}
-	
+
 	/**
 	 * Checks if passed ItemStack is bee, then checks if its a purebred cave dweller.
 	 * @param bee The ItemStack to check.
@@ -346,7 +346,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isPureCave(ItemStack bee) {
-		if(!isBee(bee)) return false;
+		if (!isBee(bee)) return false;
 		return root.getMember(bee).getGenome().getCaveDwelling() && root.getMember(bee).isPureBred(EnumBeeChromosome.CAVE_DWELLING.ordinal());
 	}
 
@@ -358,13 +358,13 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public String getForestryTranslation(String input) {
 		try {
-			return (String) localize.invoke(null, new Object[]{input.toLowerCase()});
+			return (String) localize.invoke(null, new Object[] { input.toLowerCase() });
 		} catch (Exception e) {
 			e.printStackTrace();
 			return input;
 		}
 	}
-	
+
 	/**
 	 * Void method, called to initialize LogisticsPipes' Forestry recipes.
 	 */
@@ -372,164 +372,57 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public void addCraftingRecipes() {
 		/* Carpenter recipes */
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
-			"CGC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-			Character.valueOf('r'), Item.redstone, 
-		});
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
-			"CGC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
-			Character.valueOf('r'), Item.redstone, 
-		});
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
-			"CrC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Item.redstone, 
-		});
-				
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
-			" p ",
-			"r r",
-			"CwC",
-			Character.valueOf('p'), pollen,
-			Character.valueOf('C'), propolis,
-			Character.valueOf('w'), BuildCraftTransport.pipeItemsWood,
-			Character.valueOf('r'), Item.redstone,
-		});
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
-			"CGD", 
-			"r r", 
-			"DrC", 
-			Character.valueOf('C'), "dyeBlack",
-			Character.valueOf('D'), "dyePurple",
-			Character.valueOf('G'), pollen, 
-			Character.valueOf('r'), Item.redstone, 
-		});
-		
-		
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
-			"CGC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-			Character.valueOf('r'), Item.redstone, 
-		});
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
-			"CGC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-			Character.valueOf('r'), Item.redstone, 
-		});
-		
-		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
-			"CrC", 
-			"r r", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Item.redstone, 
-		});
-		
-		if (Configs.MANDATORY_CARPENTER_RECIPES) return;
-				
-		/* Regular recipes */
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
-			"CrC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK)
-		});
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
-			" p ",
-			"rBr",
-			"CwC",
-			Character.valueOf('p'), pollen,
-			Character.valueOf('C'), propolis,
-			Character.valueOf('w'), BuildCraftTransport.pipeItemsWood,
-			Character.valueOf('r'), Item.redstone,
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
-		});
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { "CGC", "r r", "CrC", Character.valueOf('C'), propolis, Character.valueOf('G'), BuildCraftCore.ironGearItem,
+				Character.valueOf('r'), Item.redstone, });
 
-		CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
-			"CGD", 
-			"rBr", 
-			"DrC", 
-			Character.valueOf('C'), "dyeBlack",
-			Character.valueOf('D'), "dyePurple",
-			Character.valueOf('G'), pollen, 
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		}));
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
-		});
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
-		});
-		
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
-			"CrC", 
-			"rBr", 
-			"CrC", 
-			Character.valueOf('C'), propolis,
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
-		});
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { "CGC", "r r", "CrC", Character.valueOf('C'), propolis, Character.valueOf('G'),
+				new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), Character.valueOf('r'), Item.redstone, });
+
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { "CrC", "r r", "CrC", Character.valueOf('C'), propolis, Character.valueOf('r'), Item.redstone, });
+
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER),
+				new Object[] { " p ", "r r", "CwC", Character.valueOf('p'), pollen, Character.valueOf('C'), propolis, Character.valueOf('w'), BuildCraftTransport.pipeItemsWood, Character.valueOf('r'), Item.redstone, });
+
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS),
+				new Object[] { "CGD", "r r", "DrC", Character.valueOf('C'), "dyeBlack", Character.valueOf('D'), "dyePurple", Character.valueOf('G'), pollen, Character.valueOf('r'), Item.redstone, });
+
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0),
+				new Object[] { "CGC", "r r", "CrC", Character.valueOf('C'), propolis, Character.valueOf('G'), BuildCraftCore.ironGearItem, Character.valueOf('r'), Item.redstone, });
+
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0), new Object[] { "CGC", "r r", "CrC", Character.valueOf('C'), propolis, Character.valueOf('G'),
+				new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), Character.valueOf('r'), Item.redstone, });
+
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { "CrC", "r r", "CrC", Character.valueOf('C'), propolis, Character.valueOf('r'), Item.redstone, });
+
+		if (Configs.MANDATORY_CARPENTER_RECIPES) return;
+
+		/* Regular recipes */
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER),
+				new Object[] { "CGC", "rBr", "CrC", Character.valueOf('C'), propolis, Character.valueOf('G'), BuildCraftCore.ironGearItem, Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
+
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER),
+				new Object[] { "CGC", "rBr", "CrC", Character.valueOf('C'), propolis, Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) });
+
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { "CrC", "rBr", "CrC", Character.valueOf('C'), propolis, Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK) });
+
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER),
+				new Object[] { " p ", "rBr", "CwC", Character.valueOf('p'), pollen, Character.valueOf('C'), propolis, Character.valueOf('w'), BuildCraftTransport.pipeItemsWood, Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), });
+
+		CraftingManager
+				.getInstance()
+				.getRecipeList()
+				.add(new ShapedOreRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { "CGD", "rBr", "DrC", Character.valueOf('C'), "dyeBlack", Character.valueOf('D'), "dyePurple", Character.valueOf('G'), pollen, Character.valueOf('r'), Item.redstone, Character.valueOf('B'),
+						new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK) }));
+
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0),
+				new Object[] { "CGC", "rBr", "CrC", Character.valueOf('C'), propolis, Character.valueOf('G'), BuildCraftCore.ironGearItem, Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0) });
+
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyzerPipe, 1, 0),
+				new Object[] { "CGC", "rBr", "CrC", Character.valueOf('C'), propolis, Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0) });
+
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { "CrC", "rBr", "CrC", Character.valueOf('C'), propolis, Character.valueOf('r'), Item.redstone, Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0) });
 	}
-	
+
 	/**
 	 * Used to get an icon index for a given allele.
 	 * @param uid The uid String of the allele to get icon index for.
@@ -539,8 +432,7 @@ public class ForestryProxy implements IForestryProxy {
 	@SideOnly(Side.CLIENT)
 	public Icon getIconIndexForAlleleId(String uid, int phase) {
 		IAllele bSpecies = forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
-		if (!(bSpecies instanceof IAlleleBeeSpecies))
-			bSpecies = root.getDefaultTemplate()[forestry.api.apiculture.EnumBeeChromosome.SPECIES.ordinal()];
+		if (!(bSpecies instanceof IAlleleBeeSpecies)) bSpecies = root.getDefaultTemplate()[forestry.api.apiculture.EnumBeeChromosome.SPECIES.ordinal()];
 		IAlleleBeeSpecies species = (IAlleleBeeSpecies) bSpecies;
 		return species.getIcon(EnumBeeType.DRONE, phase);
 	}
@@ -553,8 +445,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public int getColorForAlleleId(String uid, int phase) {
-		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies))
-			return 16777215;
+		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies)) return 16777215;
 		IAlleleBeeSpecies species = (IAlleleBeeSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
 		return species.getIconColour(phase);
 	}

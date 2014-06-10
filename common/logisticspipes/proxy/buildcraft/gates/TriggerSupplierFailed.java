@@ -15,17 +15,17 @@ import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
 
-public class TriggerSupplierFailed extends LPTrigger implements ITriggerPipe{
+public class TriggerSupplierFailed extends LPTrigger implements ITriggerPipe {
 
 	public TriggerSupplierFailed(int id) {
-		super(id,"LogisticsPipes.trigger.supplierFailed");
+		super(id, "LogisticsPipes.trigger.supplierFailed");
 	}
-	
+
 	@Override
 	public int getIconIndex() {
 		return LPActionTriggerIconProvider.triggerSupplierFailedIconIndex;
 	}
-	
+
 	@Override
 	public String getDescription() {
 		return "Supplier failed";

@@ -93,536 +93,545 @@ import cpw.mods.fml.common.network.Player;
 
 public class GuiHandler implements IGuiHandler {
 
-	public final static Map<Integer, Object[]> argumentQueueClient = new HashMap<Integer, Object[]>();
+	public static final Map<Integer, Object[]> argumentQueueClient = new HashMap<Integer, Object[]>();
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, final int x, final int y, final int z) {
-		
+
 		TileEntity tile = null;
-		if(y != -1) {
+		if (y != -1) {
 			tile = world.getBlockTileEntity(x, y, z);
 		}
 		LogisticsTileGenericPipe pipe = null;
-		if(tile instanceof LogisticsTileGenericPipe) {
-			pipe = (LogisticsTileGenericPipe)tile;
+		if (tile instanceof LogisticsTileGenericPipe) {
+			pipe = (LogisticsTileGenericPipe) tile;
 		}
 		final LogisticsTileGenericPipe fpipe = pipe;
-		
+
 		DummyContainer dummy;
 		int xOffset;
 		int yOffset;
-		
-		if(ID > 10000) {
+
+		if (ID > 10000) {
 			ID -= 10000;
 		}
-		
+
 		//Handle Module Configuration
-		if(ID == -1) {
+		if (ID == -1) {
 			return getServerGuiElement(100 * -20 + x, player, world, 0, -1, z);
 		}
-		
-		if(ID < 120 && ID > 0) {
-			switch(ID) {
-			
-			case GuiIDs.GUI_CRAFTINGPIPE_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsCraftingLogistics)) return null;
-				dummy = new DummyContainer(player.inventory, ((PipeItemsCraftingLogistics)pipe.pipe).getDummyInventory());
-				dummy.addNormalSlotsForPlayerInventory(18, 97);
-				//Input slots
-		        for(int l = 0; l < 9; l++) {
-		        	dummy.addDummySlot(l, 18 + l * 18, 18);
-		        }
-		        
-		        //Output slot
-		        dummy.addDummySlot(9, 90, 64);
-		        
-		        for(int i=0;i<((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getFluidCrafter();i++) {
-					int liquidLeft = -(i*40) - 40;
-					dummy.addFluidSlot(i, ((PipeItemsCraftingLogistics)pipe.pipe).getFluidInventory(), liquidLeft + 13, 42);
-				}
 
-		        if(((CoreRoutedPipe)pipe.pipe).getUpgradeManager().hasByproductExtractor()) {
-		        	dummy.addDummySlot(10, 197, 104);
-		        }
-		        
-				return dummy;
+		if (ID < 120 && ID > 0) {
+			switch (ID) {
 
-			case GuiIDs.GUI_FluidSupplier_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsFluidSupplier)) return null;
-				dummy = new DummyContainer(player.inventory, ((PipeItemsFluidSupplier)pipe.pipe).getDummyInventory());
-				dummy.addNormalSlotsForPlayerInventory(18, 97);
-				
-				xOffset = 72;
-				yOffset = 18;
-				
-				for (int row = 0; row < 3; row++){
-					for (int column = 0; column < 3; column++){
-						dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);					
-					}
-				}
-				
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeItemsFluidSupplier)pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-			    return dummy;
-
-			case GuiIDs.GUI_FluidSupplier_MK2_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeFluidSupplierMk2)) return null;
-				dummy = new DummyContainer(player.inventory, ((PipeFluidSupplierMk2)pipe.pipe).getDummyInventory());
-				dummy.addNormalSlotsForPlayerInventory(18, 97);
-				dummy.addFluidSlot(0, ((PipeFluidSupplierMk2)pipe.pipe).getDummyInventory(), 0, 0);
-				
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeFluidSupplierMk2)pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-			    return dummy;
-				
-			case GuiIDs.GUI_ProviderPipe_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsProviderLogistics)) return null;
-				dummy = new DummyContainer(player.inventory, ((PipeItemsProviderLogistics)pipe.pipe).getprovidingInventory());
-				dummy.addNormalSlotsForPlayerInventory(18, 97);
-				
-				xOffset = 72;
-				yOffset = 18;
-				
-				for (int row = 0; row < 3; row++){
-					for (int column = 0; column < 3; column++){
-						dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);					
-					}
-				}
-				return dummy;
-				
-			case GuiIDs.GUI_SatelitePipe_ID:
-				if(pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeItemsSatelliteLogistics) {
-					return new DummyContainer(player.inventory, null);
-				}
-				if(pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeFluidSatellite) {
-					return new DummyContainer(player.inventory, null);
-				}
-				
-			case GuiIDs.GUI_SupplierPipe_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsSupplierLogistics)) return null;
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_SupplierPipe_ID).setArgs(new Object[]{((PipeItemsSupplierLogistics)pipe.pipe).getUpgradeManager().hasPatternUpgrade(), ((PipeItemsSupplierLogistics)pipe.pipe).slotArray}), (Player)player);
-				dummy = new DummyContainer(player.inventory, ((PipeItemsSupplierLogistics)pipe.pipe).getDummyInventory());
-				dummy.addNormalSlotsForPlayerInventory(18, 97);
-				
-				xOffset = 72;
-				yOffset = 18;
-				
-				for (int row = 0; row < 3; row++) {
-					for (int column = 0; column < 3; column++) {
-						dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);
-					}
-				}
-				return dummy;
-				
-				/*** Modules ***/
-				
-			case GuiIDs.GUI_Module_FluidSupplier_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleFluidSupplier)) return null;
-				dummy = new DummyContainer(player.inventory, ((ModuleFluidSupplier)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getFilterInventory());
-				dummy.addNormalSlotsForPlayerInventory(8, 60);
-	
-				//Pipe slots
-			    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-			    }
-			    
-			    return dummy;
-				
-			case GuiIDs.GUI_Module_Provider_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleProvider)) return null;
-				dummy = new DummyContainer(player.inventory, ((ModuleProvider)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getFilterInventory());
-				dummy.addNormalSlotsForPlayerInventory(18, 97);
-				
-				xOffset = 72;
-				yOffset = 18;
-				
-				for (int row = 0; row < 3; row++){
-					for (int column = 0; column < 3; column++){
-						dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);					
-					}
-				}
-				return dummy;
-				
-			case GuiIDs.GUI_Module_Simple_Filter_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof IModuleSimpleFilter)) return null;
-				dummy = new DummyContainer(player.inventory, ((IModuleSimpleFilter)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getFilterInventory());
-				dummy.addNormalSlotsForPlayerInventory(8, 60);
-	
-				//Pipe slots
-			    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-			    }
-			    
-			    return dummy;
-
-			case GuiIDs.GUI_Module_ElectricManager_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleElectricManager)) return null;
-				dummy = new DummyContainer(player.inventory, ((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getFilterInventory());
-				dummy.addNormalSlotsForPlayerInventory(8, 60);
-
-				//Pipe slots
-				for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-					dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-				}
-				
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ElectricManagetMode.class).setInteger2(-1).setInteger(((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).isDischargeMode() ? 1 : 0).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-				
-				return dummy;
-				
-			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BeeModule.class).setSlot(-1).readFromProvider((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-				return new DummyContainer(player.inventory, null);
-			    
-			case GuiIDs.GUI_ChassiModule_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return null;
-				PipeLogisticsChassi _chassiPipe = (PipeLogisticsChassi)pipe.pipe;
-				IInventory _moduleInventory = _chassiPipe.getModuleInventory();
-				dummy = new DummyContainer(player.inventory, _moduleInventory);
-				if (_chassiPipe.getChassiSize() < 5){
+				case GuiIDs.GUI_CRAFTINGPIPE_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsCraftingLogistics)) return null;
+					dummy = new DummyContainer(player.inventory, ((PipeItemsCraftingLogistics) pipe.pipe).getDummyInventory());
 					dummy.addNormalSlotsForPlayerInventory(18, 97);
-				} else {
-					dummy.addNormalSlotsForPlayerInventory(18, 174);
-				}
-				if (_chassiPipe.getChassiSize() > 0) dummy.addModuleSlot(0, _moduleInventory, 19, 9, _chassiPipe);
-				if (_chassiPipe.getChassiSize() > 1) dummy.addModuleSlot(1, _moduleInventory, 19, 29, _chassiPipe);
-				if (_chassiPipe.getChassiSize() > 2) dummy.addModuleSlot(2, _moduleInventory, 19, 49, _chassiPipe);
-				if (_chassiPipe.getChassiSize() > 3) dummy.addModuleSlot(3, _moduleInventory, 19, 69, _chassiPipe);
-				if (_chassiPipe.getChassiSize() > 4) {
-					dummy.addModuleSlot(4, _moduleInventory, 19, 89, _chassiPipe);
-					dummy.addModuleSlot(5, _moduleInventory, 19, 109, _chassiPipe);
-					dummy.addModuleSlot(6, _moduleInventory, 19, 129, _chassiPipe);
-					dummy.addModuleSlot(7, _moduleInventory, 19, 149, _chassiPipe);
-				}
-				
-				
-				return dummy;
-				
-				/*** Basic ***/
-			case GuiIDs.GUI_RoutingStats_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
-				return new DummyContainer(player, null, new IGuiOpenControler() {
-					@Override
-					public void guiOpenedByPlayer(EntityPlayer player) {
-						((CoreRoutedPipe)fpipe.pipe).playerStartWatching(player, 0);
-					}
-					
-					@Override
-					public void guiClosedByPlayer(EntityPlayer player) {
-						((CoreRoutedPipe)fpipe.pipe).playerStopWatching(player, 0);
-					}
-				});
-			
-			case GuiIDs.GUI_Normal_Orderer_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
-				return new DummyContainer(player.inventory, null);
-
-			case GuiIDs.GUI_Normal_Mk2_Orderer_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
-				return new DummyContainer(player.inventory, null);
-				
-			case GuiIDs.GUI_Fluid_Orderer_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeFluidRequestLogistics)) return null;
-				return new DummyContainer(player.inventory, null);
-				
-			case GuiIDs.GUI_Inv_Sys_Connector_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
-				dummy = new DummyContainer(player.inventory, ((PipeItemsInvSysConnector)pipe.pipe).inv);
-				
-				dummy.addRestrictedSlot(0, ((PipeItemsInvSysConnector)pipe.pipe).inv, 50, 10, new ISlotCheck() {
-					@Override
-					public boolean isStackAllowed(ItemStack itemStack) {
-						if(itemStack == null) return false;
-						if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
-						if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
-						return true;
-					}
-				});
-				
-				dummy.addNormalSlotsForPlayerInventory(0, 50);
-				
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(((PipeItemsInvSysConnector)pipe.pipe).resistance).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-				
-				return dummy;
-			
-			case GuiIDs.GUI_Freq_Card_ID:
-				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsSystemEntranceLogistics) || (pipe.pipe instanceof PipeItemsSystemDestinationLogistics))) return null;
-				IInventory inv = null;
-				if(pipe.pipe instanceof PipeItemsSystemEntranceLogistics) {
-					inv = ((PipeItemsSystemEntranceLogistics)pipe.pipe).inv;
-				} else if(pipe.pipe instanceof PipeItemsSystemDestinationLogistics) {
-					inv = ((PipeItemsSystemDestinationLogistics)pipe.pipe).inv;
-				}
-				
-				dummy = new DummyContainer(player.inventory, inv);
-				
-				dummy.addRestrictedSlot(0, inv, 40, 40, new ISlotCheck() {
-					@Override
-					public boolean isStackAllowed(ItemStack itemStack) {
-						if(itemStack == null) return false;
-						if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
-						if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
-						return true;
-					}
-				});
-				dummy.addNormalSlotsForPlayerInventory(0, 0);
-				
-				return dummy;
-				
-			case GuiIDs.GUI_HUD_Settings:
-				dummy = new DummyContainer(player.inventory, null);
-				dummy.addRestrictedHotbarForPlayerInventory(10, 160);
-				dummy.addRestrictedArmorForPlayerInventory(10, 60);
-				return dummy;
-				
-			case GuiIDs.GUI_Fluid_Basic_ID:
-				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeFluidBasic))) return null;
-				dummy = new DummyContainer(player, ((PipeFluidBasic)pipe.pipe).filterInv, new IGuiOpenControler() {
-					@Override
-					public void guiOpenedByPlayer(EntityPlayer player) {
-						((PipeFluidBasic)fpipe.pipe).guiOpenedByPlayer(player);
+					//Input slots
+					for (int l = 0; l < 9; l++) {
+						dummy.addDummySlot(l, 18 + l * 18, 18);
 					}
 
-					@Override
-					public void guiClosedByPlayer(EntityPlayer player) {
-						((PipeFluidBasic)fpipe.pipe).guiClosedByPlayer(player);
-					}
-				});
-				dummy.addFluidSlot(0, ((PipeFluidBasic)pipe.pipe).filterInv, 28, 15);
-				dummy.addNormalSlotsForPlayerInventory(10, 45);
-				return dummy;
-				
-			case GuiIDs.GUI_FIREWALL:
-				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) return null;
-				dummy = new DummyContainer(player.inventory, ((PipeItemsFirewall)pipe.pipe).inv);
-				dummy.addNormalSlotsForPlayerInventory(33, 147);
-				for(int i = 0;i < 6;i++) {
-					for(int j = 0;j < 6;j++) {
-						dummy.addDummySlot(i*6 + j, 0, 0);
-					}
-				}
-				return dummy;
+					//Output slot
+					dummy.addDummySlot(9, 90, 64);
 
-			case GuiIDs.GUI_Module_Apiarist_Analyzer:
-				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser)) return null;
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(0).setInteger(((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getExtractMode()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-				return new DummyContainer(player.inventory, null);
-				
-			case GuiIDs.GUI_Request_Table_ID:
-				if(pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
-				dummy = new DummyContainer(player, ((PipeBlockRequestTable)pipe.pipe).matrix, (PipeBlockRequestTable)pipe.pipe);
-				int i = 0;
-				for(int Y = 0;Y < 3;Y++) {
-					for(int X = 0;X < 9;X++) {
-						dummy.addNormalSlot(i++, ((PipeBlockRequestTable)pipe.pipe).inv, 0, 0);
+					for (int i = 0; i < ((CoreRoutedPipe) pipe.pipe).getUpgradeManager().getFluidCrafter(); i++) {
+						int liquidLeft = -(i * 40) - 40;
+						dummy.addFluidSlot(i, ((PipeItemsCraftingLogistics) pipe.pipe).getFluidInventory(), liquidLeft + 13, 42);
 					}
-				}
-				i = 0;
-				for(int Y = 0;Y < 3;Y++) {
-					for(int X = 0;X < 3;X++) {
-						dummy.addDummySlot(i++, 0, 0);
+
+					if (((CoreRoutedPipe) pipe.pipe).getUpgradeManager().hasByproductExtractor()) {
+						dummy.addDummySlot(10, 197, 104);
 					}
-				}
-				dummy.addCallableSlotHandler(0, ((PipeBlockRequestTable)pipe.pipe).resultInv, 0, 0, new ISlotClick() {
-					@Override
-					public ItemStack getResultForClick() {
-						return ((PipeBlockRequestTable)fpipe.pipe).getResultForClick();
+
+					return dummy;
+
+				case GuiIDs.GUI_FluidSupplier_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsFluidSupplier)) return null;
+					dummy = new DummyContainer(player.inventory, ((PipeItemsFluidSupplier) pipe.pipe).getDummyInventory());
+					dummy.addNormalSlotsForPlayerInventory(18, 97);
+
+					xOffset = 72;
+					yOffset = 18;
+
+					for (int row = 0; row < 3; row++) {
+						for (int column = 0; column < 3; column++) {
+							dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);
+						}
 					}
-				});
-				dummy.addNormalSlot(0, ((PipeBlockRequestTable)pipe.pipe).toSortInv, 0, 0);
-				dummy.addNormalSlot(0, ((PipeBlockRequestTable)pipe.pipe).diskInv, 0, 0);
-				dummy.addNormalSlotsForPlayerInventory(0, 0);
-				return dummy;
-				
-			default:break;
+
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeItemsFluidSupplier) pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+					return dummy;
+
+				case GuiIDs.GUI_FluidSupplier_MK2_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeFluidSupplierMk2)) return null;
+					dummy = new DummyContainer(player.inventory, ((PipeFluidSupplierMk2) pipe.pipe).getDummyInventory());
+					dummy.addNormalSlotsForPlayerInventory(18, 97);
+					dummy.addFluidSlot(0, ((PipeFluidSupplierMk2) pipe.pipe).getDummyInventory(), 0, 0);
+
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((((PipeFluidSupplierMk2) pipe.pipe).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+					return dummy;
+
+				case GuiIDs.GUI_ProviderPipe_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsProviderLogistics)) return null;
+					dummy = new DummyContainer(player.inventory, ((PipeItemsProviderLogistics) pipe.pipe).getprovidingInventory());
+					dummy.addNormalSlotsForPlayerInventory(18, 97);
+
+					xOffset = 72;
+					yOffset = 18;
+
+					for (int row = 0; row < 3; row++) {
+						for (int column = 0; column < 3; column++) {
+							dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);
+						}
+					}
+					return dummy;
+
+				case GuiIDs.GUI_SatelitePipe_ID:
+					if (pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeItemsSatelliteLogistics) {
+						return new DummyContainer(player.inventory, null);
+					}
+					if (pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeFluidSatellite) {
+						return new DummyContainer(player.inventory, null);
+					}
+
+				case GuiIDs.GUI_SupplierPipe_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsSupplierLogistics)) return null;
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_SupplierPipe_ID).setArgs(new Object[] { ((PipeItemsSupplierLogistics) pipe.pipe).getUpgradeManager().hasPatternUpgrade(), ((PipeItemsSupplierLogistics) pipe.pipe).slotArray }), (Player) player);
+					dummy = new DummyContainer(player.inventory, ((PipeItemsSupplierLogistics) pipe.pipe).getDummyInventory());
+					dummy.addNormalSlotsForPlayerInventory(18, 97);
+
+					xOffset = 72;
+					yOffset = 18;
+
+					for (int row = 0; row < 3; row++) {
+						for (int column = 0; column < 3; column++) {
+							dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);
+						}
+					}
+					return dummy;
+
+					/*** Modules ***/
+
+				case GuiIDs.GUI_Module_FluidSupplier_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleFluidSupplier)) return null;
+					dummy = new DummyContainer(player.inventory, ((ModuleFluidSupplier) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule()).getFilterInventory());
+					dummy.addNormalSlotsForPlayerInventory(8, 60);
+
+					//Pipe slots
+					for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+						dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+					}
+
+					return dummy;
+
+				case GuiIDs.GUI_Module_Provider_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleProvider)) return null;
+					dummy = new DummyContainer(player.inventory, ((ModuleProvider) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule()).getFilterInventory());
+					dummy.addNormalSlotsForPlayerInventory(18, 97);
+
+					xOffset = 72;
+					yOffset = 18;
+
+					for (int row = 0; row < 3; row++) {
+						for (int column = 0; column < 3; column++) {
+							dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);
+						}
+					}
+					return dummy;
+
+				case GuiIDs.GUI_Module_Simple_Filter_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof IModuleSimpleFilter)) return null;
+					dummy = new DummyContainer(player.inventory, ((IModuleSimpleFilter) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule()).getFilterInventory());
+					dummy.addNormalSlotsForPlayerInventory(8, 60);
+
+					//Pipe slots
+					for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+						dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+					}
+
+					return dummy;
+
+				case GuiIDs.GUI_Module_ElectricManager_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleElectricManager)) return null;
+					dummy = new DummyContainer(player.inventory, ((ModuleElectricManager) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule()).getFilterInventory());
+					dummy.addNormalSlotsForPlayerInventory(8, 60);
+
+					//Pipe slots
+					for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+						dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+					}
+
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ElectricManagetMode.class).setInteger2(-1).setInteger(((ModuleElectricManager) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule()).isDischargeMode() ? 1 : 0).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+
+					return dummy;
+
+				case GuiIDs.GUI_Module_Apiarist_Sink_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BeeModule.class).setSlot(-1).readFromProvider((ModuleApiaristSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+					return new DummyContainer(player.inventory, null);
+
+				case GuiIDs.GUI_ChassiModule_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return null;
+					PipeLogisticsChassi _chassiPipe = (PipeLogisticsChassi) pipe.pipe;
+					IInventory _moduleInventory = _chassiPipe.getModuleInventory();
+					dummy = new DummyContainer(player.inventory, _moduleInventory);
+					if (_chassiPipe.getChassiSize() < 5) {
+						dummy.addNormalSlotsForPlayerInventory(18, 97);
+					} else {
+						dummy.addNormalSlotsForPlayerInventory(18, 174);
+					}
+					if (_chassiPipe.getChassiSize() > 0) dummy.addModuleSlot(0, _moduleInventory, 19, 9, _chassiPipe);
+					if (_chassiPipe.getChassiSize() > 1) dummy.addModuleSlot(1, _moduleInventory, 19, 29, _chassiPipe);
+					if (_chassiPipe.getChassiSize() > 2) dummy.addModuleSlot(2, _moduleInventory, 19, 49, _chassiPipe);
+					if (_chassiPipe.getChassiSize() > 3) dummy.addModuleSlot(3, _moduleInventory, 19, 69, _chassiPipe);
+					if (_chassiPipe.getChassiSize() > 4) {
+						dummy.addModuleSlot(4, _moduleInventory, 19, 89, _chassiPipe);
+						dummy.addModuleSlot(5, _moduleInventory, 19, 109, _chassiPipe);
+						dummy.addModuleSlot(6, _moduleInventory, 19, 129, _chassiPipe);
+						dummy.addModuleSlot(7, _moduleInventory, 19, 149, _chassiPipe);
+					}
+
+					return dummy;
+
+					/*** Basic ***/
+				case GuiIDs.GUI_RoutingStats_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
+					return new DummyContainer(player, null, new IGuiOpenControler() {
+
+						@Override
+						public void guiOpenedByPlayer(EntityPlayer player) {
+							((CoreRoutedPipe) fpipe.pipe).playerStartWatching(player, 0);
+						}
+
+						@Override
+						public void guiClosedByPlayer(EntityPlayer player) {
+							((CoreRoutedPipe) fpipe.pipe).playerStopWatching(player, 0);
+						}
+					});
+
+				case GuiIDs.GUI_Normal_Orderer_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
+					return new DummyContainer(player.inventory, null);
+
+				case GuiIDs.GUI_Normal_Mk2_Orderer_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
+					return new DummyContainer(player.inventory, null);
+
+				case GuiIDs.GUI_Fluid_Orderer_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeFluidRequestLogistics)) return null;
+					return new DummyContainer(player.inventory, null);
+
+				case GuiIDs.GUI_Inv_Sys_Connector_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
+					dummy = new DummyContainer(player.inventory, ((PipeItemsInvSysConnector) pipe.pipe).inv);
+
+					dummy.addRestrictedSlot(0, ((PipeItemsInvSysConnector) pipe.pipe).inv, 50, 10, new ISlotCheck() {
+
+						@Override
+						public boolean isStackAllowed(ItemStack itemStack) {
+							if (itemStack == null) return false;
+							if (itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+							if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
+							return true;
+						}
+					});
+
+					dummy.addNormalSlotsForPlayerInventory(0, 50);
+
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(((PipeItemsInvSysConnector) pipe.pipe).resistance).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+
+					return dummy;
+
+				case GuiIDs.GUI_Freq_Card_ID:
+					if (pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsSystemEntranceLogistics) || (pipe.pipe instanceof PipeItemsSystemDestinationLogistics))) return null;
+					IInventory inv = null;
+					if (pipe.pipe instanceof PipeItemsSystemEntranceLogistics) {
+						inv = ((PipeItemsSystemEntranceLogistics) pipe.pipe).inv;
+					} else if (pipe.pipe instanceof PipeItemsSystemDestinationLogistics) {
+						inv = ((PipeItemsSystemDestinationLogistics) pipe.pipe).inv;
+					}
+
+					dummy = new DummyContainer(player.inventory, inv);
+
+					dummy.addRestrictedSlot(0, inv, 40, 40, new ISlotCheck() {
+
+						@Override
+						public boolean isStackAllowed(ItemStack itemStack) {
+							if (itemStack == null) return false;
+							if (itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+							if (itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
+							return true;
+						}
+					});
+					dummy.addNormalSlotsForPlayerInventory(0, 0);
+
+					return dummy;
+
+				case GuiIDs.GUI_HUD_Settings:
+					dummy = new DummyContainer(player.inventory, null);
+					dummy.addRestrictedHotbarForPlayerInventory(10, 160);
+					dummy.addRestrictedArmorForPlayerInventory(10, 60);
+					return dummy;
+
+				case GuiIDs.GUI_Fluid_Basic_ID:
+					if (pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeFluidBasic))) return null;
+					dummy = new DummyContainer(player, ((PipeFluidBasic) pipe.pipe).filterInv, new IGuiOpenControler() {
+
+						@Override
+						public void guiOpenedByPlayer(EntityPlayer player) {
+							((PipeFluidBasic) fpipe.pipe).guiOpenedByPlayer(player);
+						}
+
+						@Override
+						public void guiClosedByPlayer(EntityPlayer player) {
+							((PipeFluidBasic) fpipe.pipe).guiClosedByPlayer(player);
+						}
+					});
+					dummy.addFluidSlot(0, ((PipeFluidBasic) pipe.pipe).filterInv, 28, 15);
+					dummy.addNormalSlotsForPlayerInventory(10, 45);
+					return dummy;
+
+				case GuiIDs.GUI_FIREWALL:
+					if (pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) return null;
+					dummy = new DummyContainer(player.inventory, ((PipeItemsFirewall) pipe.pipe).inv);
+					dummy.addNormalSlotsForPlayerInventory(33, 147);
+					for (int i = 0; i < 6; i++) {
+						for (int j = 0; j < 6; j++) {
+							dummy.addDummySlot(i * 6 + j, 0, 0);
+						}
+					}
+					return dummy;
+
+				case GuiIDs.GUI_Module_Apiarist_Analyzer:
+					if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser)) return null;
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(0).setInteger(((ModuleApiaristAnalyser) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule()).getExtractMode()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+					return new DummyContainer(player.inventory, null);
+
+				case GuiIDs.GUI_Request_Table_ID:
+					if (pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
+					dummy = new DummyContainer(player, ((PipeBlockRequestTable) pipe.pipe).matrix, (PipeBlockRequestTable) pipe.pipe);
+					int i = 0;
+					for (int Y = 0; Y < 3; Y++) {
+						for (int X = 0; X < 9; X++) {
+							dummy.addNormalSlot(i++, ((PipeBlockRequestTable) pipe.pipe).inv, 0, 0);
+						}
+					}
+					i = 0;
+					for (int Y = 0; Y < 3; Y++) {
+						for (int X = 0; X < 3; X++) {
+							dummy.addDummySlot(i++, 0, 0);
+						}
+					}
+					dummy.addCallableSlotHandler(0, ((PipeBlockRequestTable) pipe.pipe).resultInv, 0, 0, new ISlotClick() {
+
+						@Override
+						public ItemStack getResultForClick() {
+							return ((PipeBlockRequestTable) fpipe.pipe).getResultForClick();
+						}
+					});
+					dummy.addNormalSlot(0, ((PipeBlockRequestTable) pipe.pipe).toSortInv, 0, 0);
+					dummy.addNormalSlot(0, ((PipeBlockRequestTable) pipe.pipe).diskInv, 0, 0);
+					dummy.addNormalSlotsForPlayerInventory(0, 0);
+					return dummy;
+
+				default:
+					break;
 			}
 		} else {
 			int slot = ID / 100;
-			if(pipe == null && slot >= 0) return null;
-			if(slot >= 0) {
+			if (pipe == null && slot >= 0) return null;
+			if (slot >= 0) {
 				slot--;
 			}
-			switch(((ID % 100) + 100) % 100) {
+			switch (((ID % 100) + 100) % 100) {
 			/*** Modules ***/
-			case GuiIDs.GUI_Module_FluidSupplier_ID:
-				if(slot < 0) return null;
-				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleFluidSupplier)) return null;
-				dummy = new DummyContainer(player.inventory, ((ModuleFluidSupplier)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getFilterInventory());
-				dummy.addNormalSlotsForPlayerInventory(8, 60);
-	
-				//Pipe slots
-			    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-			    }
-			    
-			    return dummy;
-				
-			case GuiIDs.GUI_Module_Provider_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleProvider)) return null;
-					dummy = new DummyContainer(player.inventory, ((ModuleProvider)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getFilterInventory());
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleProvider)) return null;
-					((DummyModuleContainer)dummy).setInventory(((ModuleProvider)((DummyModuleContainer)dummy).getModule()).getFilterInventory());	
-				}
-				dummy.addNormalSlotsForPlayerInventory(18, 97);
-				
-				xOffset = 72;
-				yOffset = 18;
-				
-				for (int row = 0; row < 3; row++){
-					for (int column = 0; column < 3; column++){
-						dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);					
+				case GuiIDs.GUI_Module_FluidSupplier_ID:
+					if (slot < 0) return null;
+					if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleFluidSupplier)) return null;
+					dummy = new DummyContainer(player.inventory, ((ModuleFluidSupplier) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot)).getFilterInventory());
+					dummy.addNormalSlotsForPlayerInventory(8, 60);
+
+					//Pipe slots
+					for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+						dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 					}
-				}
-				return dummy;
-				
-			case GuiIDs.GUI_Module_Simple_Filter_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof IModuleSimpleFilter)) return null;
-					dummy = new DummyContainer(player.inventory, ((IModuleSimpleFilter)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getFilterInventory());
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof IModuleSimpleFilter)) return null;
-					((DummyModuleContainer)dummy).setInventory(((IModuleSimpleFilter)((DummyModuleContainer)dummy).getModule()).getFilterInventory());	
-				}
-				dummy.addNormalSlotsForPlayerInventory(8, 60);
-	
-				//Pipe slots
-			    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-			    }
-			    
-			    return dummy;
 
-			case GuiIDs.GUI_Module_Advanced_Extractor_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleAdvancedExtractor)) return null;
-					dummy = new DummyContainer(player.inventory, ((ModuleAdvancedExtractor)(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot))).getFilterInventory());
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleAdvancedExtractor)) return null;
-					((DummyModuleContainer)dummy).setInventory(((ModuleAdvancedExtractor)((DummyModuleContainer)dummy).getModule()).getFilterInventory());
-				}
-				dummy.addNormalSlotsForPlayerInventory(8, 60);
+					return dummy;
 
-				//Pipe slots
-			    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-			    }
-			    return dummy;
-			    
-			case GuiIDs.GUI_Module_ElectricManager_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleElectricManager)) return null;
-					dummy = new DummyContainer(player.inventory, ((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getFilterInventory());
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleElectricManager)) return null;
-					((DummyModuleContainer)dummy).setInventory(((ModuleElectricManager)((DummyModuleContainer)dummy).getModule()).getFilterInventory());
-				}
-				dummy.addNormalSlotsForPlayerInventory(8, 60);
+				case GuiIDs.GUI_Module_Provider_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleProvider)) return null;
+						dummy = new DummyContainer(player.inventory, ((ModuleProvider) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot)).getFilterInventory());
+					} else {
+						dummy = new DummyModuleContainer(player, z);
+						if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleProvider)) return null;
+						((DummyModuleContainer) dummy).setInventory(((ModuleProvider) ((DummyModuleContainer) dummy).getModule()).getFilterInventory());
+					}
+					dummy.addNormalSlotsForPlayerInventory(18, 97);
 
-				//Pipe slots
-				for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-					dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-				}
+					xOffset = 72;
+					yOffset = 18;
 
-				if(slot >= 0) {
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ElectricManagetMode.class).setInteger2(slot).setInteger(((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).isDischargeMode() ? 1 : 0).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-				}
-				return dummy;
-			
-			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristSink)) return null;
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BeeModule.class).setSlot(slot).readFromProvider((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-					return new DummyContainer(player.inventory, null);
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleApiaristSink)) return null;
+					for (int row = 0; row < 3; row++) {
+						for (int column = 0; column < 3; column++) {
+							dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);
+						}
+					}
 					return dummy;
-				}
-				
-			case GuiIDs.GUI_Module_ModBased_ItemSink_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleModBasedItemSink)) return null;
-					NBTTagCompound nbt = new NBTTagCompound();
-					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-					dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
-					dummy.addDummySlot(0, 0, 0);
-					dummy.addNormalSlotsForPlayerInventory(0, 0);
+
+				case GuiIDs.GUI_Module_Simple_Filter_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof IModuleSimpleFilter)) return null;
+						dummy = new DummyContainer(player.inventory, ((IModuleSimpleFilter) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot)).getFilterInventory());
+					} else {
+						dummy = new DummyModuleContainer(player, z);
+						if (!(((DummyModuleContainer) dummy).getModule() instanceof IModuleSimpleFilter)) return null;
+						((DummyModuleContainer) dummy).setInventory(((IModuleSimpleFilter) ((DummyModuleContainer) dummy).getModule()).getFilterInventory());
+					}
+					dummy.addNormalSlotsForPlayerInventory(8, 60);
+
+					//Pipe slots
+					for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+						dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+					}
+
 					return dummy;
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleModBasedItemSink)) return null;
-					((DummyModuleContainer)dummy).setInventory(new ItemIdentifierInventory(1, "TMP", 1));
-					dummy.addDummySlot(0, 0, 0);
-					dummy.addNormalSlotsForPlayerInventory(0, 0);
+
+				case GuiIDs.GUI_Module_Advanced_Extractor_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleAdvancedExtractor)) return null;
+						dummy = new DummyContainer(player.inventory, ((ModuleAdvancedExtractor) (((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot))).getFilterInventory());
+					} else {
+						dummy = new DummyModuleContainer(player, z);
+						if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleAdvancedExtractor)) return null;
+						((DummyModuleContainer) dummy).setInventory(((ModuleAdvancedExtractor) ((DummyModuleContainer) dummy).getModule()).getFilterInventory());
+					}
+					dummy.addNormalSlotsForPlayerInventory(8, 60);
+
+					//Pipe slots
+					for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+						dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+					}
 					return dummy;
-				}
-				
-			case GuiIDs.GUI_Module_Thaumic_AspectSink_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleThaumicAspectSink)) return null;
-					NBTTagCompound nbt = new NBTTagCompound();
-					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-					dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
-					dummy.addDummySlot(0, 0, 0);
-					dummy.addNormalSlotsForPlayerInventory(0, 0);
+
+				case GuiIDs.GUI_Module_ElectricManager_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleElectricManager)) return null;
+						dummy = new DummyContainer(player.inventory, ((ModuleElectricManager) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot)).getFilterInventory());
+					} else {
+						dummy = new DummyModuleContainer(player, z);
+						if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleElectricManager)) return null;
+						((DummyModuleContainer) dummy).setInventory(((ModuleElectricManager) ((DummyModuleContainer) dummy).getModule()).getFilterInventory());
+					}
+					dummy.addNormalSlotsForPlayerInventory(8, 60);
+
+					//Pipe slots
+					for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
+						dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+					}
+
+					if (slot >= 0) {
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ElectricManagetMode.class).setInteger2(slot).setInteger(((ModuleElectricManager) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot)).isDischargeMode() ? 1 : 0).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord),
+								(Player) player);
+					}
 					return dummy;
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleThaumicAspectSink)) return null;
-					((DummyModuleContainer)dummy).setInventory(new ItemIdentifierInventory(1, "TMP", 1));
-					dummy.addDummySlot(0, 0, 0);
-					dummy.addNormalSlotsForPlayerInventory(0, 0);
-					return dummy;
-				}
-				
-			case GuiIDs.GUI_Module_OreDict_ItemSink_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleOreDictItemSink)) return null;
-					NBTTagCompound nbt = new NBTTagCompound();
-					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-					dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
-					dummy.addDummySlot(0, 0, 0);
-					dummy.addNormalSlotsForPlayerInventory(0, 0);
-					return dummy;
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleOreDictItemSink)) return null;
-					((DummyModuleContainer)dummy).setInventory(new ItemIdentifierInventory(1, "TMP", 1));
-					dummy.addDummySlot(0, 0, 0);
-					dummy.addNormalSlotsForPlayerInventory(0, 0);
-					return dummy;
-				}
-				
-			case GuiIDs.GUI_Module_Apiarist_Analyzer:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getExtractMode()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-					return new DummyContainer(player.inventory, null);
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleApiaristAnalyser)) return null;
-					return dummy;
-				}
-			
-			case GuiIDs.GUI_Module_CC_Based_QuickSort_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleCCBasedQuickSort)) return null;
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(slot).setInteger(((ModuleCCBasedQuickSort)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getTimeout()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-					return new DummyContainer(player.inventory, null);
-				} else {
-					dummy = new DummyModuleContainer(player, z);
-					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleCCBasedQuickSort)) return null;
-					return dummy;
-				}
-				
-			default:break;
+
+				case GuiIDs.GUI_Module_Apiarist_Sink_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristSink)) return null;
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BeeModule.class).setSlot(slot).readFromProvider((ModuleApiaristSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+						return new DummyContainer(player.inventory, null);
+					} else {
+						dummy = new DummyModuleContainer(player, z);
+						if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleApiaristSink)) return null;
+						return dummy;
+					}
+
+				case GuiIDs.GUI_Module_ModBased_ItemSink_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleModBasedItemSink)) return null;
+						NBTTagCompound nbt = new NBTTagCompound();
+						((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+						dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
+						dummy.addDummySlot(0, 0, 0);
+						dummy.addNormalSlotsForPlayerInventory(0, 0);
+						return dummy;
+					} else {
+						dummy = new DummyModuleContainer(player, z);
+						if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleModBasedItemSink)) return null;
+						((DummyModuleContainer) dummy).setInventory(new ItemIdentifierInventory(1, "TMP", 1));
+						dummy.addDummySlot(0, 0, 0);
+						dummy.addNormalSlotsForPlayerInventory(0, 0);
+						return dummy;
+					}
+
+				case GuiIDs.GUI_Module_Thaumic_AspectSink_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleThaumicAspectSink)) return null;
+						NBTTagCompound nbt = new NBTTagCompound();
+						((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+						dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
+						dummy.addDummySlot(0, 0, 0);
+						dummy.addNormalSlotsForPlayerInventory(0, 0);
+						return dummy;
+					} else {
+						dummy = new DummyModuleContainer(player, z);
+						if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleThaumicAspectSink)) return null;
+						((DummyModuleContainer) dummy).setInventory(new ItemIdentifierInventory(1, "TMP", 1));
+						dummy.addDummySlot(0, 0, 0);
+						dummy.addNormalSlotsForPlayerInventory(0, 0);
+						return dummy;
+					}
+
+				case GuiIDs.GUI_Module_OreDict_ItemSink_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleOreDictItemSink)) return null;
+						NBTTagCompound nbt = new NBTTagCompound();
+						((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+						dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
+						dummy.addDummySlot(0, 0, 0);
+						dummy.addNormalSlotsForPlayerInventory(0, 0);
+						return dummy;
+					} else {
+						dummy = new DummyModuleContainer(player, z);
+						if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleOreDictItemSink)) return null;
+						((DummyModuleContainer) dummy).setInventory(new ItemIdentifierInventory(1, "TMP", 1));
+						dummy.addDummySlot(0, 0, 0);
+						dummy.addNormalSlotsForPlayerInventory(0, 0);
+						return dummy;
+					}
+
+				case GuiIDs.GUI_Module_Apiarist_Analyzer:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(((ModuleApiaristAnalyser) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot)).getExtractMode()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord),
+								(Player) player);
+						return new DummyContainer(player.inventory, null);
+					} else {
+						dummy = new DummyModuleContainer(player, z);
+						if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleApiaristAnalyser)) return null;
+						return dummy;
+					}
+
+				case GuiIDs.GUI_Module_CC_Based_QuickSort_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleCCBasedQuickSort)) return null;
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CCBasedQuickSortMode.class).setInteger2(slot).setInteger(((ModuleCCBasedQuickSort) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot)).getTimeout()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord),
+								(Player) player);
+						return new DummyContainer(player.inventory, null);
+					} else {
+						dummy = new DummyModuleContainer(player, z);
+						if (!(((DummyModuleContainer) dummy).getModule() instanceof ModuleCCBasedQuickSort)) return null;
+						return dummy;
+					}
+
+				default:
+					break;
 			}
 		}
 		return null;
@@ -630,310 +639,324 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, final World world, int x, int y, int z) {
-		
+
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
 		LogisticsTileGenericPipe pipe = null;
-		if(tile instanceof LogisticsTileGenericPipe) {
-			pipe = (LogisticsTileGenericPipe)tile;
+		if (tile instanceof LogisticsTileGenericPipe) {
+			pipe = (LogisticsTileGenericPipe) tile;
 		}
-		
-		if(ID == -1) {
+
+		if (ID == -1) {
 			return getClientGuiElement(-100 * 20 + x, player, world, 0, -1, z);
 		}
-		
+
 		Object[] args = argumentQueueClient.get(ID);
-		
-		if(ID < 120 && ID > 0) {
-			switch(ID) {
-			
-			case GuiIDs.GUI_CRAFTINGPIPE_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsCraftingLogistics)) return null;
-				if(args == null) {
-					new UnsupportedOperationException("Arguments missing").printStackTrace();
+
+		if (ID < 120 && ID > 0) {
+			switch (ID) {
+
+				case GuiIDs.GUI_CRAFTINGPIPE_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsCraftingLogistics)) return null;
+					if (args == null) {
+						new UnsupportedOperationException("Arguments missing").printStackTrace();
+						return null;
+					}
+					return new GuiCraftingPipe(player, ((PipeItemsCraftingLogistics) pipe.pipe).getDummyInventory(), (PipeItemsCraftingLogistics) pipe.pipe, (Boolean) args[0], (Integer) args[1], (int[]) args[2], (Boolean) args[3], (Boolean) args[4]);
+
+				case GuiIDs.GUI_FluidSupplier_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsFluidSupplier)) return null;
+					return new GuiFluidSupplierPipe(player.inventory, ((PipeItemsFluidSupplier) pipe.pipe).getDummyInventory(), (PipeItemsFluidSupplier) pipe.pipe);
+
+				case GuiIDs.GUI_FluidSupplier_MK2_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeFluidSupplierMk2)) return null;
+					return new GuiFluidSupplierMk2Pipe(player.inventory, ((PipeFluidSupplierMk2) pipe.pipe).getDummyInventory(), (PipeFluidSupplierMk2) pipe.pipe);
+
+				case GuiIDs.GUI_ProviderPipe_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsProviderLogistics)) return null;
+					return new GuiProviderPipe(player.inventory, ((PipeItemsProviderLogistics) pipe.pipe).getprovidingInventory(), (PipeItemsProviderLogistics) pipe.pipe);
+
+				case GuiIDs.GUI_SatelitePipe_ID:
+					if (pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeItemsSatelliteLogistics) {
+						return new GuiSatellitePipe((PipeItemsSatelliteLogistics) pipe.pipe, player);
+					}
+					if (pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeFluidSatellite) {
+						return new GuiSatellitePipe((PipeFluidSatellite) pipe.pipe, player);
+					}
 					return null;
-				}
-				return new GuiCraftingPipe(player, ((PipeItemsCraftingLogistics)pipe.pipe).getDummyInventory(), (PipeItemsCraftingLogistics)pipe.pipe, (Boolean) args[0], (Integer) args[1], (int[]) args[2], (Boolean) args[3], (Boolean) args[4]);
-			
-			case GuiIDs.GUI_FluidSupplier_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsFluidSupplier)) return null;
-				return new GuiFluidSupplierPipe(player.inventory, ((PipeItemsFluidSupplier)pipe.pipe).getDummyInventory(), (PipeItemsFluidSupplier)pipe.pipe);
-			
-			case GuiIDs.GUI_FluidSupplier_MK2_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeFluidSupplierMk2)) return null;
-				return new GuiFluidSupplierMk2Pipe(player.inventory, ((PipeFluidSupplierMk2)pipe.pipe).getDummyInventory(), (PipeFluidSupplierMk2)pipe.pipe);
-				
-			case GuiIDs.GUI_ProviderPipe_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsProviderLogistics)) return null;
-				return new GuiProviderPipe(player.inventory, ((PipeItemsProviderLogistics)pipe.pipe).getprovidingInventory(), (PipeItemsProviderLogistics)pipe.pipe);
-			
-			case GuiIDs.GUI_SatelitePipe_ID:
-				if(pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeItemsSatelliteLogistics) {
-					return new GuiSatellitePipe((PipeItemsSatelliteLogistics)pipe.pipe, player);
-				}
-				if(pipe != null && pipe.pipe != null && pipe.pipe instanceof PipeFluidSatellite) {
-					return new GuiSatellitePipe((PipeFluidSatellite)pipe.pipe, player);
-				}
-				return null;
-				
-			case GuiIDs.GUI_SupplierPipe_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsSupplierLogistics)) return null;
-				return new GuiSupplierPipe(player.inventory, ((PipeItemsSupplierLogistics)pipe.pipe).getDummyInventory(), (PipeItemsSupplierLogistics)pipe.pipe, (Boolean) args[0], (int[]) args[1]);
-				
-				/*** Modules ***/
-			case GuiIDs.GUI_Module_FluidSupplier_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleFluidSupplier)) return null;
-				return new GuiFluidSupplier(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleFluidSupplier) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule());
-				
-			case GuiIDs.GUI_Module_Provider_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleProvider)) return null;
-				return new GuiProvider(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleProvider) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), 0);
-				
-			case GuiIDs.GUI_Module_Simple_Filter_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof IModuleSimpleFilter)) return null;
-				return new GuiSimpleFilter(player.inventory, (CoreRoutedPipe) pipe.pipe, (IModuleSimpleFilter) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule());
-				
-			case GuiIDs.GUI_ChassiModule_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return null;
-				return new GuiChassiPipe(player, (PipeLogisticsChassi)pipe.pipe);
 
-			case GuiIDs.GUI_Module_Advanced_Extractor_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleAdvancedExtractor)) return null;
-				return new GuiAdvancedExtractor(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleAdvancedExtractor) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), 0);
+				case GuiIDs.GUI_SupplierPipe_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsSupplierLogistics)) return null;
+					return new GuiSupplierPipe(player.inventory, ((PipeItemsSupplierLogistics) pipe.pipe).getDummyInventory(), (PipeItemsSupplierLogistics) pipe.pipe, (Boolean) args[0], (int[]) args[1]);
 
-			case GuiIDs.GUI_Module_ElectricManager_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleElectricManager)) return null;
-				return new GuiElectricManager(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleElectricManager) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), 0);				
-				
-			case GuiIDs.GUI_RoutingStats_ID:
-				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
-				return new GuiRoutingStats(((CoreRoutedPipe)pipe.pipe).getRouter(), player);
-				
-			case GuiIDs.GUI_Normal_Orderer_ID:
-				return new NormalGuiOrderer(x, y, z, MainProxy.getDimensionForWorld(world), player);
-				
-			case GuiIDs.GUI_Normal_Mk2_Orderer_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
-				return new NormalMk2GuiOrderer(((PipeItemsRequestLogisticsMk2)pipe.pipe), player);
-				
-			case GuiIDs.GUI_Fluid_Orderer_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeFluidRequestLogistics)) return null;
-				return new FluidGuiOrderer(((PipeFluidRequestLogistics)pipe.pipe), player);
-				
-			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;
-				return new GuiApiaristSink((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), player, (CoreRoutedPipe) pipe.pipe, 0);
-			
-			case GuiIDs.GUI_Inv_Sys_Connector_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
-				return new GuiInvSysConnector(player, (PipeItemsInvSysConnector)pipe.pipe);
-				
-			case GuiIDs.GUI_Freq_Card_ID:
-				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsSystemEntranceLogistics) || (pipe.pipe instanceof PipeItemsSystemDestinationLogistics))) return null;
-				IInventory inv = null;
-				if(pipe.pipe instanceof PipeItemsSystemEntranceLogistics) {
-					inv = ((PipeItemsSystemEntranceLogistics)pipe.pipe).inv;
-				} else if(pipe.pipe instanceof PipeItemsSystemDestinationLogistics) {
-					inv = ((PipeItemsSystemDestinationLogistics)pipe.pipe).inv;
-				}
-				return new GuiFreqCardContent(player, inv);
+					/*** Modules ***/
+				case GuiIDs.GUI_Module_FluidSupplier_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleFluidSupplier)) return null;
+					return new GuiFluidSupplier(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleFluidSupplier) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule());
 
-			case GuiIDs.GUI_HUD_Settings:
-				return new GuiHUDSettings(player, x);
-			
-			case GuiIDs.GUI_Fluid_Basic_ID:
-				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeFluidBasic))) return null;
-				return new GuiFluidBasic(player, ((PipeFluidBasic)pipe.pipe).filterInv);
+				case GuiIDs.GUI_Module_Provider_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleProvider)) return null;
+					return new GuiProvider(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleProvider) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule(), 0);
 
-			case GuiIDs.GUI_FIREWALL:
-				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) return null;
-				return new GuiFirewall((PipeItemsFirewall) pipe.pipe, player);
+				case GuiIDs.GUI_Module_Simple_Filter_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof IModuleSimpleFilter)) return null;
+					return new GuiSimpleFilter(player.inventory, (CoreRoutedPipe) pipe.pipe, (IModuleSimpleFilter) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule());
 
-			case GuiIDs.GUI_Module_Apiarist_Analyzer:
-				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser)) return null;
-				return new GuiApiaristAnalyser((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), (CoreRoutedPipe) pipe.pipe, player.inventory);
-	
-			case GuiIDs.GUI_Request_Table_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
-				return new GuiRequestTable(player, ((PipeBlockRequestTable)pipe.pipe));
-				
-			default:break;
+				case GuiIDs.GUI_ChassiModule_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return null;
+					return new GuiChassiPipe(player, (PipeLogisticsChassi) pipe.pipe);
+
+				case GuiIDs.GUI_Module_Advanced_Extractor_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleAdvancedExtractor)) return null;
+					return new GuiAdvancedExtractor(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleAdvancedExtractor) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule(), 0);
+
+				case GuiIDs.GUI_Module_ElectricManager_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleElectricManager)) return null;
+					return new GuiElectricManager(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleElectricManager) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule(), 0);
+
+				case GuiIDs.GUI_RoutingStats_ID:
+					if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe)) return null;
+					return new GuiRoutingStats(((CoreRoutedPipe) pipe.pipe).getRouter(), player);
+
+				case GuiIDs.GUI_Normal_Orderer_ID:
+					return new NormalGuiOrderer(x, y, z, MainProxy.getDimensionForWorld(world), player);
+
+				case GuiIDs.GUI_Normal_Mk2_Orderer_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
+					return new NormalMk2GuiOrderer(((PipeItemsRequestLogisticsMk2) pipe.pipe), player);
+
+				case GuiIDs.GUI_Fluid_Orderer_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeFluidRequestLogistics)) return null;
+					return new FluidGuiOrderer(((PipeFluidRequestLogistics) pipe.pipe), player);
+
+				case GuiIDs.GUI_Module_Apiarist_Sink_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;
+					return new GuiApiaristSink((ModuleApiaristSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule(), player, (CoreRoutedPipe) pipe.pipe, 0);
+
+				case GuiIDs.GUI_Inv_Sys_Connector_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
+					return new GuiInvSysConnector(player, (PipeItemsInvSysConnector) pipe.pipe);
+
+				case GuiIDs.GUI_Freq_Card_ID:
+					if (pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsSystemEntranceLogistics) || (pipe.pipe instanceof PipeItemsSystemDestinationLogistics))) return null;
+					IInventory inv = null;
+					if (pipe.pipe instanceof PipeItemsSystemEntranceLogistics) {
+						inv = ((PipeItemsSystemEntranceLogistics) pipe.pipe).inv;
+					} else if (pipe.pipe instanceof PipeItemsSystemDestinationLogistics) {
+						inv = ((PipeItemsSystemDestinationLogistics) pipe.pipe).inv;
+					}
+					return new GuiFreqCardContent(player, inv);
+
+				case GuiIDs.GUI_HUD_Settings:
+					return new GuiHUDSettings(player, x);
+
+				case GuiIDs.GUI_Fluid_Basic_ID:
+					if (pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeFluidBasic))) return null;
+					return new GuiFluidBasic(player, ((PipeFluidBasic) pipe.pipe).filterInv);
+
+				case GuiIDs.GUI_FIREWALL:
+					if (pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) return null;
+					return new GuiFirewall((PipeItemsFirewall) pipe.pipe, player);
+
+				case GuiIDs.GUI_Module_Apiarist_Analyzer:
+					if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser)) return null;
+					return new GuiApiaristAnalyser((ModuleApiaristAnalyser) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule(), (CoreRoutedPipe) pipe.pipe, player.inventory);
+
+				case GuiIDs.GUI_Request_Table_ID:
+					if (pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
+					return new GuiRequestTable(player, ((PipeBlockRequestTable) pipe.pipe));
+
+				default:
+					break;
 			}
 		} else {
 			int slot = ID / 100;
-			if(pipe == null && slot >= 0) return null;
-			if(slot >= 0) {
+			if (pipe == null && slot >= 0) return null;
+			if (slot >= 0) {
 				slot--;
 			}
-			switch(((ID % 100) + 100) % 100) {
-			case GuiIDs.GUI_Module_FluidSupplier_ID:
-				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleFluidSupplier)) return null;
-				return new GuiFluidSupplier(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleFluidSupplier) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot));
-				
-			case GuiIDs.GUI_Module_Provider_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleProvider)) return null;
-					return new GuiProvider(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleProvider) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof ModuleProvider)) return null;
-					return new GuiProvider(player.inventory, null, (ModuleProvider) module, slot);
-				}
-				
-			case GuiIDs.GUI_Module_Simple_Filter_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof IModuleSimpleFilter)) return null;
-					return new GuiSimpleFilter(player.inventory, (CoreRoutedPipe) pipe.pipe, (IModuleSimpleFilter) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot));
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof IModuleSimpleFilter)) return null;
-					return new GuiSimpleFilter(player.inventory, null, (IModuleSimpleFilter) module);
-				}
-				
-			case GuiIDs.GUI_Module_Advanced_Extractor_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleAdvancedExtractor)) return null;
-					return new GuiAdvancedExtractor(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleAdvancedExtractor) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof ModuleAdvancedExtractor)) return null;
-					return new GuiAdvancedExtractor(player.inventory, null, (ModuleAdvancedExtractor) module, slot);
-				}
-				
-			case GuiIDs.GUI_Module_ElectricManager_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleElectricManager)) return null;
-					return new GuiElectricManager(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleElectricManager) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof ModuleElectricManager)) return null;
-					return new GuiElectricManager(player.inventory, null, (ModuleElectricManager) module, slot);
-				}
-				
-			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristSink)) return null;
-					return new GuiApiaristSink((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), player, (CoreRoutedPipe) pipe.pipe, slot + 1);
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
-						@Override
-						public World getWorld() {
-							return world;
-						}}, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof ModuleApiaristSink)) return null;
-					return new GuiApiaristSink((ModuleApiaristSink) module, player, null, slot);
-				}
-				
-			case GuiIDs.GUI_Module_ModBased_ItemSink_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleModBasedItemSink)) return null;
-					return new GuiModBasedItemSink(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleModBasedItemSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
-						@Override
-						public World getWorld() {
-							return world;
-						}}, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof ModuleModBasedItemSink)) return null;
-					return new GuiModBasedItemSink(player.inventory, null, (ModuleModBasedItemSink) module, slot);
-				}
-				
-			case GuiIDs.GUI_Module_Thaumic_AspectSink_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleThaumicAspectSink)) return null;
-					return new GuiThaumicAspectSink(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleThaumicAspectSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
-						@Override
-						public World getWorld() {
-							return world;
-						}}, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof ModuleThaumicAspectSink)) return null;
-					return new GuiThaumicAspectSink(player.inventory, null, (ModuleThaumicAspectSink) module, slot);
-				}
-			
-			case GuiIDs.GUI_Module_OreDict_ItemSink_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleOreDictItemSink)) return null;
-					return new GuiOreDictItemSink(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleOreDictItemSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
-						@Override
-						public World getWorld() {
-							return world;
-						}}, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof ModuleOreDictItemSink)) return null;
-					return new GuiOreDictItemSink(player.inventory, null, (ModuleOreDictItemSink) module, slot);
-				}
-				
-			case GuiIDs.GUI_Module_Apiarist_Analyzer:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;
-					return new GuiApiaristAnalyser((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), (CoreRoutedPipe) pipe.pipe, player.inventory);
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
-						@Override
-						public World getWorld() {
-							return world;
-						}}, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof ModuleApiaristAnalyser)) return null;
-					return new GuiApiaristAnalyser((ModuleApiaristAnalyser) module, null, player.inventory);
-				}
-				
-			case GuiIDs.GUI_Module_CC_Based_QuickSort_ID:
-				if(slot >= 0) {
-					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleCCBasedQuickSort)) return null;
-					return new GuiCCBasedQuickSort(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleCCBasedQuickSort)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), slot);
-				} else {
-					ItemStack item = player.inventory.mainInventory[z];
-					if(item == null) return null;
-					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
-						@Override
-						public World getWorld() {
-							return world;
-						}}, null);
-					module.registerSlot(-1-z);
-					ItemModuleInformationManager.readInformation(item, module);
-					if(!(module instanceof ModuleCCBasedQuickSort)) return null;
-					return new GuiCCBasedQuickSort(player.inventory, null, (ModuleCCBasedQuickSort) module, slot);
-				}
-				
-			default:break;
+			switch (((ID % 100) + 100) % 100) {
+				case GuiIDs.GUI_Module_FluidSupplier_ID:
+					if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleFluidSupplier)) return null;
+					return new GuiFluidSupplier(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleFluidSupplier) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot));
+
+				case GuiIDs.GUI_Module_Provider_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleProvider)) return null;
+						return new GuiProvider(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleProvider) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
+					} else {
+						ItemStack item = player.inventory.mainInventory[z];
+						if (item == null) return null;
+						LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
+						module.registerSlot(-1 - z);
+						ItemModuleInformationManager.readInformation(item, module);
+						if (!(module instanceof ModuleProvider)) return null;
+						return new GuiProvider(player.inventory, null, (ModuleProvider) module, slot);
+					}
+
+				case GuiIDs.GUI_Module_Simple_Filter_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof IModuleSimpleFilter)) return null;
+						return new GuiSimpleFilter(player.inventory, (CoreRoutedPipe) pipe.pipe, (IModuleSimpleFilter) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot));
+					} else {
+						ItemStack item = player.inventory.mainInventory[z];
+						if (item == null) return null;
+						LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
+						module.registerSlot(-1 - z);
+						ItemModuleInformationManager.readInformation(item, module);
+						if (!(module instanceof IModuleSimpleFilter)) return null;
+						return new GuiSimpleFilter(player.inventory, null, (IModuleSimpleFilter) module);
+					}
+
+				case GuiIDs.GUI_Module_Advanced_Extractor_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleAdvancedExtractor)) return null;
+						return new GuiAdvancedExtractor(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleAdvancedExtractor) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
+					} else {
+						ItemStack item = player.inventory.mainInventory[z];
+						if (item == null) return null;
+						LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
+						module.registerSlot(-1 - z);
+						ItemModuleInformationManager.readInformation(item, module);
+						if (!(module instanceof ModuleAdvancedExtractor)) return null;
+						return new GuiAdvancedExtractor(player.inventory, null, (ModuleAdvancedExtractor) module, slot);
+					}
+
+				case GuiIDs.GUI_Module_ElectricManager_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleElectricManager)) return null;
+						return new GuiElectricManager(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleElectricManager) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
+					} else {
+						ItemStack item = player.inventory.mainInventory[z];
+						if (item == null) return null;
+						LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
+						module.registerSlot(-1 - z);
+						ItemModuleInformationManager.readInformation(item, module);
+						if (!(module instanceof ModuleElectricManager)) return null;
+						return new GuiElectricManager(player.inventory, null, (ModuleElectricManager) module, slot);
+					}
+
+				case GuiIDs.GUI_Module_Apiarist_Sink_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristSink)) return null;
+						return new GuiApiaristSink((ModuleApiaristSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot), player, (CoreRoutedPipe) pipe.pipe, slot + 1);
+					} else {
+						ItemStack item = player.inventory.mainInventory[z];
+						if (item == null) return null;
+						LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+
+							@Override
+							public World getWorld() {
+								return world;
+							}
+						}, null);
+						module.registerSlot(-1 - z);
+						ItemModuleInformationManager.readInformation(item, module);
+						if (!(module instanceof ModuleApiaristSink)) return null;
+						return new GuiApiaristSink((ModuleApiaristSink) module, player, null, slot);
+					}
+
+				case GuiIDs.GUI_Module_ModBased_ItemSink_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleModBasedItemSink)) return null;
+						return new GuiModBasedItemSink(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleModBasedItemSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
+					} else {
+						ItemStack item = player.inventory.mainInventory[z];
+						if (item == null) return null;
+						LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+
+							@Override
+							public World getWorld() {
+								return world;
+							}
+						}, null);
+						module.registerSlot(-1 - z);
+						ItemModuleInformationManager.readInformation(item, module);
+						if (!(module instanceof ModuleModBasedItemSink)) return null;
+						return new GuiModBasedItemSink(player.inventory, null, (ModuleModBasedItemSink) module, slot);
+					}
+
+				case GuiIDs.GUI_Module_Thaumic_AspectSink_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleThaumicAspectSink)) return null;
+						return new GuiThaumicAspectSink(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleThaumicAspectSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
+					} else {
+						ItemStack item = player.inventory.mainInventory[z];
+						if (item == null) return null;
+						LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+
+							@Override
+							public World getWorld() {
+								return world;
+							}
+						}, null);
+						module.registerSlot(-1 - z);
+						ItemModuleInformationManager.readInformation(item, module);
+						if (!(module instanceof ModuleThaumicAspectSink)) return null;
+						return new GuiThaumicAspectSink(player.inventory, null, (ModuleThaumicAspectSink) module, slot);
+					}
+
+				case GuiIDs.GUI_Module_OreDict_ItemSink_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleOreDictItemSink)) return null;
+						return new GuiOreDictItemSink(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleOreDictItemSink) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot), slot + 1);
+					} else {
+						ItemStack item = player.inventory.mainInventory[z];
+						if (item == null) return null;
+						LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+
+							@Override
+							public World getWorld() {
+								return world;
+							}
+						}, null);
+						module.registerSlot(-1 - z);
+						ItemModuleInformationManager.readInformation(item, module);
+						if (!(module instanceof ModuleOreDictItemSink)) return null;
+						return new GuiOreDictItemSink(player.inventory, null, (ModuleOreDictItemSink) module, slot);
+					}
+
+				case GuiIDs.GUI_Module_Apiarist_Analyzer:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;
+						return new GuiApiaristAnalyser((ModuleApiaristAnalyser) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot), (CoreRoutedPipe) pipe.pipe, player.inventory);
+					} else {
+						ItemStack item = player.inventory.mainInventory[z];
+						if (item == null) return null;
+						LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+
+							@Override
+							public World getWorld() {
+								return world;
+							}
+						}, null);
+						module.registerSlot(-1 - z);
+						ItemModuleInformationManager.readInformation(item, module);
+						if (!(module instanceof ModuleApiaristAnalyser)) return null;
+						return new GuiApiaristAnalyser((ModuleApiaristAnalyser) module, null, player.inventory);
+					}
+
+				case GuiIDs.GUI_Module_CC_Based_QuickSort_ID:
+					if (slot >= 0) {
+						if (pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleCCBasedQuickSort)) return null;
+						return new GuiCCBasedQuickSort(player.inventory, (CoreRoutedPipe) pipe.pipe, (ModuleCCBasedQuickSort) ((CoreRoutedPipe) pipe.pipe).getLogisticsModule().getSubModule(slot), slot);
+					} else {
+						ItemStack item = player.inventory.mainInventory[z];
+						if (item == null) return null;
+						LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+
+							@Override
+							public World getWorld() {
+								return world;
+							}
+						}, null);
+						module.registerSlot(-1 - z);
+						ItemModuleInformationManager.readInformation(item, module);
+						if (!(module instanceof ModuleCCBasedQuickSort)) return null;
+						return new GuiCCBasedQuickSort(player.inventory, null, (ModuleCCBasedQuickSort) module, slot);
+					}
+
+				default:
+					break;
 			}
 		}
 		return null;

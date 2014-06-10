@@ -16,14 +16,12 @@ public class SolderingStation implements ICraftingRecipeProvider {
 
 	@Override
 	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
-		if (!(tile instanceof LogisticsSolderingTileEntity))
-			return false;
+		if (!(tile instanceof LogisticsSolderingTileEntity)) return false;
 
 		LogisticsSolderingTileEntity station = (LogisticsSolderingTileEntity) tile;
 		ItemStack result = station.getTargetForTaget();
 
-		if (result == null)
-			return false;
+		if (result == null) return false;
 
 		inventory.setInventorySlotContents(9, result);
 
@@ -37,15 +35,15 @@ public class SolderingStation implements ICraftingRecipeProvider {
 		}
 
 		inventory.compact_first_9();
-		
+
 		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			if (inventory.getStackInSlot(i) != null) {
 				continue;
 			}
-			inventory.setInventorySlotContents(i, new ItemStack(Item.ingotIron,1));
+			inventory.setInventorySlotContents(i, new ItemStack(Item.ingotIron, 1));
 			break;
 		}
-		
+
 		return true;
 	}
 

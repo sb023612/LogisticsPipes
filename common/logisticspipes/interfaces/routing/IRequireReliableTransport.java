@@ -11,7 +11,9 @@ package logisticspipes.interfaces.routing;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 public interface IRequireReliableTransport {
+
 	public void itemLost(ItemIdentifierStack item);
+
 	public void itemArrived(ItemIdentifierStack item);
 
 }

@@ -18,11 +18,11 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
 
-public class LogisticsGuiOverrenderer {
-	
+public final class LogisticsGuiOverrenderer {
+
 	@Getter
 	private static LogisticsGuiOverrenderer instance = new LogisticsGuiOverrenderer();
-	
+
 	private int oldX;
 	private int oldY;
 	private boolean hasBeenSaved;
@@ -45,27 +45,27 @@ public class LogisticsGuiOverrenderer {
 	private int slot;
 	@Setter
 	private boolean isOverlaySlotActive;
-	
+
 	private LogisticsGuiOverrenderer() {
 		try {
 			fX = Mouse.class.getDeclaredField("x");
 			fY = Mouse.class.getDeclaredField("y");
 			fX.setAccessible(true);
 			fY.setAccessible(true);
-		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) e.printStackTrace();
+		} catch (Exception e) {
+			if (LogisticsPipes.DEBUG) e.printStackTrace();
 		}
 	}
-	
+
 	public boolean isCompatibleGui() {
-		if(FMLClientHandler.instance() == null) return false;
-		if(FMLClientHandler.instance().getClient() == null) return false;
-		if( !(FMLClientHandler.instance().getClient().currentScreen instanceof GuiContainer)) return false;
+		if (FMLClientHandler.instance() == null) return false;
+		if (FMLClientHandler.instance().getClient() == null) return false;
+		if (!(FMLClientHandler.instance().getClient().currentScreen instanceof GuiContainer)) return false;
 		return true;
 	}
-	
+
 	public void preRender() {
-		if(isOverlaySlotActive) {
+		if (isOverlaySlotActive) {
 			// Save Mouse Pos
 			oldX = Mouse.getX();
 			oldY = Mouse.getY();
@@ -74,37 +74,37 @@ public class LogisticsGuiOverrenderer {
 				fX.set(null, 0);
 				fY.set(null, 0);
 				hasBeenSaved = true;
-			} catch(Exception e) {
-				if(LogisticsPipes.DEBUG) e.printStackTrace();
+			} catch (Exception e) {
+				if (LogisticsPipes.DEBUG) e.printStackTrace();
 			}
-			while(Mouse.next()) {
-				if(Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
+			while (Mouse.next()) {
+				if (Mouse.getEventButton() == 0 && Mouse.getEventButtonState()) {
 					clicked = true;
 				}
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void renderOverGui() {
-		if(hasBeenSaved) {
+		if (hasBeenSaved) {
 			hasBeenSaved = false;
 			// Resore Mouse Pos
 			try {
 				fX.set(null, oldX);
 				fY.set(null, oldY);
-			} catch(Exception e) {
-				if(LogisticsPipes.DEBUG) e.printStackTrace();
+			} catch (Exception e) {
+				if (LogisticsPipes.DEBUG) e.printStackTrace();
 			}
 		}
-		if(isOverlaySlotActive) {
+		if (isOverlaySlotActive) {
 			GuiContainer gui = (GuiContainer) FMLClientHandler.instance().getClient().currentScreen;
 			int guiTop = gui.guiTop;
 			int guiLeft = gui.guiLeft;
 			int x = oldX * gui.width / FMLClientHandler.instance().getClient().displayWidth;
 			int y = gui.height - oldY * gui.height / FMLClientHandler.instance().getClient().displayHeight - 1;
-			for(Slot slot: (List<Slot>) gui.inventorySlots.inventorySlots) {
-				if(isMouseOverSlot(gui, slot, x, y)) {
+			for (Slot slot : (List<Slot>) gui.inventorySlots.inventorySlots) {
+				if (isMouseOverSlot(gui, slot, x, y)) {
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					GL11.glTranslated(guiLeft, guiTop, 0);
@@ -113,7 +113,7 @@ public class LogisticsGuiOverrenderer {
 					this.drawGradientRect(k1, i1, k1 + 16, i1 + 16, 0xa0ff0000, 0xa0ff0000);
 					GL11.glEnable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_DEPTH_TEST);
-					if(clicked) {
+					if (clicked) {
 						MainProxy.sendPacketToServer(PacketHandler.getPacket(SlotFinderNumberPacket.class).setInventorySlot(slot.slotNumber).setSlot(this.slot).setPipePosX(pipePosX).setPipePosY(pipePosY).setPipePosZ(pipePosZ).setPosX(targetPosX).setPosY(targetPosY).setPosZ(targetPosZ));
 						clicked = false;
 						FMLClientHandler.instance().getClient().thePlayer.closeScreen();
@@ -125,7 +125,7 @@ public class LogisticsGuiOverrenderer {
 			clicked = false;
 		}
 	}
-	
+
 	protected void drawGradientRect(int par1, int par2, int par3, int par4, int par5, int par6) {
 		float f = (float) (par5 >> 24 & 255) / 255.0F;
 		float f1 = (float) (par5 >> 16 & 255) / 255.0F;
@@ -155,10 +155,10 @@ public class LogisticsGuiOverrenderer {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	private boolean isMouseOverSlot(GuiContainer gui,Slot par1Slot, int par2, int par3) {
+	private boolean isMouseOverSlot(GuiContainer gui, Slot par1Slot, int par2, int par3) {
 		return this.isPointInRegion(gui, par1Slot.xDisplayPosition, par1Slot.yDisplayPosition, 16, 16, par2, par3);
 	}
-	
+
 	private boolean isPointInRegion(GuiContainer gui, int par1, int par2, int par3, int par4, int par5, int par6) {
 		int k1 = gui.guiLeft;
 		int l1 = gui.guiTop;

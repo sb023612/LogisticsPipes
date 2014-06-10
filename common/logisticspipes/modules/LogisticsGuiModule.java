@@ -12,15 +12,15 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 	public int getGuiHandlerID() {
 		return -1;
 	}
-	
+
 	public ModuleCoordinatesGuiProvider getPipeGuiProvider() {
 		return null;
 	}
-	
+
 	public ModuleInHandGuiProvider getInHandGuiProvider() {
 		return null;
 	}
-	
+
 	@Override
 	public boolean hasGui() {
 		return true;

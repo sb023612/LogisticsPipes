@@ -8,7 +8,7 @@ import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class FluidSupplierAmount extends IntegerCoordinatesPacket {
 
 	public FluidSupplierAmount(int id) {
@@ -29,11 +29,10 @@ public class FluidSupplierAmount extends IntegerCoordinatesPacket {
 		if (!(pipe.pipe instanceof PipeFluidSupplierMk2)) {
 			return;
 		}
-		if(MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.worldObj)) {
 			((PipeFluidSupplierMk2) pipe.pipe).setAmount(getInteger());
 		} else {
 			((PipeFluidSupplierMk2) pipe.pipe).changeFluidAmount(getInteger(), player);
 		}
 	}
 }
-

@@ -16,14 +16,14 @@ public class ChestContent extends InventoryCoordinatesPacket {
 	public ModernPacket template() {
 		return new ChestContent(getId());
 	}
-	
+
 	@Override
 	public void processPacket(EntityPlayer player) {
 		final LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
-		if(tile == null) {
+		if (tile == null) {
 			return;
 		}
-		if(tile.pipe instanceof IChestContentReceiver) {
+		if (tile.pipe instanceof IChestContentReceiver) {
 			((IChestContentReceiver) tile.pipe).setReceivedChestContent(getIdentList());
 		}
 	}
@@ -33,4 +33,3 @@ public class ChestContent extends InventoryCoordinatesPacket {
 		return true;
 	}
 }
-

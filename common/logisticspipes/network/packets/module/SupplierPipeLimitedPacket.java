@@ -19,13 +19,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class SupplierPipeLimitedPacket extends CoordinatesPacket {
 
 	@Getter
 	@Setter
 	private boolean isLimited;
-	
+
 	public SupplierPipeLimitedPacket(int id) {
 		super(id);
 	}
@@ -33,24 +33,24 @@ public class SupplierPipeLimitedPacket extends CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
-		if(pipe == null) return;
-		if(pipe.pipe instanceof PipeItemsSupplierLogistics) {
-			((PipeItemsSupplierLogistics)pipe.pipe).setLimited(isLimited());
+		if (pipe == null) return;
+		if (pipe.pipe instanceof PipeItemsSupplierLogistics) {
+			((PipeItemsSupplierLogistics) pipe.pipe).setLimited(isLimited());
 		}
-		if(MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(player.worldObj)) {
 			refresh();
 		} else {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 		}
 	}
-	
+
 	@ClientSideOnlyMethodContent
 	private void refresh() {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiSupplierPipe) {
 			((GuiSupplierPipe) FMLClientHandler.instance().getClient().currentScreen).refreshMode();
 		}
 	}
-	
+
 	@Override
 	public ModernPacket template() {
 		return new SupplierPipeLimitedPacket(getId());
