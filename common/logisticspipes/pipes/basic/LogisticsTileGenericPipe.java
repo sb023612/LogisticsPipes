@@ -66,7 +66,10 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@Override
 	public void invalidate() {
-		if(!getCPipe().blockRemove()) {
+		if(pipe == null) {
+			this.tileEntityInvalid = true;
+			super.invalidate();
+		} else if(!getCPipe().blockRemove()) {
 			this.tileEntityInvalid = true;
 			super.invalidate();
 			SimpleServiceLocator.thermalExpansionProxy.handleLPInternalConduitRemove(this);
@@ -357,13 +360,13 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 
 	public void enableRendering() {
-		if(pipe.transport instanceof PipeTransportLogistics) {
+		if(pipe != null && pipe.transport instanceof PipeTransportLogistics) {
 			((PipeTransportLogistics) pipe.transport).isRendering = true;
 		}
 	}
 
 	public void disableRendering() {
-		if(pipe.transport instanceof PipeTransportLogistics) {
+		if(pipe != null && pipe.transport instanceof PipeTransportLogistics) {
 			((PipeTransportLogistics) pipe.transport).isRendering = false;
 		}
 	}

@@ -41,6 +41,7 @@ import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
+import logisticspipes.pipes.basic.LogisticsBlockLogisticsPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -89,6 +90,7 @@ import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.RoutedItemHelper;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -226,6 +228,7 @@ public class LogisticsPipes {
 	
 	// Logistics Blocks
 	public static Block LogisticsSolidBlock;
+	public static Block LogisticsPipeBlock;
 
 	public static Textures textures = new Textures();
 	
@@ -423,7 +426,11 @@ public class LogisticsPipes {
 		LogisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
 		LogisticsSolidBlock.setUnlocalizedName("logisticsSolidBlock");
-		
+
+		LogisticsPipeBlock = new LogisticsBlockLogisticsPipe(Configs.LOGISTICS_PIPE_BLOCK_ID);
+		GameRegistry.registerBlock(LogisticsPipeBlock, ItemBlock.class, null);
+		LogisticsPipeBlock.setUnlocalizedName("logisticsPipeBlock");
+
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
 		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();

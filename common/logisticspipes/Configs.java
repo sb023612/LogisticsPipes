@@ -87,6 +87,7 @@ public class Configs {
 
 	// BlockID
 	public static int LOGISTICS_SOLID_BLOCK_ID = 1101;
+	public static int LOGISTICS_PIPE_BLOCK_ID = 1102;
 
 	// MultiThread
 	public static int MULTI_THREAD_NUMBER = 4;
@@ -225,6 +226,9 @@ public class Configs {
 		LOGISTICS_SOLID_BLOCK_ID = CONFIGURATION.getBlock(
 				"logisticsSolidBlockId", LOGISTICS_SOLID_BLOCK_ID,
 				"The ID of the LogisticsPipes Solid Block").getInt();
+		LOGISTICS_PIPE_BLOCK_ID = CONFIGURATION.getBlock(
+				"logisticsPipeBlockId", LOGISTICS_PIPE_BLOCK_ID,
+				"The ID of the LogisticsPipes Pipe Block").getInt();
 		LOGISTICSPIPE_FIREWALL_ID = CONFIGURATION.getItem(
 				"logisticsPipeFirewall.id", LOGISTICSPIPE_FIREWALL_ID,
 				"The item id for the firewall logistics pipe").getInt();

@@ -57,6 +57,8 @@ public class WorldTickHandler implements ITickHandler {
 					continue;
 				}
 
+				//ugly magic here.
+				//first copy all data from the BC TE to a LP TE
 				TileGenericPipe newTile = new LogisticsTileGenericPipe();
 				for(Field field:tile.getClass().getDeclaredFields()) {
 					try {
@@ -68,8 +70,13 @@ public class WorldTickHandler implements ITickHandler {
 						e.printStackTrace();
 					}
 				}
+				//now set tile.pipe to null, so tile.invalidate() won't call pipe.invalidate()
 				tile.pipe = null;
+				//switch out the block with a LogisticsBlockLogisticsPipe, which also calls invalidate on the old tile, breakBlock on the BlockGenericPipe and creates a new LogisticsTileGenericPipe we don't really need in the process
+				world.setBlock(x, y, z, LogisticsPipes.LogisticsPipeBlock.blockID);
+				//now swap the newly created TE out with the one containing the copied data from the original TileGenericPipe
 				world.setBlockTileEntity(x, y, z, newTile);
+				//great so far, we still have to tell any items in the pipe about their shiny new tile.
 				if(newTile.pipe != null) {
 					newTile.pipe.setTile(newTile);
 					if(newTile.pipe.transport instanceof PipeTransportItems) {
@@ -84,7 +91,7 @@ public class WorldTickHandler implements ITickHandler {
 					TileEntity tileSide = newTile.getTile(o);
 
 					if (tileSide instanceof ITileBufferHolder) {
-						((ITileBufferHolder) tileSide).blockCreated(o, BuildCraftTransport.genericPipeBlock.blockID, newTile);
+						((ITileBufferHolder) tileSide).blockCreated(o, LogisticsPipes.LogisticsPipeBlock.blockID, newTile);
 					}
 				}
 				//newTile.scheduleNeighborChange();
