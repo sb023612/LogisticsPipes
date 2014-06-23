@@ -37,7 +37,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		main.add(LogisticsPipes.LogisticsRemoteOrderer);
 		main.add(LogisticsPipes.LogisticsCraftingSignCreator);
 		
-		Item[] pipeArray = BuildCraftProxy.pipelist.toArray(new Item[]{});
+		Item[] pipeArray = LogisticsPipes.pipelist.toArray(new Item[]{});
 		Arrays.sort(pipeArray, new Comparator<Item>() {
 			@Override
 			public int compare(Item arg0, Item arg1) {

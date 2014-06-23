@@ -2,6 +2,7 @@ package logisticspipes.pipes.basic;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.logging.Level;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.asm.ModDependentField;
@@ -25,6 +26,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import thermalexpansion.part.conduit.ConduitBase;
+import buildcraft.core.utils.BCLog;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
@@ -50,6 +52,9 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	public LPConduitItem[] localConduit;
 	
 	private boolean sendInitPacket = true;
+	
+	//Override the BC field for this one
+	//public CoreRoutedPipe pipe;
 	
 	public LogisticsTileGenericPipe() {
 		if(SimpleServiceLocator.ccProxy.isCC()) {
@@ -155,13 +160,36 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
+	public void readFromNBT(NBTTagCompound nbt) {
+		//MC read code
+        this.xCoord = nbt.getInteger("x");
+        this.yCoord = nbt.getInteger("y");
+        this.zCoord = nbt.getInteger("z");
+        
+        //BC read code
+		redstonePowered = nbt.getBoolean("redstonePowered");
+		
+		coreState.pipeId = nbt.getInteger("pipeId");
+		pipe = LogisticsBlockGenericPipe.createPipe(coreState.pipeId);
+
+		if (pipe != null)
+			pipe.readFromNBT(nbt);
+		else {
+			BCLog.logger.log(Level.WARNING, "Pipe failed to load from NBT at {0},{1},{2}", new Object[]{xCoord, yCoord, zCoord});
+			deletePipe = true;
+		}
+
+		for (int i = 0; i < ForgeDirection.VALID_DIRECTIONS.length; i++) {
+			facadeBlocks[i] = nbt.getInteger("facadeBlocks[" + i + "]");
+			facadeMeta[i] = nbt.getInteger("facadeMeta[" + i + "]");
+			plugs[i] = nbt.getBoolean("plug[" + i + "]");
+		}
+
 		for(int i=0;i<turtleConnect.length;i++) {
-			turtleConnect[i] = nbttagcompound.getBoolean("turtleConnect_" + i);
+			turtleConnect[i] = nbt.getBoolean("turtleConnect_" + i);
 		}
 	}
-	
+
 	@Override
 	public boolean canPipeConnect(TileEntity with, ForgeDirection dir) {
 		if(SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
@@ -214,7 +242,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 
 	@ModDependentMethod(modId="ThermalExpansion")
 	public boolean canTEConduitConnect(ConduitBase conduit, int side) {
-		if(pipe == null) return false;
+		if(pipe == null || pipe.container == null) return false;
 		return pipe.canPipeConnect(conduit.getTile(), ForgeDirection.VALID_DIRECTIONS[side].getOpposite());
 	}
 
@@ -356,6 +384,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPipeIn
 	}
 	
 	public boolean isOpaque() {
+		if(getCPipe() == null) return false;
 		return getCPipe().isOpaque();
 	}
 

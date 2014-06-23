@@ -7,6 +7,7 @@ import java.util.List;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.pipes.signs.IPipeSign;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.transport.LPTravelingItem;
@@ -91,7 +92,6 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		dummyEntityItem.hoverStart = 0;
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
 		enableRendering(tileentity);
@@ -102,7 +102,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 		if(pipe.pipe == null) return;
 		if(!pipe.isOpaque()) {
 			if(pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
-				renderFluids((Pipe<PipeFluidTransportLogistics>)pipe.pipe, x, y, z);
+				renderFluids((FluidRoutedPipe)pipe.pipe, x, y, z);
 			}
 			if(pipe.pipe.transport instanceof PipeTransportLogistics) {
 				renderSolids((Pipe<PipeTransportLogistics>)pipe.pipe, x, y, z, f);
@@ -404,7 +404,7 @@ public class LogisticsRenderPipe extends PipeRendererTESR {
 	}
 	
 	// BC copy, except where marked with XXX
-	private void renderFluids(Pipe<PipeFluidTransportLogistics> pipe, double x, double y, double z) {
+	private void renderFluids(FluidRoutedPipe pipe, double x, double y, double z) {
 		// XXX PipeTransportFluids trans = pipe.transport;
 		PipeFluidTransportLogistics trans = (PipeFluidTransportLogistics)(pipe.transport);
 		

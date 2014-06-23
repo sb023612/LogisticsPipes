@@ -1,6 +1,7 @@
 package logisticspipes.renderer;
 
 import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.textures.Textures;
 import net.minecraft.block.Block;
@@ -12,16 +13,14 @@ import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.core.CoreConstants;
 import buildcraft.core.utils.MatrixTranformations;
-import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.PipeIconProvider;
 import buildcraft.transport.PipeRenderState;
 import buildcraft.transport.TransportProxy;
-import buildcraft.transport.render.FacadeRenderHelper;
 import buildcraft.transport.render.PipeRendererWorld;
 
 public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 
-	public void renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, BlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
+	public void renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, LogisticsBlockGenericPipe block, LogisticsTileGenericPipe pipe, int x, int y, int z) {
 		if(pipe.pipe instanceof PipeBlockRequestTable) {
 			PipeRenderState state = pipe.getRenderState();
 			IIconProvider icons = pipe.getPipeIcons();
@@ -131,7 +130,7 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 	/**
 	 * Render a block with normal and inverted vertex order so back face culling doesn't have any effect.
 	 */
-	private void renderOneWayBlock(RenderBlocks renderblocks, BlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
+	private void renderOneWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
 		assert mask != 0;
 
 		block.setRenderMask(mask);
@@ -142,7 +141,7 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 	/**
 	 * Render a block with normal and inverted vertex order so back face culling doesn't have any effect.
 	 */
-	private void renderTwoWayBlock(RenderBlocks renderblocks, BlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
+	private void renderTwoWayBlock(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, int x, int y, int z, float[] dim, int mask) {
 		assert mask != 0;
 
 		block.setRenderMask(mask);
@@ -156,7 +155,7 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 		renderblocks.flipTexture = false;
 	}
 
-	private void pipeFacadeRenderer(RenderBlocks renderblocks, BlockGenericPipe block, PipeRenderState state, int x, int y, int z) {
+	private void pipeFacadeRenderer(RenderBlocks renderblocks, LogisticsBlockGenericPipe block, PipeRenderState state, int x, int y, int z) {
 		FacadeRenderHelper.pipeFacadeRenderer(renderblocks, block, state, x, y, z);
 	}
 
@@ -220,7 +219,7 @@ public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 
 		if (tile instanceof LogisticsTileGenericPipe) {
 			LogisticsTileGenericPipe pipeTile = (LogisticsTileGenericPipe) tile;
-			renderPipe(renderer, world, (BlockGenericPipe) block, pipeTile, x, y, z);
+			renderPipe(renderer, world, (LogisticsBlockGenericPipe) block, pipeTile, x, y, z);
 		} else {
 			super.renderWorldBlock(world, x, y, z, block, modelId, renderer);
 		}

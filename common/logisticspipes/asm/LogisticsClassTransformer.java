@@ -2,6 +2,7 @@ package logisticspipes.asm;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -103,6 +104,12 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				if(Configs.TE_PIPE_SUPPORT) {
 					return handleTETravelingItem(bytes);
 				}
+			}
+			if(name.equals("buildcraft.transport.TileGenericPipe")) {
+				return handleBCTileGenericPipe(bytes);
+			}
+			if(name.equals("buildcraft/transport/TileGenericPipe$CoreState")) {
+				return handleBCTileGenericPipeCoreState(bytes);
 			}
 			if(name.equals("net.minecraft.crash.CrashReport")) {
 				return handleCrashReportClass(bytes);
@@ -620,6 +627,35 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 		}
 		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private final List<String> toProtected = Arrays.asList(new String[]{"coreState", "deletePipe", "facadeBlocks", "facadeMeta", "plugs"});
+	private byte[] handleBCTileGenericPipe(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		for(FieldNode f:node.fields) {
+			if(toProtected.contains(f.name)) {
+				if((f.access & Opcodes.ACC_PRIVATE) != 0) {
+					f.access |= Opcodes.ACC_PROTECTED;
+					f.access ^= Opcodes.ACC_PRIVATE;
+					System.out.println();
+				}
+			}
+		}
+		ClassWriter writer = new ClassWriter(0);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	private byte[] handleBCTileGenericPipeCoreState(byte[] bytes) {
+		final ClassReader reader = new ClassReader(bytes);
+		final ClassNode node = new ClassNode();
+		reader.accept(node, 0);
+		node.access += Opcodes.ACC_PROTECTED;
+		ClassWriter writer = new ClassWriter(0);
 		node.accept(writer);
 		return writer.toByteArray();
 	}
