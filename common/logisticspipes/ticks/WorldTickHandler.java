@@ -13,8 +13,8 @@ import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.BuildCraftTransport;
 import buildcraft.core.ITileBufferHolder;
+import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
@@ -50,31 +50,45 @@ public class WorldTickHandler implements ITickHandler {
 				int z = tile.zCoord;
 				World world = tile.worldObj;
 
+				System.out.println((world.isRemote?"Client":"Server") + " replacing BC tile/block with LogisticsPipes tile/block at " + x + "," + y + "," + z);
+
 				//TE or its chunk might've gone away while we weren't looking
 				TileEntity tilecheck = world.getBlockTileEntity(x, y, z);
 				if(tilecheck != tile) {
+					System.out.println("Tile changed under us, aborting");
 					localList.remove(0);
 					continue;
 				}
 
 				//ugly magic here.
-				//first copy all data from the BC TE to a LP TE
-				TileGenericPipe newTile = new LogisticsTileGenericPipe();
-				for(Field field:tile.getClass().getDeclaredFields()) {
-					try {
-						field.setAccessible(true);
-						field.set(newTile, field.get(tile));
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
+				TileGenericPipe newTile;
+				//set tile.pipe to null, so tile.invalidate() won't call pipe.invalidate()
+				Pipe savedpipe = tile.pipe;
+				tile.pipe = null;
+				if(tile instanceof LogisticsTileGenericPipe) {
+					//we're already the right TE, re-use it
+					newTile = tile;
+				} else {
+					//copy all data from the BC TE to a LP TE
+					newTile = new LogisticsTileGenericPipe();
+					for(Field field:tile.getClass().getDeclaredFields()) {
+						try {
+							field.setAccessible(true);
+							field.set(newTile, field.get(tile));
+						} catch (IllegalArgumentException e) {
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							e.printStackTrace();
+						}
 					}
 				}
-				//now set tile.pipe to null, so tile.invalidate() won't call pipe.invalidate()
-				tile.pipe = null;
-				//switch out the block with a LogisticsBlockLogisticsPipe, which also calls invalidate on the old tile, breakBlock on the BlockGenericPipe and creates a new LogisticsTileGenericPipe we don't really need in the process
+				//switch out the block with a LogisticsBlockLogisticsPipe, calls invalidate on the old tile, breakBlock on the BlockGenericPipe and creates a new LogisticsTileGenericPipe we don't really need in the process
 				world.setBlock(x, y, z, LogisticsPipes.LogisticsPipeBlock.blockID);
-				//now swap the newly created TE out with the one containing the copied data from the original TileGenericPipe
+				//validate the new/saved TE
+				newTile.validate();
+				//restore the pipe
+				newTile.pipe = savedpipe;
+				//now swap the newly created TE out with the one containing the data of the previous TE
 				world.setBlockTileEntity(x, y, z, newTile);
 				//great so far, we still have to tell any items in the pipe about their shiny new tile.
 				if(newTile.pipe != null) {

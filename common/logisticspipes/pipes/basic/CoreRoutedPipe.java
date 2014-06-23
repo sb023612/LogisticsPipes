@@ -295,20 +295,25 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public abstract ItemSendMode getItemSendMode();
 	
-	private boolean checkTileEntity(boolean force) {
-		if(isNthTick(10) || force) {
-			if(!(this.container instanceof LogisticsTileGenericPipe)) {
-				TileEntity tile = getWorld().getBlockTileEntity(getX(), getY(), getZ());
-				if(tile != this.container) {
-					LogisticsPipes.log.severe("LocalCodeError");
-				}
-				if(MainProxy.isClient(getWorld())) {
-					WorldTickHandler.clientPipesToReplace.add(this.container);
-				} else {
-					WorldTickHandler.serverPipesToReplace.add(this.container);
-				}
-				return true;
+	private boolean checkTileEntity() {
+		int blockid = this.getWorld().getBlockId(getX(), getY(), getZ());
+		TileEntity tile = getWorld().getBlockTileEntity(getX(), getY(), getZ());
+		if(tile != null) {
+			System.out.println((MainProxy.isClient(getWorld())?"Client":"Server") + " " + tile.toString() + " in block " + blockid + " at " + getX() + "," + getY() + "," + getZ());
+		} else {
+			System.out.println((MainProxy.isClient(getWorld())?"Client":"Server") + " NULL tile in block " + blockid + " at " + getX() + "," + getY() + "," + getZ());
+		}
+		//if we are in a BC block, or in a LP block but with a BC TE, queue block/TE replacement and do nothing
+		if((blockid == buildcraft.BuildCraftTransport.genericPipeBlock.blockID && tile instanceof TileGenericPipe) || (blockid == LogisticsPipes.LogisticsPipeBlock.blockID && !(tile instanceof LogisticsTileGenericPipe))) {
+			if(tile != this.container) {
+				LogisticsPipes.log.severe("LocalCodeError");
 			}
+			if(MainProxy.isServer(getWorld())) {
+				WorldTickHandler.serverPipesToReplace.add(this.container);
+			} else {
+				//do nothing client side, server update will sync to client
+			}
+			return true;
 		}
 		return false;
 	}
@@ -378,22 +383,16 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public final void updateEntity() {
 		debug.tick();
 		spawnParticleTick();
-		if(checkTileEntity(_initialInit)) {
-			stillNeedReplace = true;
-			return;
-		} else {
-			if(stillNeedReplace) {
-				stillNeedReplace = false;
-				getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlockId(getX(), getY(), getZ()));
-				/* TravelingItems are just held by a pipe, they don't need to know their world
-				 * for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
-					//assign world to any entityitem we created in readfromnbt
-					item.getValue1().getTravelingItem().setWorld(getWorld());
-				}*/
-				//first tick just create a router and do nothing.
-				firstInitialiseTick();
+		if(stillNeedReplace) {
+			//if we're the wrong block/TE, do nothing
+			if(checkTileEntity()) {
 				return;
 			}
+			//first tick just create a router and do nothing.
+			stillNeedReplace = false;
+			getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlockId(getX(), getY(), getZ()));
+			firstInitialiseTick();
+			return;
 		}
 		if(repeatFor > 0) {
 			if(delayTo < System.currentTimeMillis()) {
