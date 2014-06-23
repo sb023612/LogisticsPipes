@@ -182,4 +182,9 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 				return Textures.LOGISTICS_REQUEST_TABLE[4];
 		}
     }
+
+	@Override
+	public TileEntity createNewTileEntity(World var1) {
+		return new LogisticsTileGenericPipe();
+	}
 }

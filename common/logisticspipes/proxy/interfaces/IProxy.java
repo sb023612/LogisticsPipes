@@ -1,5 +1,7 @@
 package logisticspipes.proxy.interfaces;
 
+import buildcraft.transport.Pipe;
+import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -27,4 +29,5 @@ public interface IProxy {
 	public void tickServer();
 	public void tickClient();
 	public LogisticsModule getModuleFromGui();
+	public void setPipeIcons(ItemLogisticsPipe item, Pipe<?> dummyPipe);
 }

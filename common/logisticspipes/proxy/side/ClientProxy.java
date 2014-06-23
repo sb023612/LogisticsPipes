@@ -9,6 +9,7 @@ import logisticspipes.blocks.powertile.LogisticsIC2PowerProviderTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.blocks.powertile.LogisticsRFPowerProviderTileEntity;
 import logisticspipes.gui.modules.ModuleBaseGui;
+import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.modules.abstractmodules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
@@ -38,6 +39,7 @@ import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
+import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.PipeRendererTESR;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -216,5 +218,10 @@ public class ClientProxy implements IProxy {
 			return ((ModuleBaseGui) FMLClientHandler.instance().getClient().currentScreen).getModule();
 		}
 		return null;
+	}
+
+	@Override
+	public void setPipeIcons(ItemLogisticsPipe item, Pipe<?> dummyPipe) {
+		item.setPipesIcons(dummyPipe.getIconProvider());
 	}
 }

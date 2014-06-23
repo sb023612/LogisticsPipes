@@ -52,6 +52,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.buildcraft.gates.LogisticsTriggerProvider;
@@ -61,7 +62,6 @@ import logisticspipes.proxy.buildcraft.gates.TriggerNeedsPower;
 import logisticspipes.proxy.buildcraft.gates.TriggerSupplierFailed;
 import logisticspipes.renderer.LogisticsPipeBlockRenderer;
 import logisticspipes.transport.LPTravelingItem;
-import logisticspipes.transport.LPTravelingItem.LPTravelingItemClient;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.utils.tuples.LPPosition;
 import net.minecraft.block.Block;
@@ -84,11 +84,9 @@ import buildcraft.core.CoreConstants;
 import buildcraft.core.inventory.InvUtils;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.TransportProxy;
 import buildcraft.transport.TransportProxyClient;
 import buildcraft.transport.TravelingItem;
 import buildcraft.transport.render.PipeRendererTESR;
@@ -245,8 +243,8 @@ public class BuildCraftProxy {
 	 * @return the pipe
 	 */
 	@SuppressWarnings("unchecked")
-	public static ItemPipe registerPipe(int key, Class<? extends Pipe<?>> clas) {
-		ItemPipe item = new ItemLogisticsPipe(key, clas);
+	public static ItemLogisticsPipe registerPipe(int key, Class<? extends Pipe<?>> clas) {
+		ItemLogisticsPipe item = new ItemLogisticsPipe(key, clas);
 
 		Map<Integer, Class<? extends Pipe>> pipes = null;
 		
@@ -265,14 +263,14 @@ public class BuildCraftProxy {
 		Pipe<?> dummyPipe = BlockGenericPipe.createPipe(item.itemID);
 		if (dummyPipe != null) {
 			item.setPipeIconIndex(dummyPipe.getIconIndexForItem());
-			TransportProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
+			MainProxy.proxy.setPipeIcons(item, dummyPipe);
 		}
 
 		return item;
 	}
 	
 	protected Item createPipe(int defaultID, Class <? extends Pipe<?>> clas, String descr, Side side) {
-		ItemPipe res = registerPipe (defaultID, clas);
+		ItemLogisticsPipe res = registerPipe (defaultID, clas);
 		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
 		res.setUnlocalizedName(clas.getSimpleName());
 		Pipe<?> pipe = BlockGenericPipe.createPipe(res.itemID);
@@ -339,25 +337,6 @@ public class BuildCraftProxy {
 			e.printStackTrace();
 		} catch(IllegalAccessException e) {
 			e.printStackTrace();
-		}
-	}
-
-	public void replaceBlockGenericPipe() {
-		if(Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] == BuildCraftTransport.genericPipeBlock) {
-			LogisticsPipes.log.info("BlockGenericPipe was found with ID: " + BuildCraftTransport.genericPipeBlock.blockID);
-			Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] = null;
-			
-			//Force IDfix to ignore this block
-			Block coalBlock = Block.coalBlock;
-			Block.coalBlock = null;
-			
-			BuildCraftTransport.genericPipeBlock = new LogisticsBlockGenericPipe(BuildCraftTransport.genericPipeBlock.blockID);
-
-			Block.coalBlock = coalBlock; //Restore the coalBlock
-			
-			LogisticsPipes.log.info("LogisticsBlockGenericPipe was added at ID: " + BuildCraftTransport.genericPipeBlock.blockID);
-		} else {
-			throw new UnsupportedOperationException("[LogisticsPipes|Main] Could not find BlockGenericPipe with ID: " + BuildCraftTransport.genericPipeBlock.blockID + ". We found " + Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] != null ? Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID].getClass().getName() : "null");
 		}
 	}
 
