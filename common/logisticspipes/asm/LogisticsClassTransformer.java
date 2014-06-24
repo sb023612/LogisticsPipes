@@ -108,7 +108,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			if(name.equals("buildcraft.transport.TileGenericPipe")) {
 				return handleBCTileGenericPipe(bytes);
 			}
-			if(name.equals("buildcraft/transport/TileGenericPipe$CoreState")) {
+			if(name.equals("buildcraft.transport.TileGenericPipe$CoreState")) {
 				return handleBCTileGenericPipeCoreState(bytes);
 			}
 			if(name.equals("net.minecraft.crash.CrashReport")) {
@@ -654,7 +654,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		final ClassReader reader = new ClassReader(bytes);
 		final ClassNode node = new ClassNode();
 		reader.accept(node, 0);
-		node.access += Opcodes.ACC_PROTECTED;
+		node.access |= Opcodes.ACC_PUBLIC;
 		ClassWriter writer = new ClassWriter(0);
 		node.accept(writer);
 		return writer.toByteArray();
