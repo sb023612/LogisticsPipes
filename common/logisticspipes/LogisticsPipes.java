@@ -17,8 +17,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import buildcraft.api.transport.IPipeTile.PipeType;
-
 import logisticspipes.asm.wrapper.LogisticsWrapperHandler;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
@@ -133,12 +131,10 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
-<<<<<<< HEAD
-import net.minecraftforge.common.ForgeDirection;
-=======
 import net.minecraftforge.common.EnumHelper;
->>>>>>> mc16
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
+import buildcraft.api.transport.IPipeTile.PipeType;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
