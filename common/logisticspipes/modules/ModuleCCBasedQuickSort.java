@@ -30,7 +30,7 @@ import logisticspipes.network.packets.modules.CCBasedQuickSortSinkSize;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.cc.CCSinkResponder;
+import logisticspipes.proxy.cc.objects.CCSinkResponder;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -181,7 +181,7 @@ outer:
 		if(list.isEmpty()) return false;
 		ItemIdentifier ident = list.get(0).getStack().getItem();
 		ItemStack stack = invUtil.getStackInSlot(slot);
-		if(stack == null || ItemIdentifier.get(stack) != ident) return false;
+		if(stack == null || !ItemIdentifier.get(stack).equals(ident)) return false;
 		final IRouter source = this._service.getRouter();
 		List<Triplet<Integer, Integer, CCSinkResponder>> posibilities = new ArrayList<Triplet<Integer, Integer, CCSinkResponder>>();
 		for(CCSinkResponder sink:list) {

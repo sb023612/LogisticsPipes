@@ -1,8 +1,9 @@
-package logisticspipes.proxy.cc;
+package logisticspipes.proxy.cc.objects;
 
 import logisticspipes.interfaces.IQueueCCEvent;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
 
@@ -29,8 +30,8 @@ public class CCSinkResponder {
 	}
 	
 	@CCCommand
-	public int getItemIdentifierID() {
-		return stack.getItem().uniqueID;
+	public ItemIdentifier getItemIdentifier() {
+		return stack.getItem();
 	}
 	
 	@CCCommand
