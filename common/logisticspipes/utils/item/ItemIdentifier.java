@@ -129,21 +129,15 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 					continue;
 				}
 				keyRefWlock.lock();
-				int numremoved = 0;
 				do {
 					//value in the map might have been replaced in the meantime
 					IDReference current = keyRefMap.get(r.key);
 					if(r == current) {
-						numremoved++;
 						keyRefMap.remove(r.key);
 						tagIDsets[r.key.itemID].clear(r.uniqueID);
-						System.out.println("Cleaned up ItemIdentifier for " + r.key.itemID + ":" + r.key.itemDamage + "-nbt" + r.uniqueID);
-					} else {
-						System.out.println("Ignored stale ref for " + r.key.itemID + ":" + r.key.itemDamage + "-nbt" + r.uniqueID);
 					}
 					r = (IDReference)(keyRefQueue.poll());
 				} while(r != null);
-				System.out.println("cleaned up " + numremoved + " ItemIdentifiers");
 				keyRefWlock.unlock();
 			}
 		}
@@ -163,7 +157,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	public final int itemID;
 	public final int itemDamage;
 	public final FinalNBTTagCompound tag;
-	protected final int uniqueID;
+	public final int uniqueID;
 	
 	private int maxStackSize = 0;
 
@@ -180,7 +174,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		ret = new ItemIdentifier(itemID, 0, null, 0);
 		simpleIdentifiers.set(itemID, ret);
-		System.out.println("Created Simple ItemIdentifier for " + itemID);
 		return ret;
 	}
 
@@ -206,7 +199,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		ret = new ItemIdentifier(itemID, damage, null, 0);
 		damages.set(damage, ret);
-		System.out.println("Created Damage ItemIdentifier for " + itemID + ":" + damage);
 		return ret;
 	}
 
@@ -247,11 +239,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		keyRefMap.put(realKey, new IDReference(realKey, nextUniqueID, ret));
 		checkNBTbadness(ret, finaltag);
 		keyRefWlock.unlock();
-		if(r == null) {
-			System.out.println("Created NBT ItemIdentifier for " + itemID + ":" + damage + "-nbt" + nextUniqueID);
-		} else {
-			System.out.println("Revived NBT ItemIdentifier for " + itemID + ":" + damage + "-nbt" + nextUniqueID);
-		}
 		return ret;
 	}
 
@@ -446,28 +433,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return maxStackSize;
 	}
 	
-	public String getNBTTagCompoundName() {
-		if(tag != null) {
-			return tag.getName();
-		} else {
-			return null;
-		}
-	}
-	
-	public Map<Object, Object> getNBTTagCompoundAsMap() {
-		if(tag != null) {
-			try {
-				return getNBTBaseAsMap(tag);
-			} catch(Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-	
-	private Map<Integer, Object> getArrayAsMap(int[] array) {
+	private static Map<Integer, Object> getArrayAsMap(int[] array) {
 		HashMap<Integer, Object> map = new HashMap<Integer, Object>();
 		int i = 0;
 		for(int object: array) {
@@ -477,7 +443,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return map;
 	}
 	
-	private Map<Integer, Object> getArrayAsMap(byte[] array) {
+	private static Map<Integer, Object> getArrayAsMap(byte[] array) {
 		HashMap<Integer, Object> map = new HashMap<Integer, Object>();
 		int i = 1;
 		for(byte object: array) {
@@ -488,7 +454,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public static Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if(nbt == null) {
 			return null;
 		}
@@ -631,7 +597,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 
 	public boolean equalsForCrafting(ItemIdentifier item) {
-		return this.itemID == item.itemID && (item.isDamagable() ? true : this.itemDamage == item.itemDamage);
+		return this.itemID == item.itemID && (item.isDamageable() || (this.itemDamage == item.itemDamage));
 	}
 
 	public boolean equalsWithoutNBT(ItemStack stack) {
@@ -642,7 +608,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return this.itemID == item.itemID && this.itemDamage == item.itemDamage;
 	}
 
-	public boolean isDamagable() {
+	public boolean isDamageable() {
 		return this.getUndamaged() == this;
 	}
 
